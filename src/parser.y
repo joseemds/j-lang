@@ -24,15 +24,35 @@ extern char * yytext;
 
 
 %%
-program: type_decls
+program: funcs {}
 
-type_decls: | type_decl type_decls
+funcs: | func funcs {}
 
-type_decl: TYPE UID EQUAL type_constr
+func: FUNC LID LPAREN RPAREN LBRACE stmts RBRACE {}
+
+stmts: stmt {}
+
+stmt: func_call SEMICOLON {}
+
+func_call: LID LPAREN func_call_rest {}
+
+func_call_rest: RPAREN | arg_list RPAREN {}
+
+arg_list: arg | arg COMMA arg_list {}
+
+arg: STRING_LIT | LID {}
+
+type_decls: | type_decl type_decls {}
+
+val_decls: VAL idents COLON UID SEMICOLON {}
+
+type_decl: TYPE UID EQUAL type_constr {}
 
 type_constr: PRIM_TYPE SEMICOLON
 					| UID SEMICOLON
-					| LBRACE RBRACE
+					| LBRACE RBRACE {}
+
+idents: LID | LID COMMA idents {}
 
 %%
 
