@@ -3,9 +3,9 @@
 ## Pre-requesitos
 
 - Ter o lex instalado
-- Ter o GCC ou outro compilador de C de sua prefência instalado
+- Ter o GCC ou outro compilador de C de sua preferência instalado
 
-Para compilar a linguagem, basta executar:
+Para gerar o compilador da linguagem, basta executar:
 
 ```bash
 make
