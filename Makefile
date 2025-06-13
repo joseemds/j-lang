@@ -52,5 +52,5 @@ $(YACC_GEN_H): $(YACC_GEN_C)
 .PHONY: clean
 clean:
 	@echo "==> Cleaning up generated files..."
-	rm -f $(TARGET) $(LEX_GEN_C) $(YACC_GEN_C) $(YACC_GEN_H) y.output y.vcg y.gv $(BINDIR)
+	rm -rf $(TARGET) $(LEX_GEN_C) $(YACC_GEN_C) $(YACC_GEN_H) y.output y.vcg y.gv $(BINDIR)
 	@echo "==> Done."
