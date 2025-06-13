@@ -1,0 +1,8 @@
+scanner.yy.c
+y.tab.c
+y.tab.h
+lex.yy.c
+y.output
+y.gv
+y.vcg
+bin/
