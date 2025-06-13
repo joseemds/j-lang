@@ -5,23 +5,24 @@
 - Ter o lex instalado
 - Ter o GCC ou outro compilador de C de sua prefência instalado
 
-Para compilar o lexer, basta executar os seguintes comandos:
+Para compilar a linguagem, basta executar:
 
 ```bash
-lex j-lang.l
-gcc lex.yy.c -o j-lang-lexer
+make
 ```
+E será gerado um binário na pasta `bin/` com o nome `j-lang`
 
-Nessa pasta, você pode encontrar a implementação dos seguintes programas:
+Na pasta `examples/` estão disponíveis alguns exemplos de programas feitos na linguagem. Entre eles estão:
 
 - hello.j
 - mergesort.j
 - fib.j
 
-Para ver o resultado do lexer nesses arquivos basta executar, `./j-lang-lexer < arquivo.j`, isto é
+Para executar o parser da linguagem em um dos exemplos, basta executar: 
+`./bin/j-lang < arquivo.j`, isto é
 
 ```
-./j-lang-lexer < hello.j
-./j-lang-lexer < mergesort.j
-./j-lang-lexer < fib.j
+./bin/j-lang < hello.j
+./bin/j-lang < mergesort.j
+./bin/j-lang < fib.j
 ```
