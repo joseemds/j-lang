@@ -24,11 +24,15 @@ extern char * yytext;
 
 
 %%
-program: funcs {}
+program: imports type_decls val_decls funcs {}
+
+imports: | imports import {}
+
+import: IMPORT LID SEMICOLON {}
 
 funcs: | func funcs {}
 
-func: FUNC LID LPAREN RPAREN LBRACE stmts RBRACE {}
+func: FUNC LID LPAREN RPAREN COLON UID LBRACE stmts RBRACE {}
 
 stmts: stmt | stmts stmt {}
 
@@ -44,7 +48,9 @@ arg: STRING_LIT | LID {}
 
 type_decls: | type_decls type_decl {}
 
-val_decls: VAL idents COLON UID SEMICOLON {}
+val_decls : | val_decls val_decl
+
+val_decl: VAL idents COLON UID SEMICOLON {}
 
 type_decl: TYPE UID EQUAL type_constr {}
 
