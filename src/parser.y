@@ -30,7 +30,7 @@ funcs: | func funcs {}
 
 func: FUNC LID LPAREN RPAREN LBRACE stmts RBRACE {}
 
-stmts: stmt {}
+stmts: stmt | stmts stmt {}
 
 stmt: func_call SEMICOLON {}
 
@@ -38,11 +38,11 @@ func_call: LID LPAREN func_call_rest {}
 
 func_call_rest: RPAREN | arg_list RPAREN {}
 
-arg_list: arg | arg COMMA arg_list {}
+arg_list: arg | arg_list COMMA arg {}
 
 arg: STRING_LIT | LID {}
 
-type_decls: | type_decl type_decls {}
+type_decls: | type_decls type_decl {}
 
 val_decls: VAL idents COLON UID SEMICOLON {}
 
@@ -52,7 +52,7 @@ type_constr: PRIM_TYPE SEMICOLON
 					| UID SEMICOLON
 					| LBRACE RBRACE {}
 
-idents: LID | LID COMMA idents {}
+idents: LID | idents COMMA LID  {}
 
 %%
 
