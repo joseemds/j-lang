@@ -23,8 +23,8 @@ extern char * yytext;
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COLON SEMICOLON COMMA DOT
 %define parse.error detailed
 
-%left TIMES DIVIDE
-%left PLUS MINUS
+%left TIMES DIVIDE AND
+%left PLUS MINUS OR
 
 %%
 program: stmt_list {}
@@ -33,7 +33,13 @@ stmt_list: %empty | stmts
 
 import: IMPORT LID SEMICOLON {}
 
-func: FUNC LID LPAREN RPAREN COLON UID LBRACE stmt_list RBRACE {}
+func: FUNC LID LPAREN func_params_opt RPAREN COLON UID LBRACE stmt_list RBRACE {}
+
+func_params_opt: %empty | func_params
+
+func_params: func_param | func_params COMMA func_param
+
+func_param: idents COLON UID
 
 stmts: stmt | stmts stmt {}
 
