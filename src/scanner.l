@@ -7,6 +7,7 @@
 %}
 
 %option noyywrap nounput noinput
+%option yylineno
 
 DIGIT    [0-9]
 UPPERCASE_IDENTIFIER [A-Z][a-zA-Z0-9_]*

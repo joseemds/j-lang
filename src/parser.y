@@ -21,22 +21,25 @@ extern char * yytext;
 %token EQUAL CMP LEQ LT GEQ GT NEQ
 %token PLUS MINUS TIMES DIVIDE AND OR NOT
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COLON SEMICOLON COMMA DOT
-
+%define parse.error detailed
 
 %%
-program: imports type_decls val_decls funcs {}
+program: stmt_list {}
 
-imports: | imports import {}
+stmt_list: %empty | stmts
+
 
 import: IMPORT LID SEMICOLON {}
 
-funcs: | func funcs {}
-
-func: FUNC LID LPAREN RPAREN COLON UID LBRACE stmts RBRACE {}
+func: FUNC LID LPAREN RPAREN COLON UID LBRACE stmt_list RBRACE {}
 
 stmts: stmt | stmts stmt {}
 
-stmt: func_call SEMICOLON {}
+stmt: import | type_decl | variable_stmt | func | expr
+
+expr: func_call
+
+variable_stmt: assign | val_decl
 
 func_call: LID LPAREN func_call_rest {}
 
@@ -46,11 +49,13 @@ arg_list: arg | arg_list COMMA arg {}
 
 arg: STRING_LIT | LID {}
 
-type_decls: | type_decls type_decl {}
+val_decl: VAL idents COLON UID val_initialization_opt SEMICOLON {}
 
-val_decls : | val_decls val_decl
+val_initialization_opt: %empty | val_initialization {}
 
-val_decl: VAL idents COLON UID SEMICOLON {}
+val_initialization: EQUAL NUMBER {}
+
+assign: LID EQUAL NUMBER SEMICOLON {}
 
 type_decl: TYPE UID EQUAL type_constr {}
 
