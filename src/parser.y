@@ -4,7 +4,7 @@
 #include <string.h>
 
 int yylex(void);
-int yyerror(char *s);
+int yyerror(const char *s);
 extern int yylineno;
 extern char * yytext;
 %}
@@ -18,7 +18,7 @@ extern char * yytext;
 %token <sValue> UID LID STRING_LIT PRIM_TYPE
 %token <iValue> NUMBER
 %token TYPE FUNC VAL IF ELSE WHILE FOR RETURN IMPORT ENUM
-%token EQUAL CMP LEQ LT GEQ GT NEQ TRUE FALSE RETURN
+%token EQUAL CMP LEQ LT GEQ GT NEQ TRUE FALSE
 %token PLUS MINUS TIMES DIVIDE AND OR NOT
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COLON SEMICOLON COMMA DOT
 %define parse.error detailed
@@ -103,7 +103,7 @@ int main (void) {
 	return yyparse ( );
 }
 
-int yyerror (char *msg) {
+int yyerror (const char *msg) {
 	fprintf (stderr, "%d: %s at '%s'\n", yylineno, msg, yytext);
 	return 0;
 }
