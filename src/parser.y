@@ -18,7 +18,7 @@ extern char * yytext;
 %token <sValue> UID LID STRING_LIT PRIM_TYPE
 %token <iValue> NUMBER
 %token TYPE FUNC VAL IF ELSE WHILE FOR RETURN IMPORT ENUM
-%token EQUAL CMP LEQ LT GEQ GT NEQ TRUE FALSE
+%nonassoc EQUAL CMP LEQ LT GEQ GT NEQ TRUE FALSE
 %token PLUS MINUS TIMES DIVIDE AND OR NOT
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COLON SEMICOLON COMMA DOT
 %define parse.error detailed
@@ -43,13 +43,18 @@ func_param: idents COLON UID
 
 stmts: stmt | stmts stmt {}
 
-stmt: import | type_decl | variable_stmt | func | expr SEMICOLON | return_stmt
+stmt: import | type_decl | variable_stmt | func | expr SEMICOLON | return_stmt | for_stmt
+
+
+for_stmt: FOR LPAREN variable_stmt expr SEMICOLON variable_stmt RPAREN LBRACE stmt_list RBRACE {}
+			 
 
 return_stmt: RETURN expr SEMICOLON
 
 expr: arith_expr 
     | expr OR expr
     | expr AND expr
+		| expr LT expr
     | arith_expr CMP arith_expr
     | arith_expr NEQ arith_expr
 
@@ -75,9 +80,9 @@ atomic_expr:
 
 variable_stmt: assign | val_decl
 
-func_call: LID LPAREN func_call_rest {}
+func_call: LID LPAREN arg_list_opt RPAREN {}
 
-func_call_rest: RPAREN | arg_list RPAREN {}
+arg_list_opt: %empty | arg_list {}
 
 arg_list: expr | arg_list COMMA expr {}
 

@@ -1,6 +1,6 @@
 type NumArray = [Int];
 
-func merge(val arr : NumArray, val left : Int, val mid : Int, val right : Int) : Void{
+func merge(arr : NumArray, left : Int, mid : Int, right : Int) : Void {
 
 	val x1 : Int = mid - left + 1;
 	val x2 : Int = right - mid + 1;
@@ -32,7 +32,7 @@ func merge(val arr : NumArray, val left : Int, val mid : Int, val right : Int) :
 	}
 }
 
-func mergeSort (val arr : NumArray, val left : Int, val right : Int) : Void{ 
+func mergeSort (arr : NumArray, left : Int, right : Int) : Void{ 
 	if (left < right) {
 		val mid : Int = left + (right - left) / 2;
 
@@ -43,7 +43,7 @@ func mergeSort (val arr : NumArray, val left : Int, val right : Int) : Void{
 	}
 }
 
-func printArray(val arr : NumArray) : Void{ 
+func printArray(arr : NumArray) : Void{ 
 	print("[ ");
    	for (val i : Int = 0; i < arr.length; i = i + 1) {  
 print(arr[i]);
