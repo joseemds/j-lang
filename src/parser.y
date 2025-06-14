@@ -18,16 +18,18 @@ extern char * yytext;
 %token <sValue> UID LID STRING_LIT PRIM_TYPE
 %token <iValue> NUMBER
 %token TYPE FUNC VAL IF ELSE WHILE FOR RETURN IMPORT ENUM
-%token EQUAL CMP LEQ LT GEQ GT NEQ
+%token EQUAL CMP LEQ LT GEQ GT NEQ TRUE FALSE RETURN
 %token PLUS MINUS TIMES DIVIDE AND OR NOT
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COLON SEMICOLON COMMA DOT
 %define parse.error detailed
+
+%left TIMES DIVIDE
+%left PLUS MINUS
 
 %%
 program: stmt_list {}
 
 stmt_list: %empty | stmts
-
 
 import: IMPORT LID SEMICOLON {}
 
@@ -35,9 +37,35 @@ func: FUNC LID LPAREN RPAREN COLON UID LBRACE stmt_list RBRACE {}
 
 stmts: stmt | stmts stmt {}
 
-stmt: import | type_decl | variable_stmt | func | expr
+stmt: import | type_decl | variable_stmt | func | expr SEMICOLON | return_stmt
 
-expr: func_call
+return_stmt: RETURN expr SEMICOLON
+
+expr: arith_expr 
+    | expr OR expr
+    | expr AND expr
+    | arith_expr CMP arith_expr
+    | arith_expr NEQ arith_expr
+
+arith_expr:
+    atomic_expr
+    | arith_expr PLUS arith_expr  {}
+    | arith_expr MINUS arith_expr {}
+    | arith_expr TIMES arith_expr {}
+    | arith_expr DIVIDE arith_expr{}
+    | NOT atomic_expr            {}
+    | MINUS atomic_expr {}
+    ;
+
+atomic_expr:
+    NUMBER
+		| STRING_LIT
+    | TRUE
+    | FALSE
+    | LID
+    | func_call
+    | LPAREN expr RPAREN
+    ;
 
 variable_stmt: assign | val_decl
 
@@ -45,17 +73,15 @@ func_call: LID LPAREN func_call_rest {}
 
 func_call_rest: RPAREN | arg_list RPAREN {}
 
-arg_list: arg | arg_list COMMA arg {}
-
-arg: STRING_LIT | LID {}
+arg_list: expr | arg_list COMMA expr {}
 
 val_decl: VAL idents COLON UID val_initialization_opt SEMICOLON {}
 
 val_initialization_opt: %empty | val_initialization {}
 
-val_initialization: EQUAL NUMBER {}
+val_initialization: EQUAL expr {}
 
-assign: LID EQUAL NUMBER SEMICOLON {}
+assign: LID EQUAL expr SEMICOLON {}
 
 type_decl: TYPE UID EQUAL type_constr {}
 

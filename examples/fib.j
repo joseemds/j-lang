@@ -4,8 +4,8 @@ val my_int : Int = 10;
 val x : Int = 10;
 val s : String;
 val w,y,z : Int;
-w = 10;
+w = 10 * 3;
 
 func main(): Void {
-    print()
+    print(fib(my_int));
 }
