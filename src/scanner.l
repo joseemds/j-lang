@@ -3,7 +3,7 @@
 #include <string.h>
 #include "include/y.tab.h"
 
-  extern int yyerror (char *msg);  
+extern int yyerror (char *msg);  
 %}
 
 %option noyywrap nounput noinput
@@ -14,12 +14,18 @@ UPPERCASE_IDENTIFIER [A-Z][a-zA-Z0-9_]*
 LOWERCASE_IDENTIFIER [a-z_][a-zA-Z0-9_]*
 WHITESPACE [ \n\t\r]+
 
+/* PRIM_TYPE [ "Int" | "String" | "Bool" | "Float" ] não funciona?*/
+
 STRING_LITERAL \"[^"]*\"
 
 %%
 
 {WHITESPACE}          {}
 
+ /* {PRIM_TYPE}           { return PRIM_TYPE; } */
+
+"true"                { return TRUE; }
+"false"               { return FALSE; }
 "type"                { return TYPE; }
 "func"                { return FUNC; }
 "val"                 { return VAL; }
@@ -27,9 +33,12 @@ STRING_LITERAL \"[^"]*\"
 "else"                { return ELSE; }
 "while"               { return WHILE; }
 "for"                 { return FOR; }
+"while"               { return WHILE; }
 "return"              { return RETURN; }
 "import"              { return IMPORT; }
 "enum"                { return ENUM; }
+"break"               { return BREAK; }
+"continue"            { return CONTINUE; }
 
 {DIGIT}+              { return NUMBER;}
 {STRING_LITERAL}      {
