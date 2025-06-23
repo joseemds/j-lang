@@ -9,20 +9,22 @@ extern int yyerror (char *msg);
 %option noyywrap nounput noinput
 %option yylineno
 
-DIGIT    [0-9]
-UPPERCASE_IDENTIFIER [A-Z][a-zA-Z0-9_]*
-LOWERCASE_IDENTIFIER [a-z_][a-zA-Z0-9_]*
-WHITESPACE [ \n\t\r]+
+DIGIT     [0-9]
+UPPERCASE_IDENTIFIER   [A-Z][a-zA-Z0-9_]*
+LOWERCASE_IDENTIFIER   [a-z_][a-zA-Z0-9_]*
+WHITESPACE   [ \n\t\r]+
 
-/* PRIM_TYPE [ "Int" | "String" | "Bool" | "Float" ] não funciona?*/
+PRIM_TYPE  (Int|String|Bool|Float)
+ARRAY_TYPE  \[(Int|String|Bool|Float)\]
 
-STRING_LITERAL \"[^"]*\"
+STRING_LITERAL  \"[^"]*\"
 
 %%
 
 {WHITESPACE}          {}
 
- /* {PRIM_TYPE}           { return PRIM_TYPE; } */
+{PRIM_TYPE}           { return PRIM_TYPE; }
+{ARRAY_TYPE}          { return ARRAY_TYPE; }
 
 "true"                { return TRUE; }
 "false"               { return FALSE; }

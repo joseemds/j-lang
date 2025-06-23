@@ -45,9 +45,9 @@ func mergeSort (arr : NumArray, left : Int, right : Int) : Void{
 
 func printArray(arr : NumArray) : Void{ 
 	print("[ ");
-   	for (val i : Int = 0; i < arr.length; i = i + 1) {  
+   	for (val i : Int = 0; i < arr.length(); i = i + 1) {  
 print(arr[i]);
-if (i < arr.length - 1){
+if (i < arr.length() - 1){
 	print(", ");
 	}
 }
@@ -60,7 +60,7 @@ func main () : Void {
 	print("Original array");
 	printArray(number);
 
-	mergeSort(numbers, 0, numbers.length - 1);
+	mergeSort(numbers, 0, numbers.length() - 1);
 
 	print("Sorted array:");
 	printArray(numbers);

@@ -1,5 +1,3 @@
-import example;
-
 val my_int : Int = 10;
 val x : Int = 10;
 val s : String;
