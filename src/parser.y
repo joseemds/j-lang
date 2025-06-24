@@ -15,7 +15,7 @@ extern char * yytext;
 	char * sValue;
 	};
 
-%token <sValue> UID LID STRING_LIT PRIM_TYPE ARRAY_TYPE
+%token <sValue> UID LID STRING_LIT PRIM_TYPE
 %token <iValue> NUMBER
 %token TYPE FUNC VAL IF ELSE WHILE FOR RETURN IMPORT ENUM BREAK CONTINUE
 %nonassoc EQUAL CMP LEQ LT GEQ GT NEQ TRUE FALSE
@@ -30,16 +30,14 @@ extern char * yytext;
 
 program: stmt_list {}
 
-stmt_list: %empty | stmts // não é melhor só colocar uma regra vazia em stmts?
+stmt_list: %empty | stmts
 
 stmts: stmt | stmts stmt {}
-
-// stmts: %empty | stmts stmt -> equivale às duas acima?
 
 stmt: import 
     | type_decl 
     | variable_stmt SEMICOLON
-    | func 
+    | func_decl 
     | expr SEMICOLON 
     | return_stmt 
     | for_stmt
@@ -57,34 +55,40 @@ type_constr: usable_type SEMICOLON
            | type_enum SEMICOLON
 
 type_struct: %empty 
-           | val_decl SEMICOLON type_struct
+           | struct_fields SEMICOLON type_struct // fazer recursão esquerda
+
+struct_fields: idents COLON usable_type val_initialization_opt
 
 type_enum: ENUM LBRACE enum_values RBRACE
 
 enum_values: STRING_LIT
-           | STRING_LIT COMMA enum_values
+           | enum_values COMMA STRING_LIT 
+
+array_type: LBRACKET array_type RBRACKET
+          | LBRACKET usable_type RBRACKET
 
 variable_stmt: assign
              | val_decl
 
 assign: LID EQUAL expr {}
-      | array_expr EQUAL expr {}
+      | array_access EQUAL expr {}
+      | attr_access EQUAL expr {}
 
-array_expr: LID LBRACKET arith_expr RBRACKET {}
+array_access: atomic_expr LBRACKET arith_expr RBRACKET {} // possível erro com o uso de atomic_expr
 
-val_decl: VAL idents COLON usable_type val_initialization_opt {} // Essa regra não permite "val w = 10,y,z = w : Int;", apenas a inicialização da última variável declarada (ou de todas?)
-
-usable_type: UID
-           | PRIM_TYPE
-           | ARRAY_TYPE
+val_decl: VAL idents COLON usable_type val_initialization_opt {}
 
 idents: LID | idents COMMA LID  {}
 
+usable_type: UID
+           | PRIM_TYPE
+           | array_type
+
 val_initialization_opt: %empty | val_initialization {}
 
-val_initialization: EQUAL expr {}
+val_initialization: EQUAL expr_list {}
 
-func: FUNC LID LPAREN func_params_opt RPAREN COLON usable_type LBRACE stmt_list RBRACE {}
+func_decl: FUNC LID LPAREN func_params_opt RPAREN COLON usable_type LBRACE stmt_list RBRACE {}
 
 func_params_opt: %empty | func_params
 
@@ -119,11 +123,12 @@ atomic_expr: NUMBER
            | LID
            | func_call
            | LPAREN expr RPAREN
-           | array_expr
-           | method_call
+           | array_access
+           | attr_access
            | array_notation
+           | struct_cons
 
-method_call: LID DOT func_call {}
+attr_access: atomic_expr DOT LID {} // possível erro com o uso de atomic_expr
 
 array_notation: LBRACKET expr_list_opt RBRACKET {}
 
@@ -131,10 +136,18 @@ expr_list_opt: %empty
              | expr_list {}
 
 expr_list: expr {}
-         | expr COMMA expr_list {}
+         | expr_list COMMA expr {}
 
-for_stmt: FOR LPAREN variable_stmt SEMICOLON expr SEMICOLON variable_stmt RPAREN LBRACE stmt_list RBRACE {} // todas as variáveis de controle de for vão ter o escopo local?
-        | FOR LPAREN LID SEMICOLON expr SEMICOLON variable_stmt RPAREN LBRACE stmt_list RBRACE {} // terceira parte da estrutura deveria ser apenas um assignment?
+struct_cons: usable_type LBRACE struct_assign_opt RBRACE
+
+struct_assign_opt: %empty
+             | struct_assign
+
+struct_assign: LID COLON expr
+             | struct_assign COMMA LID COLON expr {}
+
+for_stmt: FOR LPAREN variable_stmt SEMICOLON expr SEMICOLON assign RPAREN LBRACE stmt_list RBRACE {}
+        | FOR LPAREN LID SEMICOLON expr SEMICOLON assign RPAREN LBRACE stmt_list RBRACE {}
 
 func_call: LID LPAREN arg_list_opt RPAREN {}
 

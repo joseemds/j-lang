@@ -1,7 +1,8 @@
 val my_int : Int = 10;
 val x : Int = 10;
-val s : String;
-val w,y,z : Int;
+val s, s1, s2 : String;
+val w, y, z : Int = 2, 3;
+val w, y, z : Int = 1, 2, w;
 val w,y,z : Int = x;
 w = 10 * 3;
 
@@ -14,5 +15,5 @@ func fib_times_fib(n, m : Int) : Int {
 }
 
 func main(): Void {
-    print(fib(my_int));
+  print(fib(my_int));
 }

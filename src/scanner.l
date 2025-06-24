@@ -15,7 +15,6 @@ LOWERCASE_IDENTIFIER   [a-z_][a-zA-Z0-9_]*
 WHITESPACE   [ \n\t\r]+
 
 PRIM_TYPE  (Int|String|Bool|Float)
-ARRAY_TYPE  \[(Int|String|Bool|Float)\]
 
 STRING_LITERAL  \"[^"]*\"
 
@@ -24,7 +23,6 @@ STRING_LITERAL  \"[^"]*\"
 {WHITESPACE}          {}
 
 {PRIM_TYPE}           { return PRIM_TYPE; }
-{ARRAY_TYPE}          { return ARRAY_TYPE; }
 
 "true"                { return TRUE; }
 "false"               { return FALSE; }
@@ -35,7 +33,6 @@ STRING_LITERAL  \"[^"]*\"
 "else"                { return ELSE; }
 "while"               { return WHILE; }
 "for"                 { return FOR; }
-"while"               { return WHILE; }
 "return"              { return RETURN; }
 "import"              { return IMPORT; }
 "enum"                { return ENUM; }
