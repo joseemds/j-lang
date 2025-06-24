@@ -14,7 +14,7 @@ UPPERCASE_IDENTIFIER   [A-Z][a-zA-Z0-9_]*
 LOWERCASE_IDENTIFIER   [a-z_][a-zA-Z0-9_]*
 WHITESPACE   [ \n\t\r]+
 
-PRIM_TYPE  (Int|String|Bool|Float)
+PRIM_TYPE  (Int|String|Bool|Float|Frac)
 
 STRING_LITERAL  \"[^"]*\"
 
@@ -40,6 +40,7 @@ STRING_LITERAL  \"[^"]*\"
 "continue"            { return CONTINUE; }
 
 {DIGIT}+              { return NUMBER;}
+{DIGIT}*\.{DIGIT}+    { return FLOAT; }
 {STRING_LITERAL}      {
                         return STRING_LIT;
                       }

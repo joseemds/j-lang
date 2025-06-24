@@ -11,12 +11,14 @@ extern char * yytext;
 
 %union {
 	int    iValue;
+  float  fValue;
 	char   cValue;
 	char * sValue;
 	};
 
 %token <sValue> UID LID STRING_LIT PRIM_TYPE
 %token <iValue> NUMBER
+%token <fValue> FLOAT
 %token TYPE FUNC VAL IF ELSE WHILE FOR RETURN IMPORT ENUM BREAK CONTINUE
 %nonassoc EQUAL CMP LEQ LT GEQ GT NEQ TRUE FALSE
 %token PLUS MINUS TIMES DIVIDE AND OR NOT
@@ -117,6 +119,7 @@ arith_expr: atomic_expr
           | MINUS atomic_expr             {}
 
 atomic_expr: NUMBER
+           | FLOAT
 		       | STRING_LIT
            | TRUE
            | FALSE
