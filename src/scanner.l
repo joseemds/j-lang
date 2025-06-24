@@ -60,6 +60,7 @@ STRING_LITERAL  \"[^"]*\"
 "-"                   { return MINUS; }
 "*"                   { return TIMES; }
 "/"                   { return DIVIDE; }
+"%"                   { return MOD; }
 "&&"                  { return AND; }
 "||"                  { return OR; }
 "!"                   { return NOT; }
