@@ -1,0 +1,1 @@
+- [ ] Discutir e implementao constantes
