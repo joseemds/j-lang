@@ -14,5 +14,5 @@ while(true) {}
 val b : Bool = false;
 
 while (b){
-  boom();
+  boom(); -- explodiu
 }

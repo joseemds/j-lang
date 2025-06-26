@@ -20,7 +20,9 @@ STRING_LITERAL  \"[^"]*\"
 
 %%
 
-{WHITESPACE}          {}
+"--".*                  {}
+
+{WHITESPACE}            {}
 
 {PRIM_TYPE}           { return PRIM_TYPE; }
 
