@@ -31,7 +31,7 @@ test: $(TARGET)
 	done
 	@echo "--- Todos os testes passaram com sucesso! ---"
 
-$(TARGET): $(LEX_GEN_C) $(YACC_GEN_C)
+$(TARGET): $(LEX_GEN_C) $(YACC_GEN_C) $(C_SOURCES)
 	@echo "==> Compiling and Linking: $(CC) $^ -o $(TARGET)"
 	@mkdir -p $(BINDIR)
 	$(CC) $(CFLAGS) $^ -o $(TARGET)

@@ -9,11 +9,17 @@ extern int yylineno;
 extern char * yytext;
 %}
 
+%code requires {
+	#include <ast.h>
+}
+
 %union {
 	int    iValue;
   float  fValue;
 	char   cValue;
 	char * sValue;
+	ASTStmt* stmtValue;
+	ASTExpr* exprValue;
 	};
 
 %token <sValue> UID LID STRING_LIT PRIM_TYPE
@@ -24,9 +30,14 @@ extern char * yytext;
 %token PLUS MINUS TIMES DIVIDE MOD AND OR NOT
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COLON SEMICOLON COMMA DOT
 %define parse.error detailed
+%locations
 
 %left TIMES DIVIDE AND
 %left PLUS MINUS OR
+
+
+%type <exprValue> atomic_expr
+%type <exprValue> arith_expr
 
 %%
 
@@ -118,18 +129,18 @@ arith_expr: atomic_expr
           | NOT atomic_expr               {}
           | MINUS atomic_expr             {}
 
-atomic_expr: NUMBER
-           | FLOAT
-		       | STRING_LIT
-           | TRUE
-           | FALSE
-           | LID
-           | func_call
-           | LPAREN expr RPAREN
-           | array_access
-           | attr_access
-           | array_notation
-           | struct_cons
+atomic_expr: NUMBER {$$ = mk_int_lit(@1.first_line, @1.first_column, $1);}
+           | FLOAT {$$ = mk_float_lit(@1.first_line, @1.first_column, $1);}
+		       | STRING_LIT  {$$ = mk_string_lit(@1.first_line, @1.first_column, $1);}
+           | TRUE  {$$ = mk_bool_lit(@1.first_line, @1.first_column, 1);}
+           | FALSE {$$ = mk_bool_lit(@1.first_line, @1.first_column, 0);}
+           | LID {$$ = mk_ident(@1.first_line, @1.first_column, $1);}
+           | func_call {}
+           | LPAREN expr RPAREN {}
+           | array_access {}
+           | attr_access {}
+           | array_notation {}
+           | struct_cons {}
 
 attr_access: atomic_expr DOT LID {} // possível erro com o uso de atomic_expr
 

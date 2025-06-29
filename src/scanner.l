@@ -3,8 +3,18 @@
 #include <string.h>
 #include "include/y.tab.h"
 
+int yycol = 1;
+
+#define YY_USER_ACTION \
+    yylloc.first_line = yylineno; \
+    yylloc.first_column = yycol; \
+    yylloc.last_line = yylineno; \
+    yylloc.last_column = yycol + yyleng - 1; \
+    yycol += yyleng;
+
 extern int yyerror (char *msg);  
 %}
+
 
 %option noyywrap nounput noinput
 %option yylineno

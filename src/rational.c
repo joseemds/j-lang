@@ -1,11 +1,4 @@
-#pragma once
-
-#include "jmath.h"
-
-typedef struct rational {
-    int top;
-    int bot;
-} rational;
+#include "rational.h"
 
 rational rational_add(rational a, rational b){
     rational r;
@@ -37,12 +30,14 @@ rational rational_mul(rational a, rational b){
     return r;
 }
 
-rational rational_div(rational a, rational b){
-    rational r;
-
-    r.top = a.top * b.bot; 
-    r.bot = a.bot * b.top;
-}
+// rational rational_div(rational a, rational b){
+//     rational r;
+//
+//     r.top = a.top * b.bot; 
+//     r.bot = a.bot * b.top;
+//
+// 		return r
+// }
 
 void rational_simplify(rational* r){
     int common = gcd(r->top, r->bot);

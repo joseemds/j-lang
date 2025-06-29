@@ -1,0 +1,79 @@
+#include "ast.h"
+
+ASTExpr* mk_ident(int line, int col, char* name) {
+    ExprIdent* ident = (ExprIdent*)malloc(sizeof(ExprIdent));
+    ident->name = strdup(name);
+
+    ASTExpr* expr_node = (ASTExpr*)malloc(sizeof(ASTExpr));
+    expr_node->kind = EXPR_IDENT;
+    expr_node->line = line;
+    expr_node->col = col;
+    expr_node->ident = ident;
+
+    return expr_node;
+}
+
+ASTExpr* mk_bool_lit(int line, int col, int value) {
+    ExprBoolLiteral* bool_lit = (ExprBoolLiteral*)malloc(sizeof(ExprBoolLiteral));
+    if (!bool_lit) {
+        fprintf(stderr, "Failed to allocate memory for ASTExpr node\n");
+        exit(EXIT_FAILURE);
+    }
+
+		bool_lit->value = value;
+
+    ASTExpr* node = (ASTExpr*) malloc(sizeof(ASTExpr));
+    if (!node) {
+        fprintf(stderr, "Failed to allocate memory for ASTExpr node\n");
+        exit(EXIT_FAILURE);
+    }
+
+    node->kind = EXPR_BOOL_LITERAL;
+    node->line = line;
+    node->col = col;
+    node->bool_lit = bool_lit;
+
+    return node;
+}
+
+ASTExpr* mk_int_lit(int line, int col, int value) {
+		ExprIntLiteral* int_lit = (ExprIntLiteral*)malloc(sizeof(ExprIntLiteral));
+		int_lit->value = value;
+    ASTExpr* node = (ASTExpr*) malloc(sizeof(ASTExpr));
+    if (!node) {
+        fprintf(stderr, "Failed to allocate memory for ASTExpr node\n");
+        exit(EXIT_FAILURE);
+    }
+
+    node->kind = EXPR_INT_LITERAL;
+    node->line = line;
+    node->col = col;
+    node->int_lit = int_lit;
+
+    return node;
+}
+
+ASTExpr* mk_float_lit(int line, int col, float value) {
+    ExprFloatLiteral* float_lit = (ExprFloatLiteral*)malloc(sizeof(ExprFloatLiteral));
+    float_lit->value = value;
+
+    ASTExpr* expr_node = (ASTExpr*)malloc(sizeof(ASTExpr));
+    expr_node->kind = EXPR_FLOAT_LITERAL;
+    expr_node->line = line;
+    expr_node->col = col;
+    expr_node->float_lit = float_lit;
+
+    return expr_node;
+}
+ASTExpr* mk_string_lit(int line, int col, char* value) {
+    ExprStringLiteral* string_lit = (ExprStringLiteral*)malloc(sizeof(ExprStringLiteral));
+    string_lit->value = strdup(value);
+
+    ASTExpr* expr_node = (ASTExpr*)malloc(sizeof(ASTExpr));
+    expr_node->kind = EXPR_STRING_LITERAL;
+    expr_node->line = line;
+    expr_node->col = col;
+    expr_node->string_lit = string_lit;
+
+    return expr_node;
+}
