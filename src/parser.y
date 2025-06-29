@@ -20,6 +20,8 @@ extern char * yytext;
 	char * sValue;
 	ASTStmt* stmtValue;
 	ASTExpr* exprValue;
+	StmtList* stmtList;
+
 	};
 
 %token <sValue> UID LID STRING_LIT PRIM_TYPE
@@ -36,14 +38,15 @@ extern char * yytext;
 %left PLUS MINUS OR
 
 
-%type <exprValue> atomic_expr
-%type <exprValue> arith_expr
+%type <exprValue> atomic_expr arith_expr expr
+%type <stmtList> program stmt_list stmts
+
 
 %%
 
-program: stmt_list {}
+program: stmt_list {$$ = $1;}
 
-stmt_list: %empty | stmts
+stmt_list: %empty {$$ = NULL;} | stmts {$$ = $1;} // revert this 
 
 stmts: stmt | stmts stmt {}
 
@@ -171,8 +174,8 @@ arg_list_opt: %empty
 arg_list: expr 
         | arg_list COMMA expr {}
 
-if_stmt: IF LPAREN expr RPAREN LBRACE stmt_list RBRACE {}
-       | IF LPAREN expr RPAREN LBRACE stmt_list RBRACE ELSE LBRACE stmt_list RBRACE {}
+if_stmt: IF LPAREN expr[cond] RPAREN LBRACE stmt_list[then] RBRACE { mk_if_stmt(@1.first_line, @1.first_column, $cond, $then, NULL); }
+       | IF LPAREN expr[cond] RPAREN LBRACE stmt_list[then] RBRACE ELSE LBRACE stmt_list[else_] RBRACE {mk_if_stmt(@1.first_line, @1.first_column, $cond, $then, $else_); }
 
 while_stmt: WHILE LPAREN expr RPAREN LBRACE stmt_list RBRACE {}
 

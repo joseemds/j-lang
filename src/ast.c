@@ -65,6 +65,7 @@ ASTExpr* mk_float_lit(int line, int col, float value) {
 
     return expr_node;
 }
+
 ASTExpr* mk_string_lit(int line, int col, char* value) {
     ExprStringLiteral* string_lit = (ExprStringLiteral*)malloc(sizeof(ExprStringLiteral));
     string_lit->value = strdup(value);
@@ -77,3 +78,18 @@ ASTExpr* mk_string_lit(int line, int col, char* value) {
 
     return expr_node;
 }
+
+
+ASTStmt* mk_if_stmt(int line, int col, ASTExpr* cond, StmtList* then, StmtList* else_){
+	StmtIf* if_stmt = (StmtIf*)malloc(sizeof(StmtIf));
+	ASTStmt* stmt = (ASTStmt*)malloc(sizeof(ASTStmt));
+
+	stmt->kind=STMT_IF;
+	stmt->col=col;
+	stmt->line=line;
+	stmt->if_stmt = if_stmt;
+
+	return stmt;
+
+}
+

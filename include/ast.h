@@ -60,6 +60,7 @@ typedef enum StmtKind {
 		STMT_IF,
 		STMT_BREAK,
 		STMT_CONTINUE,
+		STMT_EXPR,
 } StmtKind;
 
 typedef struct StmtList {
@@ -85,23 +86,24 @@ typedef struct StmtFuncDecl {} StmtFuncDecl;
 typedef struct StmtFuncParam {} StmtFuncParam;
 typedef struct StmtFuncCall {} StmtFuncCall;
 typedef struct StmtValDecl {} StmtValDecl;
+typedef struct StmtExpr {} StmtExpr;
 
 typedef struct StmtAssign {} StmtAssign;
 typedef struct StmtStructField {} StmtStructField;
 
 
-typedef struct StmtIfStmt {
+typedef struct StmtIf {
     ASTExpr* condition;
-    ASTStmt* then_branch;
-    ASTStmt* else_branch;
-} StmtIfStmt;
+    StmtList* then;
+    StmtList* else_;
+} StmtIf;
 
 struct ASTStmt {
-	StmtKind nodeType;
+	StmtKind kind;
 	int line;
 	int col;
 	union {
-		StmtIfStmt if_stmt;
+		StmtIf* if_stmt;
 		StmtWhile while_stmt;
 		StmtFor for_stmt;
 		StmtReturn return_stmt;
@@ -118,7 +120,7 @@ struct ASTStmt {
 };
 
 
-ASTStmt* mk_if_stmt(int line, int col);
+ASTStmt* mk_if_stmt(int line, int col, ASTExpr* cond, StmtList* then, StmtList* else_);
 ASTStmt* mk_while_stmt(int line, int col);
 ASTStmt* mk_for_stmt(int line, int col);
 ASTStmt* mk_return_stmt(int line, int col);
