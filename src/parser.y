@@ -139,7 +139,7 @@ atomic_expr: NUMBER {$$ = mk_int_lit(@1.first_line, @1.first_column, $1);}
            | FALSE {$$ = mk_bool_lit(@1.first_line, @1.first_column, 0);}
            | LID {$$ = mk_ident(@1.first_line, @1.first_column, $1);}
            | func_call {}
-           | LPAREN expr RPAREN {}
+           | LPAREN expr RPAREN {$$ = $2;}
            | array_access {}
            | attr_access {}
            | array_notation {}
