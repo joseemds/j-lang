@@ -79,6 +79,22 @@ ASTExpr* mk_string_lit(int line, int col, char* value) {
     return expr_node;
 }
 
+ASTExpr* mk_binary_op(int line, int col, int op, ASTExpr* left, ASTExpr* right){
+    ASTExpr* expr_node = (ASTExpr*)malloc(sizeof(ASTExpr));
+		ExprBinaryOp* binary_op = (ExprBinaryOp*)malloc(sizeof(ExprBinaryOp));
+
+		binary_op->left = left;
+		binary_op->right = right;
+		binary_op->op = op;
+
+		expr_node->col = col;
+		expr_node->line = line;
+		expr_node->binary_op=binary_op;
+
+		return expr_node;
+
+};
+
 
 ASTStmt* mk_if_stmt(int line, int col, ASTExpr* cond, StmtList* then, StmtList* else_){
 	StmtIf* if_stmt = (StmtIf*)malloc(sizeof(StmtIf));

@@ -24,7 +24,7 @@ typedef enum ExprKind {
 } ExprKind;
 
 typedef struct ExprBinaryOp {
-	int binary_op;
+	int op;
 	ASTExpr* left;
 	ASTExpr* right;
 } ExprBinaryOp;
@@ -129,7 +129,7 @@ ASTStmt* mk_func_decl_stmt(int line, int col);
 ASTStmt* mk_val_decl_stmt(int line, int col);
 ASTStmt* mk_assign_stmt(int line, int col);
 
-ASTExpr*  mk_binary_op(int line, int col);
+ASTExpr*  mk_binary_op(int line, int col, int op, ASTExpr* left, ASTExpr* right);
 ASTExpr*  mk_ident(int line, int col, char* ident);
 ASTExpr*  mk_int_lit(int line, int col, int value);
 ASTExpr*  mk_float_lit(int line, int col, float value);

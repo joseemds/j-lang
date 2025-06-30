@@ -114,21 +114,21 @@ func_param: idents COLON usable_type
 
 return_stmt: RETURN expr SEMICOLON {}
 
-expr: arith_expr 
-    | expr OR arith_expr
-    | expr AND arith_expr
-		| expr LT arith_expr
-		| expr LEQ arith_expr
-		| expr GT arith_expr
-		| expr GEQ arith_expr
-    | expr CMP arith_expr
-    | expr NEQ arith_expr
+expr: arith_expr  {$$ = $1;}
+    | expr OR arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, OR, $1, $3);}
+    | expr AND arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, AND, $1, $3);}
+		| expr LT arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, LT, $1, $3);}
+		| expr LEQ arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, LEQ, $1, $3);}
+		| expr GT arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, GT, $1, $3);}
+		| expr GEQ arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, GEQ, $1, $3);}
+    | expr CMP arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, CMP, $1, $3);}
+    | expr NEQ arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, NEQ, $1, $3);}
 
-arith_expr: atomic_expr
-          | arith_expr PLUS atomic_expr   {}
-          | arith_expr MINUS atomic_expr  {}
-          | arith_expr TIMES atomic_expr  {}
-          | arith_expr DIVIDE atomic_expr {}
+arith_expr: atomic_expr                   {$$ = $1;}
+          | arith_expr PLUS atomic_expr   {$$ = mk_binary_op(@1.first_line, @1.first_column, PLUS, $1, $3);}
+          | arith_expr MINUS atomic_expr  {$$ = mk_binary_op(@1.first_line, @1.first_column, MINUS, $1, $3);}
+          | arith_expr TIMES atomic_expr  {$$ = mk_binary_op(@1.first_line, @1.first_column, TIMES, $1, $3);}
+          | arith_expr DIVIDE atomic_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, DIVIDE, $1, $3);}
           | NOT atomic_expr               {}
           | MINUS atomic_expr             {}
 
