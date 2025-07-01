@@ -20,6 +20,7 @@ extern char * yytext;
 	char * sValue;
 	ASTStmt* stmtValue;
 	ASTExpr* exprValue;
+	ASTType* typeValue;
 	StmtList* stmtList;
 };
 
@@ -39,6 +40,7 @@ extern char * yytext;
 
 %type <exprValue> atomic_expr arith_expr expr
 %type <stmtList> program stmt_list stmts
+%type <typeValue> usable_type array_type
 
 
 %%
@@ -79,8 +81,8 @@ type_enum: ENUM LBRACE enum_values RBRACE
 enum_values: STRING_LIT
            | enum_values COMMA STRING_LIT 
 
-array_type: LBRACKET array_type RBRACKET
-          | LBRACKET usable_type RBRACKET
+array_type: LBRACKET array_type RBRACKET  {$$ = mk_type_array(@2.first_line, @2.first_column, $2);}
+          | LBRACKET usable_type RBRACKET {$$ = $2;}
 
 variable_stmt: assign
              | val_decl
@@ -95,9 +97,9 @@ val_decl: VAL idents COLON usable_type val_initialization_opt {}
 
 idents: LID { mk_ident(@1.first_line, @1.first_column, $1); } | idents COMMA LID  {}
 
-usable_type: UID
-           | PRIM_TYPE
-           | array_type
+usable_type: UID {mk_type_ident(@1.first_line, @1.first_column, $1);}
+           | PRIM_TYPE {mk_type_prim(@1.first_line, @1.first_column, $1);}
+           | array_type {$$ = mk_type_array(@1.first_line, @1.first_column, $1);}
 
 val_initialization_opt: %empty | val_initialization {}
 
