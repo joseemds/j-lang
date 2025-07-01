@@ -34,7 +34,7 @@ STRING_LITERAL  \"[^"]*\"
 
 {WHITESPACE}            {}
 
-{PRIM_TYPE}           { return PRIM_TYPE; }
+{PRIM_TYPE}           { yylval.sValue = strdup(yytext); return PRIM_TYPE; }
 
 "true"                { return TRUE; }
 "false"               { return FALSE; }
@@ -51,14 +51,15 @@ STRING_LITERAL  \"[^"]*\"
 "break"               { return BREAK; }
 "continue"            { return CONTINUE; }
 
-{DIGIT}+              { return NUMBER;}
+{DIGIT}+              { yylval.iValue = atoi(yytext); return NUMBER;}
 {DIGIT}*\.{DIGIT}+    { return FLOAT; }
 {STRING_LITERAL}      {
+                        yylval.sValue = strdup(yytext);
                         return STRING_LIT;
                       }
 
-{UPPERCASE_IDENTIFIER} { return UID; }
-{LOWERCASE_IDENTIFIER} { return LID;}
+{UPPERCASE_IDENTIFIER} { yylval.sValue = strdup(yytext); return UID; }
+{LOWERCASE_IDENTIFIER} { yylval.sValue = strdup(yytext); return LID;}
 
 "="                   { return EQUAL; }
 "=="                  { return CMP; }

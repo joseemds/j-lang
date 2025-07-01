@@ -94,15 +94,15 @@ typedef struct StmtTypeDecl {
   // separar em casos dos construtores?
 } StmtTypeDecl;
 
+typedef struct StmtFuncParam {
+
+} StmtFuncParam;
+
 typedef struct StmtFuncDecl {
   // guardar o tipo de retorno?
   StmtFuncParam* params;
   StmtList* body;
 } StmtFuncDecl;
-
-typedef struct StmtFuncParam {
-
-} StmtFuncParam;
 
 typedef struct StmtFuncCall {
 

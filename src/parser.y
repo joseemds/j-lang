@@ -21,8 +21,7 @@ extern char * yytext;
 	ASTStmt* stmtValue;
 	ASTExpr* exprValue;
 	StmtList* stmtList;
-
-	};
+};
 
 %token <sValue> UID LID STRING_LIT PRIM_TYPE
 %token <iValue> NUMBER
