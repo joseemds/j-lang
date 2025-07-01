@@ -95,7 +95,6 @@ ASTExpr* mk_binary_op(int line, int col, int op, ASTExpr* left, ASTExpr* right){
 
 };
 
-
 ASTStmt* mk_if_stmt(int line, int col, ASTExpr* cond, StmtList* then, StmtList* else_){
 	StmtIf* if_stmt = (StmtIf*)malloc(sizeof(StmtIf));
 	ASTStmt* stmt = (ASTStmt*)malloc(sizeof(ASTStmt));
@@ -109,3 +108,39 @@ ASTStmt* mk_if_stmt(int line, int col, ASTExpr* cond, StmtList* then, StmtList* 
 
 }
 
+ASTType* mk_type_ident(int line, int col, char* type_name) {
+  ASTType* typ = (ASTType*)malloc(sizeof(ASTType));
+  TypeIdent* ident = (TypeIdent*)malloc(sizeof(TypeIdent));
+  ident->name = type_name;
+  
+  typ->line = line;
+  typ->col = col;
+  typ->ident = ident;
+  typ->kind = TYPE_IDENT;
+  return typ;
+}
+
+
+ASTType* mk_type_prim(int line, int col, char* type_name) {
+  ASTType* typ = (ASTType*)malloc(sizeof(ASTType));
+  TypePrim* prim = (TypePrim*)malloc(sizeof(TypePrim));
+  prim->name = type_name;
+  
+  typ->line = line;
+  typ->col = col;
+  typ->prim = prim;
+  typ->kind = TYPE_PRIM;
+  return typ;
+}
+
+ASTType* mk_type_array(int line, int col, ASTType* inner_type){
+  ASTType* typ = (ASTType*)malloc(sizeof(ASTType));
+  TypeArray* array = (TypeArray*)malloc(sizeof(TypeArray));
+  array->inner_type = inner_type;
+
+  typ->line = line;
+  typ->col = col;
+  typ->kind = TYPE_ARRAY;
+  typ->array = array;
+  return typ;
+}

@@ -93,7 +93,7 @@ array_access: atomic_expr LBRACKET arith_expr RBRACKET {} // possível erro com 
 
 val_decl: VAL idents COLON usable_type val_initialization_opt {}
 
-idents: LID | idents COMMA LID  {}
+idents: LID { mk_ident(@1.first_line, @1.first_column, $1); } | idents COMMA LID  {}
 
 usable_type: UID
            | PRIM_TYPE
@@ -109,7 +109,7 @@ func_params_opt: %empty | func_params
 
 func_params: func_param | func_params COMMA func_param
 
-func_param: idents COLON usable_type
+func_param: idents COLON usable_type {}
 
 return_stmt: RETURN expr SEMICOLON {}
 

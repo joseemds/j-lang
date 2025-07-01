@@ -8,6 +8,28 @@
 typedef struct ASTNode ASTNode;
 typedef struct ASTStmt ASTStmt;
 typedef struct ASTExpr ASTExpr;
+typedef struct ASTType ASTType;
+
+typedef enum ASTTypeKind {
+	TYPE_IDENT,
+	TYPE_PRIM,
+	TYPE_ARRAY
+} ASTTypeKind;
+
+typedef struct TypeIdent {char* name;} TypeIdent;
+typedef struct TypePrim {char* name;} TypePrim;
+typedef struct TypeArray {ASTType* inner_type;} TypeArray;
+
+typedef struct ASTType {
+	int line;
+	int col;
+	ASTTypeKind kind;
+	union {
+		TypeIdent* ident;
+		TypePrim* prim;
+		TypeArray* array;
+	};
+} ASTType;
 
 typedef enum ExprKind {
 	EXPR_BINARY,
@@ -71,8 +93,7 @@ typedef struct StmtList {
 
 typedef struct StmtWhile {
 	ASTExpr* cond;
-	ASTStmt* body;
-  // StmtList* body ?
+	StmtList* body;
 } StmtWhile;
 
 typedef struct StmtFor {
@@ -95,7 +116,8 @@ typedef struct StmtTypeDecl {
 } StmtTypeDecl;
 
 typedef struct StmtFuncParam {
-
+	ExprIdent* ident; // lista 
+	ASTType* type;
 } StmtFuncParam;
 
 typedef struct StmtFuncDecl {
@@ -162,6 +184,7 @@ ASTStmt* mk_for_stmt(int line, int col);
 ASTStmt* mk_return_stmt(int line, int col);
 ASTStmt* mk_type_decl_stmt(int line, int col);
 ASTStmt* mk_func_decl_stmt(int line, int col);
+ASTStmt* mk_func_param_stmt(int line, int col);
 ASTStmt* mk_val_decl_stmt(int line, int col);
 ASTStmt* mk_assign_stmt(int line, int col);
 
@@ -171,3 +194,7 @@ ASTExpr*  mk_int_lit(int line, int col, int value);
 ASTExpr*  mk_float_lit(int line, int col, float value);
 ASTExpr*  mk_string_lit(int line, int col, char* value);
 ASTExpr*  mk_bool_lit(int line, int col, int value);
+
+ASTType* mk_type_ident(int line, int col, char* type_name);
+ASTType* mk_type_prim(int line, int col, char* type_name);
+ASTType* mk_type_array(int line, int col, ASTType* type_);
