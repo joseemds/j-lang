@@ -21,6 +21,7 @@ typedef enum ExprKind {
 	EXPR_STRING_LITERAL,
 	EXPR_BOOL_LITERAL,
 	EXPR_IDENT
+  // EXPR_RATIONAL_LITERAL ?
 } ExprKind;
 
 typedef struct ExprBinaryOp {
@@ -71,25 +72,60 @@ typedef struct StmtList {
 typedef struct StmtWhile {
 	ASTExpr* cond;
 	ASTStmt* body;
+  // StmtList* body ?
 } StmtWhile;
 
 typedef struct StmtFor {
-
+  ASTExpr* var;
+  ASTExpr* cond;
+  ASTExpr* inc;
+  StmtList* body;
 } StmtFor;
+
 typedef struct StmtReturn {
 	ASTExpr* expr;
 } StmtReturn;
 
-typedef struct StmtImport {} StmtImport;
-typedef struct StmtTypeDecl {} StmtTypeDecl;
-typedef struct StmtFuncDecl {} StmtFuncDecl;
-typedef struct StmtFuncParam {} StmtFuncParam;
-typedef struct StmtFuncCall {} StmtFuncCall;
-typedef struct StmtValDecl {} StmtValDecl;
-typedef struct StmtExpr {} StmtExpr;
+// typedef struct StmtImport {
+  // não vamos trabalhar com imports
+// } StmtImport;
 
-typedef struct StmtAssign {} StmtAssign;
-typedef struct StmtStructField {} StmtStructField;
+typedef struct StmtTypeDecl {
+  // separar em casos dos construtores?
+} StmtTypeDecl;
+
+typedef struct StmtFuncDecl {
+  // guardar o tipo de retorno?
+  StmtFuncParam* params;
+  StmtList* body;
+} StmtFuncDecl;
+
+typedef struct StmtFuncParam {
+
+} StmtFuncParam;
+
+typedef struct StmtFuncCall {
+
+} StmtFuncCall;
+
+typedef struct StmtValDecl {
+  // guardar os tipos?
+  ExprIdent** idents; // array de ponteiros porque várias variáveis podem ser declaradas por linha? (relatado?)
+  ASTExpr** exprs; // possíveis inicializações das variáveis
+} StmtValDecl;
+
+typedef struct StmtExpr {
+  ASTExpr* expr; //?
+} StmtExpr;
+
+typedef struct StmtAssign {
+  ExprIdent* ident;
+  ASTExpr* expr;
+} StmtAssign;
+
+typedef struct StmtStructField {
+  
+} StmtStructField;
 
 
 typedef struct StmtIf {
