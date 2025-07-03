@@ -8,6 +8,7 @@ typedef struct rational {
 } rational;
 
 rational rational_add(rational a, rational b);
+
 rational rational_sub(rational a, rational b);
 
 rational rational_mul(rational a, rational b);
@@ -20,6 +21,10 @@ rational rational_mul(rational a, rational b);
 //
 // 		return r
 // }
+
+rational rational_square(rational a);
+
+rational rational_power(rational b, int p);
 
 void rational_simplify(rational* r);
 
