@@ -49,7 +49,8 @@ program: stmt_list {$$ = $1;}
 
 stmt_list: %empty {$$ = NULL;} | stmts {$$ = $1;} // revert this 
 
-stmts: stmt | stmts stmt {}
+stmts: stmt {} 
+     | stmts stmt {}
 
 stmt: import 
     | type_decl 

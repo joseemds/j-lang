@@ -42,8 +42,8 @@ typedef enum ExprKind {
 	EXPR_CONS,
 	EXPR_STRING_LITERAL,
 	EXPR_BOOL_LITERAL,
-	EXPR_IDENT
-  // EXPR_RATIONAL_LITERAL ?
+	EXPR_IDENT,
+  EXPR_RATIONAL_LITERAL
 } ExprKind;
 
 typedef struct ExprBinaryOp {
@@ -70,6 +70,7 @@ typedef struct ASTExpr {
 		ExprFloatLiteral* float_lit;
 		ExprStringLiteral* string_lit;
 		ExprBoolLiteral* bool_lit;
+    ExprRationalLiteral* rational_lit;
 	};
 } ASTExpr;
 
@@ -133,7 +134,7 @@ typedef struct StmtFuncCall {
 typedef struct StmtValDecl {
   // guardar os tipos?
   ExprIdent** idents; // array de ponteiros porque várias variáveis podem ser declaradas por linha? (relatado?)
-  ASTExpr** exprs; // possíveis inicializações das variáveis
+  ASTExpr** exprs; // possíveis inicializações das variáveis | mudar pra lista ligada por eficiência de memória
 } StmtValDecl;
 
 typedef struct StmtExpr {
@@ -162,31 +163,34 @@ struct ASTStmt {
 	int col;
 	union {
 		StmtIf* if_stmt;
-		StmtWhile while_stmt;
-		StmtFor for_stmt;
-		StmtReturn return_stmt;
+		StmtWhile* while_stmt;
+		StmtFor* for_stmt;
+		StmtReturn* return_stmt;
 
-		StmtTypeDecl type_decl;
-		StmtFuncDecl func_decl;
-		StmtValDecl val_decl;
-		StmtFuncParam func_param;
-		StmtStructField struct_field;
+		StmtTypeDecl* type_decl;
+		StmtFuncDecl* func_decl;
+		StmtValDecl* val_decl;
+		StmtFuncParam* func_param;
+		StmtStructField* struct_field;
 
-		StmtAssign assign;
-		StmtFuncCall func_call;
+		StmtAssign* assign;
+		StmtFuncCall* func_call;
 	};
 };
 
 
-ASTStmt* mk_if_stmt(int line, int col, ASTExpr* cond, StmtList* then, StmtList* else_);
-ASTStmt* mk_while_stmt(int line, int col);
-ASTStmt* mk_for_stmt(int line, int col);
-ASTStmt* mk_return_stmt(int line, int col);
 ASTStmt* mk_type_decl_stmt(int line, int col);
+ASTStmt* mk_val_decl_stmt(int line, int col, ExprIdent** idents, ASTExpr** exprs);
 ASTStmt* mk_func_decl_stmt(int line, int col);
 ASTStmt* mk_func_param_stmt(int line, int col);
-ASTStmt* mk_val_decl_stmt(int line, int col);
 ASTStmt* mk_assign_stmt(int line, int col);
+ASTStmt* mk_return_stmt(int line, int col, ASTExpr* expr);
+ASTStmt* mk_for_stmt(int line, int col);
+ASTStmt* mk_while_stmt(int line, int col);
+ASTStmt* mk_if_stmt(int line, int col, ASTExpr* cond, StmtList* then, StmtList* else_);
+ASTStmt* mk_break_stmt(int line, int col);
+ASTStmt* mk_continue_stmt(int line, int col);
+ASTStmt* mk_expr_stmt(int line, int col, ASTExpr* expr);
 
 ASTExpr*  mk_binary_op(int line, int col, int op, ASTExpr* left, ASTExpr* right);
 ASTExpr*  mk_ident(int line, int col, char* ident);

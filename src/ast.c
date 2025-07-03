@@ -79,6 +79,19 @@ ASTExpr* mk_string_lit(int line, int col, char* value) {
     return expr_node;
 }
 
+ASTExpr* mk_rational_lit(int line, int col, rational value) {
+  ExprRationalLiteral* rational_lit = (ExprRationalLiteral*)malloc(sizeof(ExprRationalLiteral));
+  rational_lit->value = value;
+
+  ASTExpr* expr_node = (ASTExpr*)malloc(sizeof(ASTExpr));
+  expr_node->kind = EXPR_RATIONAL_LITERAL;
+  expr_node->line = line;
+  expr_node->col = col;
+  expr_node->rational_lit = rational_lit;
+
+  return expr_node;
+}
+
 ASTExpr* mk_binary_op(int line, int col, int op, ASTExpr* left, ASTExpr* right){
     ASTExpr* expr_node = (ASTExpr*)malloc(sizeof(ASTExpr));
 		ExprBinaryOp* binary_op = (ExprBinaryOp*)malloc(sizeof(ExprBinaryOp));
@@ -95,19 +108,6 @@ ASTExpr* mk_binary_op(int line, int col, int op, ASTExpr* left, ASTExpr* right){
 
 };
 
-ASTStmt* mk_if_stmt(int line, int col, ASTExpr* cond, StmtList* then, StmtList* else_){
-	StmtIf* if_stmt = (StmtIf*)malloc(sizeof(StmtIf));
-	ASTStmt* stmt = (ASTStmt*)malloc(sizeof(ASTStmt));
-
-	stmt->kind=STMT_IF;
-	stmt->col=col;
-	stmt->line=line;
-	stmt->if_stmt = if_stmt;
-
-	return stmt;
-
-}
-
 ASTType* mk_type_ident(int line, int col, char* type_name) {
   ASTType* typ = (ASTType*)malloc(sizeof(ASTType));
   TypeIdent* ident = (TypeIdent*)malloc(sizeof(TypeIdent));
@@ -119,7 +119,6 @@ ASTType* mk_type_ident(int line, int col, char* type_name) {
   typ->kind = TYPE_IDENT;
   return typ;
 }
-
 
 ASTType* mk_type_prim(int line, int col, char* type_name) {
   ASTType* typ = (ASTType*)malloc(sizeof(ASTType));
@@ -143,4 +142,37 @@ ASTType* mk_type_array(int line, int col, ASTType* inner_type){
   typ->kind = TYPE_ARRAY;
   typ->array = array;
   return typ;
+}
+
+ASTStmt* mk_if_stmt(int line, int col, ASTExpr* cond, StmtList* then, StmtList* else_){
+	StmtIf* if_stmt = (StmtIf*)malloc(sizeof(StmtIf));
+	ASTStmt* stmt = (ASTStmt*)malloc(sizeof(ASTStmt));
+
+  if_stmt->condition = cond;
+  if_stmt->then = then;
+  if_stmt->else_ = else_;
+
+	stmt->kind=STMT_IF;
+	stmt->line=line;
+	stmt->col=col;
+	stmt->if_stmt = if_stmt;
+
+	return stmt;
+
+}
+
+
+// ASTStmt* mk_type_decl_stmt(int line, int col, ... ){}
+
+ASTStmt* mk_val_decl_stmt(int line, int col, ExprIdent** idents, ASTExpr** exprs){
+  StmtValDecl* val_decl_stmt = (StmtValDecl*)malloc(sizeof(StmtValDecl));
+   ASTStmt* stmt = (ASTStmt*)malloc(sizeof(ASTStmt));
+
+   val_decl_stmt->idents = idents;
+   val_decl_stmt->exprs = exprs;
+
+   stmt->kind = STMT_VARIABLE;
+   stmt->line = line;
+   stmt->col = col;
+   stmt->val_decl = val_decl_stmt;
 }
