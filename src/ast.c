@@ -1,5 +1,32 @@
 #include "ast.h"
 
+
+ExprList* mk_expr_list(ASTExpr* expr) {
+  ExprList* list = (ExprList*)malloc(sizeof(ExprList));
+  list->expr = expr;
+  list->next = NULL;
+
+  return list;
+}
+
+void append_expr_list(ExprList* list, ASTExpr* expr) {
+  ExprList* next = mk_expr_list(expr);
+  list->next = next;
+}
+
+StmtList* mk_stmt_list(ASTStmt* stmt) {
+  StmtList* list = (StmtList*)malloc(sizeof(StmtList));
+  list->stmt = stmt;
+  list->next = NULL;
+
+  return list;
+}
+
+void append_stmt_list(StmtList* list, ASTStmt* stmt) {
+  StmtList* next = mk_stmt_list(stmt);
+  list->next = next;
+}
+
 ASTExpr* mk_ident(int line, int col, char* name) {
     ExprIdent* ident = (ExprIdent*)malloc(sizeof(ExprIdent));
     ident->name = strdup(name);
@@ -175,4 +202,19 @@ ASTStmt* mk_val_decl_stmt(int line, int col, ExprIdent** idents, ASTExpr** exprs
    stmt->line = line;
    stmt->col = col;
    stmt->val_decl = val_decl_stmt;
+
+   return stmt;
+}
+
+StmtFuncParams* mk_func_params(ExprList* idents, ASTType* type){
+  StmtFuncParams* params = (StmtFuncParams*)malloc(sizeof(StmtFuncParams));
+  params->idents = idents;
+  params->type = type;
+  params->next = NULL;
+
+  return params;
+}
+
+void append_func_params(StmtFuncParams* curr, StmtFuncParams* next){
+  curr->next = next;
 }

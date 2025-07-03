@@ -36,14 +36,14 @@ rational rational_mul(rational a, rational b){
     return r;
 }
 
-// rational rational_div(rational a, rational b){
-//     rational r;
-//
-//     r.top = a.top * b.bot; 
-//     r.bot = a.bot * b.top;
-//
-// 		return r
-// }
+rational rational_div(rational a, rational b){
+    rational r;
+
+    r.top = a.top * b.bot; 
+    r.bot = a.bot * b.top;
+
+	return r;
+}
 
 rational rational_square(rational a){
   rational r;

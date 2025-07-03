@@ -5,6 +5,8 @@
 
 #include "rational.h"
 
+typedef struct IdentList IdentList;
+typedef struct ExprList ExprList;
 typedef struct ASTNode ASTNode;
 typedef struct ASTStmt ASTStmt;
 typedef struct ASTExpr ASTExpr;
@@ -19,6 +21,13 @@ typedef enum ASTTypeKind {
 typedef struct TypeIdent {char* name;} TypeIdent;
 typedef struct TypePrim {char* name;} TypePrim;
 typedef struct TypeArray {ASTType* inner_type;} TypeArray;
+
+
+typedef struct ExprList {
+	ASTExpr* expr;
+	ExprList* next;
+} ExprList;
+
 
 typedef struct ASTType {
 	int line;
@@ -59,6 +68,12 @@ typedef struct ExprStringLiteral { char* value; } ExprStringLiteral;
 typedef struct ExprBoolLiteral { int value; } ExprBoolLiteral;
 typedef struct ExprRationalLiteral { rational value; } ExprRationalLiteral;
 
+typedef struct IdentList {
+	ExprIdent* ident;
+	IdentList* next;
+} IdentList;
+
+
 typedef struct ASTExpr {
 	ExprKind kind;
 	int col;
@@ -78,6 +93,7 @@ typedef enum StmtKind {
     STMT_TYPE_DECL,
 		STMT_VARIABLE,
 		STMT_FUNC_DECL,
+		STMT_FUNC_PARAM,
 		STMT_RETURN,
 		STMT_FOR,
 		STMT_WHILE,
@@ -88,7 +104,7 @@ typedef enum StmtKind {
 } StmtKind;
 
 typedef struct StmtList {
-    ASTStmt* item;
+    ASTStmt* stmt;
     struct StmtList* next;
 } StmtList;
 
@@ -108,22 +124,19 @@ typedef struct StmtReturn {
 	ASTExpr* expr;
 } StmtReturn;
 
-// typedef struct StmtImport {
-  // não vamos trabalhar com imports
-// } StmtImport;
-
 typedef struct StmtTypeDecl {
   // separar em casos dos construtores?
 } StmtTypeDecl;
 
-typedef struct StmtFuncParam {
-	ExprIdent* ident; // lista 
+typedef struct StmtFuncParams StmtFuncParams;
+typedef struct StmtFuncParams {
+	ExprList* idents; 
 	ASTType* type;
-} StmtFuncParam;
+	StmtFuncParams* next;
+} StmtFuncParams;
 
 typedef struct StmtFuncDecl {
-  // guardar o tipo de retorno?
-  StmtFuncParam* params;
+  StmtFuncParams* params;
   StmtList* body;
 } StmtFuncDecl;
 
@@ -170,7 +183,6 @@ struct ASTStmt {
 		StmtTypeDecl* type_decl;
 		StmtFuncDecl* func_decl;
 		StmtValDecl* val_decl;
-		StmtFuncParam* func_param;
 		StmtStructField* struct_field;
 
 		StmtAssign* assign;
@@ -179,10 +191,18 @@ struct ASTStmt {
 };
 
 
+ExprList* mk_expr_list(ASTExpr* Expr);
+void append_expr_list(ExprList* list, ASTExpr* Expr);
+
+StmtList* mk_stmt_list(ASTStmt* stmt);
+void append_stmt_list(StmtList* list, ASTStmt* stmt);
+
+StmtFuncParams* mk_func_params(ExprList* idents, ASTType* typ);
+void append_func_params(StmtFuncParams* params, StmtFuncParams* next);
+
 ASTStmt* mk_type_decl_stmt(int line, int col);
 ASTStmt* mk_val_decl_stmt(int line, int col, ExprIdent** idents, ASTExpr** exprs);
 ASTStmt* mk_func_decl_stmt(int line, int col);
-ASTStmt* mk_func_param_stmt(int line, int col);
 ASTStmt* mk_assign_stmt(int line, int col);
 ASTStmt* mk_return_stmt(int line, int col, ASTExpr* expr);
 ASTStmt* mk_for_stmt(int line, int col);

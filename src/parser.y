@@ -22,6 +22,8 @@ extern char * yytext;
 	ASTExpr* exprValue;
 	ASTType* typeValue;
 	StmtList* stmtList;
+  ExprList* exprList;
+  StmtFuncParams* funcParams;
 };
 
 %token <sValue> UID LID STRING_LIT PRIM_TYPE
@@ -31,7 +33,7 @@ extern char * yytext;
 %nonassoc EQUAL CMP LEQ LT GEQ GT NEQ TRUE FALSE
 %token PLUS MINUS TIMES DIVIDE MOD AND OR NOT
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COLON SEMICOLON COMMA DOT
-%define parse.error detailed
+%define parse.error verbose
 %locations
 
 %left TIMES DIVIDE AND
@@ -41,6 +43,8 @@ extern char * yytext;
 %type <exprValue> atomic_expr arith_expr expr
 %type <stmtList> program stmt_list stmts
 %type <typeValue> usable_type array_type
+%type <exprList> idents
+%type <funcParams> func_param func_params func_params_opt
 
 
 %%
@@ -96,7 +100,7 @@ array_access: atomic_expr LBRACKET arith_expr RBRACKET {} // possível erro com 
 
 val_decl: VAL idents COLON usable_type val_initialization_opt {}
 
-idents: LID { mk_ident(@1.first_line, @1.first_column, $1); } | idents COMMA LID  {}
+idents: LID {mk_expr_list(mk_ident(@1.first_line, @1.first_column, $1));} | idents COMMA LID  {append_expr_list($1, mk_ident(@3.first_line, @3.first_column, $3)); $$ = $1; }
 
 usable_type: UID {mk_type_ident(@1.first_line, @1.first_column, $1);}
            | PRIM_TYPE {mk_type_prim(@1.first_line, @1.first_column, $1);}
@@ -110,9 +114,11 @@ func_decl: FUNC LID LPAREN func_params_opt RPAREN COLON usable_type LBRACE stmt_
 
 func_params_opt: %empty | func_params
 
-func_params: func_param | func_params COMMA func_param
+func_params: func_param {$$ = $1;} | func_params COMMA func_param {append_func_params($1, $3); $$ = $1;}
 
-func_param: idents COLON usable_type {}
+func_param: idents COLON usable_type {
+  $$ = mk_func_params($1, $3);
+}
 
 return_stmt: RETURN expr SEMICOLON {}
 
