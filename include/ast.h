@@ -136,6 +136,8 @@ typedef struct StmtFuncParams {
 } StmtFuncParams;
 
 typedef struct StmtFuncDecl {
+	char* name;
+	ASTType* return_typ;
   StmtFuncParams* params;
   StmtList* body;
 } StmtFuncDecl;
@@ -151,7 +153,7 @@ typedef struct StmtValDecl {
 } StmtValDecl;
 
 typedef struct StmtExpr {
-  ASTExpr* expr; //?
+  ASTExpr* expr;
 } StmtExpr;
 
 typedef struct StmtAssign {
@@ -187,6 +189,7 @@ struct ASTStmt {
 
 		StmtAssign* assign;
 		StmtFuncCall* func_call;
+		StmtExpr* expr;
 	};
 };
 
@@ -202,7 +205,7 @@ void append_func_params(StmtFuncParams* params, StmtFuncParams* next);
 
 ASTStmt* mk_type_decl_stmt(int line, int col);
 ASTStmt* mk_val_decl_stmt(int line, int col, ExprIdent** idents, ASTExpr** exprs);
-ASTStmt* mk_func_decl_stmt(int line, int col);
+ASTStmt* mk_func_decl_stmt(int line, int col, char* name, StmtFuncParams* params, ASTType* return_typ, StmtList* body);
 ASTStmt* mk_assign_stmt(int line, int col);
 ASTStmt* mk_return_stmt(int line, int col, ASTExpr* expr);
 ASTStmt* mk_for_stmt(int line, int col);
@@ -212,12 +215,12 @@ ASTStmt* mk_break_stmt(int line, int col);
 ASTStmt* mk_continue_stmt(int line, int col);
 ASTStmt* mk_expr_stmt(int line, int col, ASTExpr* expr);
 
-ASTExpr*  mk_binary_op(int line, int col, int op, ASTExpr* left, ASTExpr* right);
-ASTExpr*  mk_ident(int line, int col, char* ident);
-ASTExpr*  mk_int_lit(int line, int col, int value);
-ASTExpr*  mk_float_lit(int line, int col, float value);
-ASTExpr*  mk_string_lit(int line, int col, char* value);
-ASTExpr*  mk_bool_lit(int line, int col, int value);
+ASTExpr* mk_binary_op(int line, int col, int op, ASTExpr* left, ASTExpr* right);
+ASTExpr* mk_ident(int line, int col, char* ident);
+ASTExpr* mk_int_lit(int line, int col, int value);
+ASTExpr* mk_float_lit(int line, int col, float value);
+ASTExpr* mk_string_lit(int line, int col, char* value);
+ASTExpr* mk_bool_lit(int line, int col, int value);
 
 ASTType* mk_type_ident(int line, int col, char* type_name);
 ASTType* mk_type_prim(int line, int col, char* type_name);

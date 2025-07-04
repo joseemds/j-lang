@@ -2,11 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ast.h>
+#include <printers.h>
 
 int yylex(void);
 int yyerror(const char *s);
 extern int yylineno;
 extern char * yytext;
+StmtList* root = NULL;
 %}
 
 %code requires {
@@ -41,34 +44,32 @@ extern char * yytext;
 
 
 %type <exprValue> atomic_expr arith_expr expr
+%type <stmtValue> stmt type_decl func_decl variable_stmt for_stmt while_stmt if_stmt return_stmt
 %type <stmtList> program stmt_list stmts
 %type <typeValue> usable_type array_type
 %type <exprList> idents
 %type <funcParams> func_param func_params func_params_opt
 
-
 %%
 
-program: stmt_list {$$ = $1;}
+program: stmt_list {root = $1;}
 
-stmt_list: %empty {$$ = NULL;} | stmts {$$ = $1;} // revert this 
+stmt_list: %empty {$$ = NULL;} | stmts {$$ = $1;}
 
-stmts: stmt {} 
-     | stmts stmt {}
+stmts: stmt {$$ = mk_stmt_list($1);} 
+     | stmts stmt {append_stmt_list($1, $2); $$ = $1;}
 
-stmt: import 
-    | type_decl 
+stmt: 
+    type_decl 
     | variable_stmt SEMICOLON
-    | func_decl 
-    | expr SEMICOLON 
+    | func_decl  {$$ = $1;}
+    | expr SEMICOLON {$$ = mk_expr_stmt(@1.first_line, @1.first_column, $1);}
     | return_stmt 
     | for_stmt
     | while_stmt
-    | if_stmt
-    | BREAK SEMICOLON
-    | CONTINUE SEMICOLON
-
-import: IMPORT LID SEMICOLON {}
+    | if_stmt {$$ = $1;}
+    | BREAK SEMICOLON {$$ = mk_break_stmt(@1.first_line, @1.first_column);}
+    | CONTINUE SEMICOLON {$$ = mk_continue_stmt(@1.first_line, @1.first_column);}
 
 type_decl: TYPE UID EQUAL type_constr {}
 
@@ -100,29 +101,35 @@ array_access: atomic_expr LBRACKET arith_expr RBRACKET {} // possível erro com 
 
 val_decl: VAL idents COLON usable_type val_initialization_opt {}
 
-idents: LID {mk_expr_list(mk_ident(@1.first_line, @1.first_column, $1));} | idents COMMA LID  {append_expr_list($1, mk_ident(@3.first_line, @3.first_column, $3)); $$ = $1; }
+idents: LID {$$ = mk_expr_list(mk_ident(@1.first_line, @1.first_column, $1));}
+			| idents COMMA LID  {append_expr_list($1, mk_ident(@3.first_line, @3.first_column, $3)); $$ = $1; }
 
-usable_type: UID {mk_type_ident(@1.first_line, @1.first_column, $1);}
-           | PRIM_TYPE {mk_type_prim(@1.first_line, @1.first_column, $1);}
+usable_type: UID {$$ = mk_type_ident(@1.first_line, @1.first_column, $1);}
+           | PRIM_TYPE {$$ = mk_type_prim(@1.first_line, @1.first_column, $1);}
            | array_type {$$ = mk_type_array(@1.first_line, @1.first_column, $1);}
 
 val_initialization_opt: %empty | val_initialization {}
 
 val_initialization: EQUAL expr_list {}
 
-func_decl: FUNC LID LPAREN func_params_opt RPAREN COLON usable_type LBRACE stmt_list RBRACE {}
+func_decl: FUNC LID[name] LPAREN func_params_opt[params] RPAREN COLON usable_type[return_typ] LBRACE stmt_list[body] RBRACE {
+				 $$ = mk_func_decl_stmt(@1.first_line, @1.first_column, $name, $params, $return_typ, $body);
+				 }
 
-func_params_opt: %empty | func_params
+func_params_opt: %empty {$$ = NULL;}
+							 | func_params {$$ = $1;}
 
-func_params: func_param {$$ = $1;} | func_params COMMA func_param {append_func_params($1, $3); $$ = $1;}
+func_params: func_param {$$ = $1;} 
+					 | func_params COMMA func_param {append_func_params($1, $3); $$ = $1;}
 
 func_param: idents COLON usable_type {
   $$ = mk_func_params($1, $3);
 }
 
-return_stmt: RETURN expr SEMICOLON {}
+return_stmt: RETURN expr SEMICOLON {$$ = mk_return_stmt(@1.first_line, @1.first_column, $2);}
 
 expr: arith_expr  {$$ = $1;}
+    | expr MOD arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, MOD, $1, $3);}
     | expr OR arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, OR, $1, $3);}
     | expr AND arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, AND, $1, $3);}
 		| expr LT arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, LT, $1, $3);}
@@ -182,15 +189,20 @@ arg_list_opt: %empty
 arg_list: expr 
         | arg_list COMMA expr {}
 
-if_stmt: IF LPAREN expr[cond] RPAREN LBRACE stmt_list[then] RBRACE { mk_if_stmt(@1.first_line, @1.first_column, $cond, $then, NULL); }
-       | IF LPAREN expr[cond] RPAREN LBRACE stmt_list[then] RBRACE ELSE LBRACE stmt_list[else_] RBRACE {mk_if_stmt(@1.first_line, @1.first_column, $cond, $then, $else_); }
+if_stmt: IF LPAREN expr[cond] RPAREN LBRACE stmt_list[then] RBRACE { $$ = mk_if_stmt(@1.first_line, @1.first_column, $cond, $then, NULL); }
+       | IF LPAREN expr[cond] RPAREN LBRACE stmt_list[then] RBRACE ELSE LBRACE stmt_list[else_] RBRACE {$$ = mk_if_stmt(@1.first_line, @1.first_column, $cond, $then, $else_); }
 
 while_stmt: WHILE LPAREN expr RPAREN LBRACE stmt_list RBRACE {}
 
 %%
 
 int main (void) {
-	return yyparse ( );
+	int status = yyparse ();
+	printf("Parsed with status: %d\n", status);
+	// if(root){
+	// 	pp_stmt_list(root);
+	// }
+	return status;
 }
 
 int yyerror (const char *msg) {

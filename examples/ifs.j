@@ -1,10 +1,9 @@
 func if_() : Bool {
-  val b : Bool = false;
+--  val b : Bool = false;
 
   if (b) {
     return false;
   }
-  return true;
 }
 
 func if_else() : Bool {
