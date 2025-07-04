@@ -3,8 +3,8 @@
 #include "jmath.h"
 
 typedef struct rational {
-    int top;
-    int bot;
+  int top;
+  int bot;
 } rational;
 
 rational rational_add(rational a, rational b);
@@ -19,6 +19,6 @@ rational rational_square(rational a);
 
 rational rational_power(rational b, int p);
 
-void rational_simplify(rational* r);
+void rational_simplify(rational *r);
 
 float rational_divide(rational r);
