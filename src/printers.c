@@ -110,6 +110,7 @@ void pp_expr(ASTExpr *expr) {
     break;
   case EXPR_IDENT:
     pp_string(expr->ident->name);
+    printf(" ");
     break;
   case EXPR_RATIONAL_LITERAL:
     break;
