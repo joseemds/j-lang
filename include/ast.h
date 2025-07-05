@@ -55,6 +55,11 @@ typedef enum ExprKind {
   EXPR_RATIONAL_LITERAL
 } ExprKind;
 
+typedef struct ExprFuncCall {
+  char *func_name;
+  ExprList *params;
+} ExprFuncCall;
+
 typedef struct ExprBinaryOp {
   int op;
   ASTExpr *left;
@@ -97,6 +102,7 @@ typedef struct ASTExpr {
     ExprStringLiteral *string_lit;
     ExprBoolLiteral *bool_lit;
     ExprRationalLiteral *rational_lit;
+    ExprFuncCall *func_call;
   };
 } ASTExpr;
 
@@ -113,7 +119,7 @@ typedef enum StmtKind {
   STMT_BREAK,
   STMT_CONTINUE,
   STMT_EXPR,
-	STMT_ASSIGN
+  STMT_ASSIGN
 } StmtKind;
 
 typedef struct StmtList {
@@ -160,14 +166,14 @@ typedef struct StmtFuncCall {
 } StmtFuncCall;
 
 typedef struct StmtValDecl {
-	ASTType* type;
-  ExprList* idents;
+  ASTType *type;
+  ExprList *idents;
 } StmtValDecl;
 
 typedef struct StmtValInit {
-	ASTType* type;
-  ExprList* idents;
-  ExprList* exprs;
+  ASTType *type;
+  ExprList *idents;
+  ExprList *exprs;
 } StmtValInit;
 
 typedef struct StmtExpr {
@@ -221,12 +227,13 @@ StmtFuncParams *mk_func_params(ExprList *idents, ASTType *typ);
 void append_func_params(StmtFuncParams *params, StmtFuncParams *next);
 
 ASTStmt *mk_type_decl_stmt(int line, int col);
-ASTStmt *mk_val_decl_stmt(int line, int col, ExprList* idents, ASTType* typ);
-ASTStmt *mk_val_init_stmt(int line, int col, ExprList* idents, ASTType* typ, ExprList* values);
+ASTStmt *mk_val_decl_stmt(int line, int col, ExprList *idents, ASTType *typ);
+ASTStmt *mk_val_init_stmt(int line, int col, ExprList *idents, ASTType *typ,
+                          ExprList *values);
 ASTStmt *mk_func_decl_stmt(int line, int col, char *name,
                            StmtFuncParams *params, ASTType *return_typ,
                            StmtList *body);
-ASTStmt *mk_assign_stmt(int line, int col, ASTExpr* ident, ASTExpr* value);
+ASTStmt *mk_assign_stmt(int line, int col, ASTExpr *ident, ASTExpr *value);
 ASTStmt *mk_return_stmt(int line, int col, ASTExpr *expr);
 ASTStmt *mk_for_stmt(int line, int col);
 ASTStmt *mk_while_stmt(int line, int col);
@@ -242,6 +249,7 @@ ASTExpr *mk_int_lit(int line, int col, int value);
 ASTExpr *mk_float_lit(int line, int col, float value);
 ASTExpr *mk_string_lit(int line, int col, char *value);
 ASTExpr *mk_bool_lit(int line, int col, int value);
+ASTExpr *mk_func_call(int line, int col, char *funcName, ExprList *args);
 
 ASTType *mk_type_ident(int line, int col, char *type_name);
 ASTType *mk_type_prim(int line, int col, char *type_name);

@@ -9,14 +9,14 @@ ExprList *mk_expr_list(ASTExpr *expr) {
 }
 
 void append_expr_list(ExprList *list, ASTExpr *expr) {
-    if (expr == NULL) {
-        return;
-    }
-    ExprList* next = mk_expr_list(expr);
-    while (list->next != NULL) {
-        list = list->next;
-    }
-    list->next = next;
+  if (expr == NULL) {
+    return;
+  }
+  ExprList *next = mk_expr_list(expr);
+  while (list->next != NULL) {
+    list = list->next;
+  }
+  list->next = next;
 }
 
 StmtList *mk_stmt_list(ASTStmt *stmt) {
@@ -28,12 +28,13 @@ StmtList *mk_stmt_list(ASTStmt *stmt) {
 }
 
 void append_stmt_list(StmtList *list, ASTStmt *stmt) {
-	if(stmt == NULL) return;
-	StmtList* next = mk_stmt_list(stmt);
-	while (list->next != NULL) {
-			list = list->next;
-	}
-	list->next = next;
+  if (stmt == NULL)
+    return;
+  StmtList *next = mk_stmt_list(stmt);
+  while (list->next != NULL) {
+    list = list->next;
+  }
+  list->next = next;
 }
 
 ASTExpr *mk_ident(int line, int col, char *name) {
@@ -45,6 +46,20 @@ ASTExpr *mk_ident(int line, int col, char *name) {
   expr_node->line = line;
   expr_node->col = col;
   expr_node->ident = ident;
+
+  return expr_node;
+}
+
+ASTExpr *mk_func_call(int line, int col, char *func_name, ExprList *params) {
+  ExprFuncCall *func_call = (ExprFuncCall *)malloc(sizeof(ExprIdent));
+  func_call->func_name = strdup(func_name);
+  func_call->params = params;
+
+  ASTExpr *expr_node = (ASTExpr *)malloc(sizeof(ASTExpr));
+  expr_node->kind = EXPR_FUNC_CALL;
+  expr_node->line = line;
+  expr_node->col = col;
+  expr_node->func_call = func_call;
 
   return expr_node;
 }
@@ -219,13 +234,12 @@ ASTStmt *mk_continue_stmt(int line, int col) {
 
 // ASTStmt* mk_type_decl_stmt(int line, int col, ... ){}
 
-ASTStmt *mk_val_decl_stmt(int line, int col, ExprList* idents,
-                          ASTType* typ) {
+ASTStmt *mk_val_decl_stmt(int line, int col, ExprList *idents, ASTType *typ) {
   StmtValDecl *val_decl_stmt = (StmtValDecl *)malloc(sizeof(StmtValDecl));
   ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
 
   val_decl_stmt->idents = idents;
-	val_decl_stmt->type = typ;
+  val_decl_stmt->type = typ;
 
   stmt->kind = STMT_VAR_DECL;
   stmt->line = line;
@@ -235,14 +249,14 @@ ASTStmt *mk_val_decl_stmt(int line, int col, ExprList* idents,
   return stmt;
 }
 
-ASTStmt *mk_val_init_stmt(int line, int col, ExprList* idents,
-                          ASTType* typ, ExprList* values) {
+ASTStmt *mk_val_init_stmt(int line, int col, ExprList *idents, ASTType *typ,
+                          ExprList *values) {
   StmtValInit *val_init = (StmtValInit *)malloc(sizeof(StmtValDecl));
   ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
 
   val_init->idents = idents;
-	val_init->type = typ;
-	val_init->exprs = values;
+  val_init->type = typ;
+  val_init->exprs = values;
 
   stmt->kind = STMT_VAR_INIT;
   stmt->line = line;
@@ -251,8 +265,6 @@ ASTStmt *mk_val_init_stmt(int line, int col, ExprList* idents,
 
   return stmt;
 }
-
-
 
 ASTStmt *mk_return_stmt(int line, int col, ASTExpr *expr) {
   StmtReturn *return_stmt = (StmtReturn *)malloc(sizeof(StmtReturn));
@@ -268,18 +280,18 @@ ASTStmt *mk_return_stmt(int line, int col, ASTExpr *expr) {
   return stmt;
 }
 
-ASTStmt *mk_assign_stmt(int line, int col, ASTExpr* ident, ASTExpr* value) {
-	StmtAssign *assign = (StmtAssign*)malloc(sizeof(StmtAssign));
+ASTStmt *mk_assign_stmt(int line, int col, ASTExpr *ident, ASTExpr *value) {
+  StmtAssign *assign = (StmtAssign *)malloc(sizeof(StmtAssign));
   ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
-	
-	assign->ident = ident;
-	assign->expr = value;
+
+  assign->ident = ident;
+  assign->expr = value;
   stmt->kind = STMT_ASSIGN;
   stmt->line = line;
   stmt->col = col;
   stmt->assign = assign;
 
-	return stmt;
+  return stmt;
 }
 
 ASTStmt *mk_expr_stmt(int line, int col, ASTExpr *expr) {
@@ -325,11 +337,11 @@ StmtFuncParams *mk_func_params(ExprList *idents, ASTType *type) {
 }
 
 void append_func_params(StmtFuncParams *curr, StmtFuncParams *param) {
-    if (param == NULL) {
-        return;
-    }
-    while (curr->next != NULL) {
-        curr = curr->next;
-    }
-    curr->next = param;
+  if (param == NULL) {
+    return;
+  }
+  while (curr->next != NULL) {
+    curr = curr->next;
+  }
+  curr->next = param;
 }

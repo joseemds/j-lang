@@ -43,11 +43,11 @@ StmtList* root = NULL;
 %left PLUS MINUS OR
 
 
-%type <exprValue> atomic_expr arith_expr expr
+%type <exprValue> atomic_expr arith_expr expr func_call
 %type <stmtValue> stmt type_decl func_decl variable_stmt for_stmt while_stmt if_stmt return_stmt assign val_decl
 %type <stmtList> program stmt_list stmts
 %type <typeValue> usable_type array_type
-%type <exprList> idents expr_list
+%type <exprList> idents expr_list arg_list arg_list_opt
 %type <funcParams> func_param func_params func_params_opt
 
 %%
@@ -182,13 +182,15 @@ struct_assign: LID COLON expr
 for_stmt: FOR LPAREN variable_stmt SEMICOLON expr SEMICOLON assign RPAREN LBRACE stmt_list RBRACE {}
         | FOR LPAREN LID SEMICOLON expr SEMICOLON assign RPAREN LBRACE stmt_list RBRACE {}
 
-func_call: LID LPAREN arg_list_opt RPAREN {}
+func_call: LID LPAREN arg_list_opt RPAREN {
+				 $$ = mk_func_call(@1.first_line, @1.first_column, $1, $3);
+				 }
 
-arg_list_opt: %empty
-            | arg_list {}
+arg_list_opt: %empty {$$ = NULL;}
+            | arg_list {$$ = $1;}
 
-arg_list: expr 
-        | arg_list COMMA expr {}
+arg_list: expr  {$$ = mk_expr_list($1);}
+        | arg_list COMMA expr {append_expr_list($1, $3); $$ = $1;}
 
 if_stmt: IF LPAREN expr[cond] RPAREN LBRACE stmt_list[then] RBRACE { $$ = mk_if_stmt(@1.first_line, @1.first_column, $cond, $then, NULL); }
        | IF LPAREN expr[cond] RPAREN LBRACE stmt_list[then] RBRACE ELSE LBRACE stmt_list[else_] RBRACE {$$ = mk_if_stmt(@1.first_line, @1.first_column, $cond, $then, $else_); }

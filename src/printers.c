@@ -80,9 +80,13 @@ void pp_expr(ASTExpr *expr) {
     pp_expr(expr->binary_op->left);
     pp_binary_op(expr->binary_op->op);
     pp_expr(expr->binary_op->right);
-
     break;
   case EXPR_FUNC_CALL:
+    printf("(");
+    pp_string(expr->func_call->func_name);
+    printf(" ");
+    pp_expr_list(expr->func_call->params);
+    printf(")");
     break;
   case EXPR_INT_LITERAL:
     pp_int(expr->int_lit->value);
@@ -118,7 +122,6 @@ void pp_expr(ASTExpr *expr) {
 void pp_expr_list(ExprList *expr_list) {
   while (expr_list != NULL) {
     pp_expr(expr_list->expr);
-    printf(" ");
     expr_list = expr_list->next;
   }
 }
@@ -138,7 +141,7 @@ void pp_func_params(StmtFuncParams *params) {
     params = params->next;
   }
   printf(")");
-	printf("\n");
+  printf("\n");
 }
 
 void pp_stmt(ASTStmt *stmt) {
@@ -155,7 +158,7 @@ void pp_stmt(ASTStmt *stmt) {
     printf(")");
     printf(": ");
     pp_type(stmt->func_decl->return_typ);
-
+    printf("\n");
     break;
 
   case STMT_IF:
@@ -176,27 +179,26 @@ void pp_stmt(ASTStmt *stmt) {
     printf(")");
     break;
 
-	case STMT_VAR_DECL:
-		printf("(val ");
-		printf("(");
-		pp_expr_list(stmt->val_decl->idents);
-		printf(":: ");
-		pp_type(stmt->val_decl->type);
-		printf("))");
-		break;
+  case STMT_VAR_DECL:
+    printf("(val ");
+    printf("(");
+    pp_expr_list(stmt->val_decl->idents);
+    printf(":: ");
+    pp_type(stmt->val_decl->type);
+    printf("))");
+    break;
 
-	case STMT_VAR_INIT:
-		printf("(val ");
-		printf("(");
-		pp_expr_list(stmt->val_init->idents);
-		printf(" ");
-		pp_expr_list(stmt->val_init->exprs);
-		printf(" ");
-		printf(":: ");
-		pp_type(stmt->val_decl->type);
-		printf("))");
-		break;
-
+  case STMT_VAR_INIT:
+    printf("(val ");
+    printf("(");
+    pp_expr_list(stmt->val_init->idents);
+    printf(" ");
+    pp_expr_list(stmt->val_init->exprs);
+    printf(" ");
+    printf(":: ");
+    pp_type(stmt->val_decl->type);
+    printf("))");
+    break;
 
   case STMT_RETURN:
     printf("return ");
@@ -210,7 +212,7 @@ void pp_stmt(ASTStmt *stmt) {
 
 void pp_stmt_list(StmtList *stmt_list) {
   while (stmt_list != NULL) {
-		pp_stmt(stmt_list->stmt);
+    pp_stmt(stmt_list->stmt);
     stmt_list = stmt_list->next;
   }
 }
