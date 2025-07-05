@@ -236,7 +236,7 @@ ASTStmt *mk_func_decl_stmt(int line, int col, char *name,
 ASTStmt *mk_assign_stmt(int line, int col, ASTExpr *ident, ASTExpr *value);
 ASTStmt *mk_return_stmt(int line, int col, ASTExpr *expr);
 ASTStmt *mk_for_stmt(int line, int col);
-ASTStmt *mk_while_stmt(int line, int col);
+ASTStmt *mk_while_stmt(int line, int col, ASTExpr* cond, StmtList* body);
 ASTStmt *mk_if_stmt(int line, int col, ASTExpr *cond, StmtList *then,
                     StmtList *else_);
 ASTStmt *mk_break_stmt(int line, int col);

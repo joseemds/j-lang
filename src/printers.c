@@ -162,6 +162,17 @@ void pp_stmt(ASTStmt *stmt) {
     printf("\n");
     break;
 
+	case STMT_WHILE:
+		printf("(while (");
+		pp_expr(stmt->while_stmt->cond);
+		printf(") ");
+		printf("(");
+		pp_stmt_list(stmt->while_stmt->body);
+		printf(")");
+		printf("\n");
+		break;
+
+
   case STMT_IF:
     printf("(if ");
     printf("(");

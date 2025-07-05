@@ -199,6 +199,21 @@ ASTType *mk_type_array(int line, int col, ASTType *inner_type) {
   return typ;
 }
 
+ASTStmt *mk_while_stmt(int line, int col, ASTExpr *cond, StmtList *body) {
+  StmtWhile *while_stmt = (StmtWhile*)malloc(sizeof(StmtIf));
+  ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
+
+  while_stmt->cond = cond;
+  while_stmt->body = body;
+
+  stmt->kind = STMT_WHILE;
+  stmt->line = line;
+  stmt->col = col;
+  stmt->while_stmt = while_stmt;
+
+  return stmt;
+}
+
 ASTStmt *mk_if_stmt(int line, int col, ASTExpr *cond, StmtList *then,
                     StmtList *else_) {
   StmtIf *if_stmt = (StmtIf *)malloc(sizeof(StmtIf));

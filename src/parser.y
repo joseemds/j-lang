@@ -65,8 +65,8 @@ stmt:
     | func_decl  {$$ = $1;}
     | expr SEMICOLON {$$ = mk_expr_stmt(@1.first_line, @1.first_column, $1);}
     | return_stmt {$$ = $1;}
-    | for_stmt
-    | while_stmt
+    | for_stmt 
+    | while_stmt {$$ = $1;}
     | if_stmt {$$ = $1;}
     | BREAK SEMICOLON {$$ = mk_break_stmt(@1.first_line, @1.first_column);}
     | CONTINUE SEMICOLON {$$ = mk_continue_stmt(@1.first_line, @1.first_column);}
@@ -195,7 +195,7 @@ arg_list: expr  {$$ = mk_expr_list($1);}
 if_stmt: IF LPAREN expr[cond] RPAREN LBRACE stmt_list[then] RBRACE { $$ = mk_if_stmt(@1.first_line, @1.first_column, $cond, $then, NULL); }
        | IF LPAREN expr[cond] RPAREN LBRACE stmt_list[then] RBRACE ELSE LBRACE stmt_list[else_] RBRACE {$$ = mk_if_stmt(@1.first_line, @1.first_column, $cond, $then, $else_); }
 
-while_stmt: WHILE LPAREN expr RPAREN LBRACE stmt_list RBRACE {}
+while_stmt: WHILE LPAREN expr[cond] RPAREN LBRACE stmt_list[body] RBRACE {$$ = mk_while_stmt(@1.first_line, @1.first_column, $cond, $body);}
 
 %%
 
