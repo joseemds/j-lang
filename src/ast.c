@@ -219,21 +219,40 @@ ASTStmt *mk_continue_stmt(int line, int col) {
 
 // ASTStmt* mk_type_decl_stmt(int line, int col, ... ){}
 
-ASTStmt *mk_val_decl_stmt(int line, int col, ExprIdent **idents,
-                          ASTExpr **exprs) {
+ASTStmt *mk_val_decl_stmt(int line, int col, ExprList* idents,
+                          ASTType* typ) {
   StmtValDecl *val_decl_stmt = (StmtValDecl *)malloc(sizeof(StmtValDecl));
   ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
 
   val_decl_stmt->idents = idents;
-  val_decl_stmt->exprs = exprs;
+	val_decl_stmt->type = typ;
 
-  stmt->kind = STMT_VARIABLE;
+  stmt->kind = STMT_VAR_DECL;
   stmt->line = line;
   stmt->col = col;
   stmt->val_decl = val_decl_stmt;
 
   return stmt;
 }
+
+ASTStmt *mk_val_init_stmt(int line, int col, ExprList* idents,
+                          ASTType* typ, ExprList* values) {
+  StmtValInit *val_init = (StmtValInit *)malloc(sizeof(StmtValDecl));
+  ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
+
+  val_init->idents = idents;
+	val_init->type = typ;
+	val_init->exprs = values;
+
+  stmt->kind = STMT_VAR_INIT;
+  stmt->line = line;
+  stmt->col = col;
+  stmt->val_init = val_init;
+
+  return stmt;
+}
+
+
 
 ASTStmt *mk_return_stmt(int line, int col, ASTExpr *expr) {
   StmtReturn *return_stmt = (StmtReturn *)malloc(sizeof(StmtReturn));
@@ -247,6 +266,20 @@ ASTStmt *mk_return_stmt(int line, int col, ASTExpr *expr) {
   stmt->return_stmt = return_stmt;
 
   return stmt;
+}
+
+ASTStmt *mk_assign_stmt(int line, int col, ASTExpr* ident, ASTExpr* value) {
+	StmtAssign *assign = (StmtAssign*)malloc(sizeof(StmtAssign));
+  ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
+	
+	assign->ident = ident;
+	assign->expr = value;
+  stmt->kind = STMT_ASSIGN;
+  stmt->line = line;
+  stmt->col = col;
+  stmt->assign = assign;
+
+	return stmt;
 }
 
 ASTStmt *mk_expr_stmt(int line, int col, ASTExpr *expr) {

@@ -138,6 +138,7 @@ void pp_func_params(StmtFuncParams *params) {
     params = params->next;
   }
   printf(")");
+	printf("\n");
 }
 
 void pp_stmt(ASTStmt *stmt) {
@@ -175,6 +176,28 @@ void pp_stmt(ASTStmt *stmt) {
     printf(")");
     break;
 
+	case STMT_VAR_DECL:
+		printf("(val ");
+		printf("(");
+		pp_expr_list(stmt->val_decl->idents);
+		printf(":: ");
+		pp_type(stmt->val_decl->type);
+		printf("))");
+		break;
+
+	case STMT_VAR_INIT:
+		printf("(val ");
+		printf("(");
+		pp_expr_list(stmt->val_init->idents);
+		printf(" ");
+		pp_expr_list(stmt->val_init->exprs);
+		printf(" ");
+		printf(":: ");
+		pp_type(stmt->val_decl->type);
+		printf("))");
+		break;
+
+
   case STMT_RETURN:
     printf("return ");
     pp_expr(stmt->return_stmt->expr);
@@ -186,8 +209,8 @@ void pp_stmt(ASTStmt *stmt) {
 }
 
 void pp_stmt_list(StmtList *stmt_list) {
-  pp_stmt(stmt_list->stmt);
-  while (stmt_list->next != NULL) {
+  while (stmt_list != NULL) {
+		pp_stmt(stmt_list->stmt);
     stmt_list = stmt_list->next;
   }
 }

@@ -102,7 +102,8 @@ typedef struct ASTExpr {
 
 typedef enum StmtKind {
   STMT_TYPE_DECL,
-  STMT_VARIABLE,
+  STMT_VAR_DECL,
+  STMT_VAR_INIT,
   STMT_FUNC_DECL,
   STMT_FUNC_PARAM,
   STMT_RETURN,
@@ -112,6 +113,7 @@ typedef enum StmtKind {
   STMT_BREAK,
   STMT_CONTINUE,
   STMT_EXPR,
+	STMT_ASSIGN
 } StmtKind;
 
 typedef struct StmtList {
@@ -158,19 +160,22 @@ typedef struct StmtFuncCall {
 } StmtFuncCall;
 
 typedef struct StmtValDecl {
-  // guardar os tipos?
-  ExprIdent **idents; // array de ponteiros porque várias variáveis podem ser
-                      // declaradas por linha? (relatado?)
-  ASTExpr **exprs; // possíveis inicializações das variáveis | mudar pra lista
-                   // ligada por eficiência de memória
+	ASTType* type;
+  ExprList* idents;
 } StmtValDecl;
+
+typedef struct StmtValInit {
+	ASTType* type;
+  ExprList* idents;
+  ExprList* exprs;
+} StmtValInit;
 
 typedef struct StmtExpr {
   ASTExpr *expr;
 } StmtExpr;
 
 typedef struct StmtAssign {
-  ExprIdent *ident;
+  ASTExpr *ident;
   ASTExpr *expr;
 } StmtAssign;
 
@@ -197,6 +202,7 @@ struct ASTStmt {
     StmtTypeDecl *type_decl;
     StmtFuncDecl *func_decl;
     StmtValDecl *val_decl;
+    StmtValInit *val_init;
     StmtStructField *struct_field;
 
     StmtAssign *assign;
@@ -215,12 +221,12 @@ StmtFuncParams *mk_func_params(ExprList *idents, ASTType *typ);
 void append_func_params(StmtFuncParams *params, StmtFuncParams *next);
 
 ASTStmt *mk_type_decl_stmt(int line, int col);
-ASTStmt *mk_val_decl_stmt(int line, int col, ExprIdent **idents,
-                          ASTExpr **exprs);
+ASTStmt *mk_val_decl_stmt(int line, int col, ExprList* idents, ASTType* typ);
+ASTStmt *mk_val_init_stmt(int line, int col, ExprList* idents, ASTType* typ, ExprList* values);
 ASTStmt *mk_func_decl_stmt(int line, int col, char *name,
                            StmtFuncParams *params, ASTType *return_typ,
                            StmtList *body);
-ASTStmt *mk_assign_stmt(int line, int col);
+ASTStmt *mk_assign_stmt(int line, int col, ASTExpr* ident, ASTExpr* value);
 ASTStmt *mk_return_stmt(int line, int col, ASTExpr *expr);
 ASTStmt *mk_for_stmt(int line, int col);
 ASTStmt *mk_while_stmt(int line, int col);

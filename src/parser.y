@@ -44,10 +44,10 @@ StmtList* root = NULL;
 
 
 %type <exprValue> atomic_expr arith_expr expr
-%type <stmtValue> stmt type_decl func_decl variable_stmt for_stmt while_stmt if_stmt return_stmt
+%type <stmtValue> stmt type_decl func_decl variable_stmt for_stmt while_stmt if_stmt return_stmt assign val_decl
 %type <stmtList> program stmt_list stmts
 %type <typeValue> usable_type array_type
-%type <exprList> idents
+%type <exprList> idents expr_list
 %type <funcParams> func_param func_params func_params_opt
 
 %%
@@ -90,17 +90,17 @@ enum_values: STRING_LIT
 array_type: LBRACKET array_type RBRACKET  {$$ = mk_type_array(@2.first_line, @2.first_column, $2);}
           | LBRACKET usable_type RBRACKET {$$ = $2;}
 
-variable_stmt: assign
-             | val_decl
+variable_stmt: assign {$$ = $1;}
+             | val_decl {$$ = $1;}
 
-assign: LID EQUAL expr {}
+assign: LID EQUAL expr {$$ = mk_assign_stmt(@1.first_line, @1.first_column, mk_ident(@1.first_line, @1.first_column, $1), $3);}
       | array_access EQUAL expr {}
       | attr_access EQUAL expr {}
 
 array_access: atomic_expr LBRACKET arith_expr RBRACKET {} // possível erro com o uso de atomic_expr
 
-val_decl: VAL idents COLON usable_type {} 
-				| VAL idents COLON usable_type EQUAL expr_list {}
+val_decl: VAL idents COLON usable_type {$$ = mk_val_decl_stmt(@1.first_line, @1.first_column, $2, $4);} 
+				| VAL idents[ids] COLON usable_type[typ] EQUAL expr_list[values] {$$ = mk_val_init_stmt(@1.first_line, @1.first_column, $ids, $typ, $values);}
 
 idents: LID {$$ = mk_expr_list(mk_ident(@1.first_line, @1.first_column, $1));}
 			| idents COMMA LID  {append_expr_list($1, mk_ident(@3.first_line, @3.first_column, $3)); $$ = $1; }
@@ -168,8 +168,8 @@ array_notation: LBRACKET expr_list_opt RBRACKET {}
 expr_list_opt: %empty
              | expr_list {}
 
-expr_list: expr {}
-         | expr_list COMMA expr {}
+expr_list: expr {$$ = mk_expr_list($1);}
+         | expr_list COMMA expr {append_expr_list($1, $3); $$ = $1;}
 
 struct_cons: usable_type LBRACE struct_assign_opt RBRACE
 
