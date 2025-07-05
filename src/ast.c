@@ -9,8 +9,14 @@ ExprList *mk_expr_list(ASTExpr *expr) {
 }
 
 void append_expr_list(ExprList *list, ASTExpr *expr) {
-  ExprList *next = mk_expr_list(expr);
-  list->next = next;
+    if (expr == NULL) {
+        return;
+    }
+    ExprList* next = mk_expr_list(expr);
+    while (list->next != NULL) {
+        list = list->next;
+    }
+    list->next = next;
 }
 
 StmtList *mk_stmt_list(ASTStmt *stmt) {
@@ -22,8 +28,12 @@ StmtList *mk_stmt_list(ASTStmt *stmt) {
 }
 
 void append_stmt_list(StmtList *list, ASTStmt *stmt) {
-  StmtList *next = mk_stmt_list(stmt);
-  list->next = next;
+	if(stmt == NULL) return;
+	StmtList* next = mk_stmt_list(stmt);
+	while (list->next != NULL) {
+			list = list->next;
+	}
+	list->next = next;
 }
 
 ASTExpr *mk_ident(int line, int col, char *name) {
@@ -281,6 +291,12 @@ StmtFuncParams *mk_func_params(ExprList *idents, ASTType *type) {
   return params;
 }
 
-void append_func_params(StmtFuncParams *curr, StmtFuncParams *next) {
-  curr->next = next;
+void append_func_params(StmtFuncParams *curr, StmtFuncParams *param) {
+    if (param == NULL) {
+        return;
+    }
+    while (curr->next != NULL) {
+        curr = curr->next;
+    }
+    curr->next = param;
 }

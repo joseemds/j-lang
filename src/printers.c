@@ -35,40 +35,40 @@ void pp_binary_op(int op) {
   switch (op) {
   default:
     printf("Unknown operation %d", op);
-  case 276:
+  case EQUAL:
     printf(" = ");
     break;
-  case 277:
+  case CMP:
     printf(" == ");
     break;
-  case 278:
+  case LEQ:
     printf(" <= ");
     break;
-  case 279:
+  case LT:
     printf(" < ");
     break;
-  case 280:
+  case GEQ:
     printf(" >= ");
     break;
-  case 281:
+  case GT:
     printf(" > ");
     break;
-  case 282:
+  case NEQ:
     printf(" != ");
     break;
-  case 285:
+  case PLUS:
     printf(" + ");
     break;
-  case 286:
+  case MINUS:
     printf(" - ");
     break;
-  case 297:
+  case TIMES:
     printf(" * ");
     break;
-  case 298:
+  case DIVIDE:
     printf(" / ");
     break;
-  case 289:
+  case MOD:
     printf(" %% ");
     break;
   }

@@ -64,7 +64,7 @@ stmt:
     | variable_stmt SEMICOLON
     | func_decl  {$$ = $1;}
     | expr SEMICOLON {$$ = mk_expr_stmt(@1.first_line, @1.first_column, $1);}
-    | return_stmt 
+    | return_stmt {$$ = $1;}
     | for_stmt
     | while_stmt
     | if_stmt {$$ = $1;}
@@ -99,7 +99,8 @@ assign: LID EQUAL expr {}
 
 array_access: atomic_expr LBRACKET arith_expr RBRACKET {} // possível erro com o uso de atomic_expr
 
-val_decl: VAL idents COLON usable_type val_initialization_opt {}
+val_decl: VAL idents COLON usable_type {} 
+				| VAL idents COLON usable_type EQUAL expr_list {}
 
 idents: LID {$$ = mk_expr_list(mk_ident(@1.first_line, @1.first_column, $1));}
 			| idents COMMA LID  {append_expr_list($1, mk_ident(@3.first_line, @3.first_column, $3)); $$ = $1; }
@@ -199,9 +200,9 @@ while_stmt: WHILE LPAREN expr RPAREN LBRACE stmt_list RBRACE {}
 int main (void) {
 	int status = yyparse ();
 	printf("Parsed with status: %d\n", status);
-	// if(root){
-	// 	pp_stmt_list(root);
-	// }
+	if(root){
+		pp_stmt_list(root);
+	}
 	return status;
 }
 
