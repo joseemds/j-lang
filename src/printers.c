@@ -148,7 +148,7 @@ void pp_func_params(StmtFuncParams *params) {
 void pp_stmt(ASTStmt *stmt) {
   switch (stmt->kind) {
   default:
-    printf("Unknown stmt kind");
+    printf("Unknown stmt kind %d", stmt->kind);
 
   case STMT_FUNC_DECL:
     printf("(func %s ", stmt->func_decl->name);
@@ -186,7 +186,7 @@ void pp_stmt(ASTStmt *stmt) {
     pp_expr_list(stmt->val_decl->idents);
     printf(":: ");
     pp_type(stmt->val_decl->type);
-    printf("))");
+    printf("))\n");
     break;
 
   case STMT_VAR_INIT:
@@ -198,7 +198,16 @@ void pp_stmt(ASTStmt *stmt) {
     printf(" ");
     printf(":: ");
     pp_type(stmt->val_decl->type);
-    printf("))");
+    printf("))\n");
+    break;
+
+  case STMT_ASSIGN:
+    printf("(assign ");
+    pp_expr(stmt->assign->ident);
+    printf("(");
+    printf(" ");
+    pp_expr(stmt->assign->expr);
+    printf("))\n");
     break;
 
   case STMT_RETURN:
