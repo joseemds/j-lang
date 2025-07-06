@@ -27,3 +27,5 @@ func prob_1_float(x, y : Float, c : Int) : Void {
   res = square(x) - y + int_to_float(c);
   print(res);
 }
+
+func main() : Void {}
