@@ -65,7 +65,7 @@ stmt:
     | func_decl  {$$ = $1;}
     | expr SEMICOLON {$$ = mk_expr_stmt(@1.first_line, @1.first_column, $1);}
     | return_stmt {$$ = $1;}
-    | for_stmt 
+    | for_stmt { $$ = $1;}
     | while_stmt {$$ = $1;}
     | if_stmt {$$ = $1;}
     | BREAK SEMICOLON {$$ = mk_break_stmt(@1.first_line, @1.first_column);}
@@ -179,8 +179,9 @@ struct_assign_opt: %empty
 struct_assign: LID COLON expr
              | struct_assign COMMA LID COLON expr {}
 
-for_stmt: FOR LPAREN variable_stmt SEMICOLON expr SEMICOLON assign RPAREN LBRACE stmt_list RBRACE {}
-        | FOR LPAREN LID SEMICOLON expr SEMICOLON assign RPAREN LBRACE stmt_list RBRACE {}
+for_stmt: FOR LPAREN variable_stmt[var] SEMICOLON expr[cond] SEMICOLON assign[inc] RPAREN LBRACE stmt_list[body] RBRACE {$$ = mk_for_stmt(@1.first_line, @1.first_column, $var, $cond, $inc, $body);}
+        | FOR LPAREN LID[var] SEMICOLON expr[cond] SEMICOLON assign[inc] RPAREN LBRACE stmt_list[body] RBRACE { ASTExpr* ident = mk_ident(@1.first_line, @1.first_column, $var);
+				$$ = mk_for_stmt(@1.first_line, @1.first_column, mk_expr_stmt(@var.first_line, @var.first_column, ident), $cond, $inc, $body);}
 
 func_call: LID LPAREN arg_list_opt RPAREN {
 				 $$ = mk_func_call(@1.first_line, @1.first_column, $1, $3);

@@ -133,9 +133,9 @@ typedef struct StmtWhile {
 } StmtWhile;
 
 typedef struct StmtFor {
-  ASTExpr *var;
+  ASTStmt *var;
   ASTExpr *cond;
-  ASTExpr *inc;
+  ASTStmt *inc;
   StmtList *body;
 } StmtFor;
 
@@ -235,8 +235,9 @@ ASTStmt *mk_func_decl_stmt(int line, int col, char *name,
                            StmtList *body);
 ASTStmt *mk_assign_stmt(int line, int col, ASTExpr *ident, ASTExpr *value);
 ASTStmt *mk_return_stmt(int line, int col, ASTExpr *expr);
-ASTStmt *mk_for_stmt(int line, int col);
-ASTStmt *mk_while_stmt(int line, int col, ASTExpr* cond, StmtList* body);
+ASTStmt *mk_for_stmt(int line, int col, ASTStmt *var, ASTExpr *cond,
+                     ASTStmt *inc, StmtList *body);
+ASTStmt *mk_while_stmt(int line, int col, ASTExpr *cond, StmtList *body);
 ASTStmt *mk_if_stmt(int line, int col, ASTExpr *cond, StmtList *then,
                     StmtList *else_);
 ASTStmt *mk_break_stmt(int line, int col);

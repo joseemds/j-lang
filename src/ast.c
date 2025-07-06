@@ -200,7 +200,7 @@ ASTType *mk_type_array(int line, int col, ASTType *inner_type) {
 }
 
 ASTStmt *mk_while_stmt(int line, int col, ASTExpr *cond, StmtList *body) {
-  StmtWhile *while_stmt = (StmtWhile*)malloc(sizeof(StmtIf));
+  StmtWhile *while_stmt = (StmtWhile *)malloc(sizeof(StmtWhile));
   ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
 
   while_stmt->cond = cond;
@@ -210,6 +210,23 @@ ASTStmt *mk_while_stmt(int line, int col, ASTExpr *cond, StmtList *body) {
   stmt->line = line;
   stmt->col = col;
   stmt->while_stmt = while_stmt;
+
+  return stmt;
+}
+
+ASTStmt *mk_for_stmt(int line, int col, ASTStmt *var, ASTExpr *cond,
+                     ASTStmt *inc, StmtList *body) {
+  StmtFor *for_stmt = (StmtFor *)malloc(sizeof(StmtFor));
+  ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
+
+  for_stmt->cond = cond;
+  for_stmt->var = var;
+  for_stmt->inc = inc;
+
+  stmt->kind = STMT_FOR;
+  stmt->line = line;
+  stmt->col = col;
+  stmt->for_stmt = for_stmt;
 
   return stmt;
 }

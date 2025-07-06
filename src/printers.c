@@ -162,16 +162,34 @@ void pp_stmt(ASTStmt *stmt) {
     printf("\n");
     break;
 
-	case STMT_WHILE:
-		printf("(while (");
-		pp_expr(stmt->while_stmt->cond);
-		printf(") ");
-		printf("(");
-		pp_stmt_list(stmt->while_stmt->body);
-		printf(")");
-		printf("\n");
-		break;
+  case STMT_WHILE:
+    printf("(while (");
+    pp_expr(stmt->while_stmt->cond);
+    printf(") ");
+    printf("(");
+    pp_stmt_list(stmt->while_stmt->body);
+    printf(")");
+    printf("\n");
+    break;
 
+  case STMT_FOR:
+    printf("(for (");
+    pp_stmt(stmt->for_stmt->var);
+    printf(") ");
+
+    printf("(");
+    pp_expr(stmt->for_stmt->cond);
+    printf(")");
+
+    printf("(");
+    pp_stmt(stmt->for_stmt->inc);
+    printf(")");
+
+    printf("(");
+    pp_stmt_list(stmt->for_stmt->body);
+    printf(")");
+    printf("\n");
+    break;
 
   case STMT_IF:
     printf("(if ");
