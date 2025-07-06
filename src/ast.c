@@ -331,8 +331,9 @@ ASTStmt *mk_expr_stmt(int line, int col, ASTExpr *expr) {
   ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
 
   expr_stmt->expr = expr;
+  expr_stmt->expr->kind = expr->kind;
 
-  stmt->kind = STMT_RETURN;
+  stmt->kind = STMT_EXPR;
   stmt->line = line;
   stmt->col = col;
   stmt->expr = expr_stmt;

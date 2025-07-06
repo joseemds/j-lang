@@ -150,6 +150,14 @@ void pp_stmt(ASTStmt *stmt) {
   default:
     printf("Unknown stmt kind %d", stmt->kind);
 
+  case STMT_BREAK:
+    printf("(break)");
+    break;
+
+  case STMT_CONTINUE:
+    printf("(continue)");
+    break;
+
   case STMT_FUNC_DECL:
     printf("(func %s ", stmt->func_decl->name);
     pp_func_params(stmt->func_decl->params);
