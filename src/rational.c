@@ -7,7 +7,7 @@ rational rational_add(rational a, rational b) {
 
   r.top = a.top * (r.bot / a.bot) + b.top * (r.bot / b.bot);
 
-  rational_simplify(&r);
+  r = rational_simplify(r);
 
   return r;
 }
@@ -19,7 +19,7 @@ rational rational_sub(rational a, rational b) {
 
   r.top = a.top * (r.bot / a.bot) - b.top * (r.bot / b.bot);
 
-  rational_simplify(&r);
+  r = rational_simplify(r);
 
   return r;
 }
@@ -31,7 +31,7 @@ rational rational_mul(rational a, rational b) {
 
   r.top = a.top * b.top;
 
-  rational_simplify(&r);
+  r = rational_simplify(r);
 
   return r;
 }
@@ -48,11 +48,11 @@ rational rational_div(rational a, rational b) {
 rational rational_square(rational a) {
   rational r;
 
-  r.top = square(a.top);
+  r.top = int_square(a.top);
 
-  r.bot = square(a.bot);
+  r.bot = int_square(a.bot);
 
-  rational_simplify(&r);
+  r = rational_simplify(r);
 
   return r;
 }
@@ -60,19 +60,36 @@ rational rational_square(rational a) {
 rational rational_power(rational b, int p) {
   rational r;
 
-  r.top = power(b.top, p);
+  if (p < 0){
+    int temp = b.top;
+    b.top = b.top;
+    b.bot = temp;
+    p *= -1;
+  }
+  r.top = int_power(b.top, p);
 
-  r.bot = power(b.bot, p);
+  r.bot = int_power(b.bot, p);
 
-  rational_simplify(&r);
+  r = rational_simplify(r);
 
   return r;
 }
 
-void rational_simplify(rational *r) {
-  int common = gcd(r->top, r->bot);
-  r->top /= common;
-  r->bot /= common;
-};
+rational rational_invert(rational a) {
+  return rational_power(a, -1);
+}
+
+rational rational_simplify(rational r) {
+  int common = gcd(r.top, r.bot);
+  r.top /= common;
+  r.bot /= common;
+  return r;
+}
+
+int rational_compare(rational a, rational b) {
+  a = rational_simplify(a);
+  b = rational_simplify(b);
+  return (a.top == b.top && a.bot == b.bot) ? 1 : 0;
+}
 
 float rational_divide(rational r) { return (float)r.top / r.bot; }

@@ -19,7 +19,16 @@ float square(float a) { return a * a; }
 
 float power(float b, int p) {
   float v = 1;
+  if (p < 0) b = 1 / b;
   for (int i = 0; i < p; i++)
     v *= b;
   return v;
+}
+
+int int_square(int a) {
+  return (int) square((float) a);
+}
+
+int int_power(int b, int p) {
+  return (int) power((float) b, p);
 }
