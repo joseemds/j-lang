@@ -28,6 +28,7 @@ StmtList* root = NULL;
   ExprList *exprList;
   StmtFuncParams* funcParams;
 	StmtStructField* structFields;
+	StructFieldAssign* structAssign;
 };
 
 %token <sValue> UID LID STRING_LIT PRIM_TYPE
@@ -45,11 +46,12 @@ StmtList* root = NULL;
 %left PLUS MINUS OR
 
 
-%type <exprValue> atomic_expr arith_expr expr func_call
+%type <structAssign> struct_assign struct_assign_opt
+%type <exprValue> atomic_expr arith_expr expr func_call attr_access array_access array_notation
 %type <stmtValue> stmt type_decl func_decl variable_stmt for_stmt while_stmt if_stmt return_stmt assign val_decl
 %type <stmtList> program stmt_list stmts
 %type <typeValue> usable_type array_type
-%type <exprList> idents expr_list arg_list arg_list_opt enum_values
+%type <exprList> idents expr_list expr_list_opt arg_list arg_list_opt enum_values
 %type <funcParams> func_param func_params func_params_opt
 %type <structFields> type_struct struct_fields
 
@@ -109,8 +111,8 @@ variable_stmt: assign {$$ = $1;}
              | val_decl {$$ = $1;}
 
 assign: LID EQUAL expr {$$ = mk_assign_stmt(@1.first_line, @1.first_column, mk_ident(@1.first_line, @1.first_column, $1), $3);}
-      | array_access EQUAL expr {}
-      | attr_access EQUAL expr {}
+      | array_access EQUAL expr {$$ = mk_assign_stmt(@1.first_line, @1.first_column, $1, $3);}
+      | attr_access EQUAL expr {$$ = mk_assign_stmt(@1.first_line, @1.first_column, $1, $3);}
 
 array_access: atomic_expr LBRACKET arith_expr RBRACKET {mk_array_access_expr(@2.first_line, @2.first_column, $1, $3);}
 
@@ -169,28 +171,28 @@ atomic_expr: NUMBER {$$ = mk_int_lit(@1.first_line, @1.first_column, $1);}
            | CHAR_LIT {$$ = mk_char_lit(@1.first_line, @1.first_column, $1);}
            | func_call {$$ = $1;}
            | LPAREN expr RPAREN {$$ = $2;}
-           | array_access {}
-           | attr_access {}
-           | array_notation {}
+           | array_access {$$ = $1;}
+           | attr_access {$$ = $1;}
+           | array_notation {$$ = $1;}
            | struct_cons {}
 
-attr_access: atomic_expr DOT LID {mk_attr_access_expr(@2.first_line, @2.first_column, $1, $3);}
+attr_access: atomic_expr DOT LID {$$ = mk_attr_access_expr(@2.first_line, @2.first_column, $1, $3);}
 
-array_notation: LBRACKET expr_list_opt RBRACKET {}
+array_notation: LBRACKET expr_list_opt RBRACKET {$$ = mk_array_lit_expr(@1.first_line, @1.first_column, $2);}
 
-expr_list_opt: %empty
-             | expr_list {}
+expr_list_opt: %empty {$$ = NULL;}
+             | expr_list {$$ = $1;}
 
 expr_list: expr {$$ = mk_expr_list($1);}
          | expr_list COMMA expr {append_expr_list($1, $3); $$ = $1;}
 
 struct_cons: usable_type LBRACE struct_assign_opt RBRACE
 
-struct_assign_opt: %empty
-             | struct_assign
+struct_assign_opt: %empty {$$ = NULL;}
+             | struct_assign {$$ = $1;}
 
-struct_assign: LID COLON expr
-             | struct_assign COMMA LID COLON expr {}
+struct_assign: LID COLON expr {$$ = mk_struct_field_assign($1, $3);} // lhs tem que ser expressao
+             | struct_assign COMMA LID COLON expr {} // Isso ta certo?
 
 for_stmt: FOR LPAREN variable_stmt[var] SEMICOLON expr[cond] SEMICOLON assign[inc] RPAREN LBRACE stmt_list[body] RBRACE {$$ = mk_for_stmt(@1.first_line, @1.first_column, $var, $cond, $inc, $body);}
         | FOR LPAREN LID[var] SEMICOLON expr[cond] SEMICOLON assign[inc] RPAREN LBRACE stmt_list[body] RBRACE { ASTExpr* ident = mk_ident(@1.first_line, @1.first_column, $var);
