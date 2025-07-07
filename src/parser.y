@@ -27,6 +27,7 @@ StmtList* root = NULL;
 	StmtList *stmtList;
   ExprList *exprList;
   StmtFuncParams* funcParams;
+	StmtStructField* structFields;
 };
 
 %token <sValue> UID LID STRING_LIT PRIM_TYPE
@@ -48,8 +49,9 @@ StmtList* root = NULL;
 %type <stmtValue> stmt type_decl func_decl variable_stmt for_stmt while_stmt if_stmt return_stmt assign val_decl
 %type <stmtList> program stmt_list stmts
 %type <typeValue> usable_type array_type
-%type <exprList> idents expr_list arg_list arg_list_opt
+%type <exprList> idents expr_list arg_list arg_list_opt enum_values
 %type <funcParams> func_param func_params func_params_opt
+%type <structFields> type_struct struct_fields
 
 %%
 
@@ -72,21 +74,33 @@ stmt:
     | BREAK SEMICOLON {$$ = mk_break_stmt(@1.first_line, @1.first_column);}
     | CONTINUE SEMICOLON {$$ = mk_continue_stmt(@1.first_line, @1.first_column);}
 
-type_decl: TYPE UID EQUAL type_constr {}
+type_decl:
+    TYPE UID[name] EQUAL usable_type[type] SEMICOLON
+    {
+        $$ = mk_type_alias(@1.first_line, @1.first_column, $name, $type);
+    }
+    | TYPE UID[name] EQUAL LBRACE type_struct[fields] RBRACE SEMICOLON
+    {
+        $$ = mk_type_struct(@1.first_line, @1.first_column, $name, $fields);
+    }
+    | TYPE UID[name] EQUAL ENUM LBRACE enum_values[vals] RBRACE SEMICOLON
+    {
+        $$ = mk_type_enum(@1.first_line, @1.first_column, $name, $vals);
+    }
 
-type_constr: usable_type SEMICOLON
-					 | LBRACE type_struct RBRACE {}
-           | type_enum SEMICOLON
+type_struct: %empty {$$ = NULL;}
+           | struct_fields SEMICOLON type_struct {
+							$1->next = $3;
+							$$ = $1;
+					 }
 
-type_struct: %empty 
-           | struct_fields SEMICOLON type_struct // fazer recursão esquerda
+struct_fields: idents COLON usable_type {$$ = mk_struct_field($1, $3);}
 
-struct_fields: idents COLON usable_type val_initialization_opt
-
-type_enum: ENUM LBRACE enum_values RBRACE
-
-enum_values: STRING_LIT
-           | enum_values COMMA STRING_LIT 
+enum_values: STRING_LIT {$$ = mk_expr_list(mk_string_lit(@1.first_line, @1.first_column, $1));}
+           | enum_values COMMA STRING_LIT {
+							append_expr_list($1, mk_string_lit(@3.first_line, @3.first_column, $3));
+							$$ = $1;
+					 }
 
 array_type: LBRACKET array_type RBRACKET  {$$ = mk_type_array(@2.first_line, @2.first_column, $2);}
           | LBRACKET usable_type RBRACKET {$$ = $2;}
@@ -110,9 +124,6 @@ usable_type: UID {$$ = mk_type_ident(@1.first_line, @1.first_column, $1);}
            | PRIM_TYPE {$$ = mk_type_prim(@1.first_line, @1.first_column, $1);}
            | array_type {$$ = mk_type_array(@1.first_line, @1.first_column, $1);}
 
-val_initialization_opt: %empty | val_initialization {}
-
-val_initialization: EQUAL expr_list {}
 
 func_decl: FUNC LID[name] LPAREN func_params_opt[params] RPAREN COLON usable_type[return_typ] LBRACE stmt_list[body] RBRACE {
 				 $$ = mk_func_decl_stmt(@1.first_line, @1.first_column, $name, $params, $return_typ, $body);
@@ -146,8 +157,6 @@ arith_expr: atomic_expr                   {$$ = $1;}
           | arith_expr MINUS atomic_expr  {$$ = mk_binary_op(@1.first_line, @1.first_column, MINUS, $1, $3);}
           | arith_expr TIMES atomic_expr  {$$ = mk_binary_op(@1.first_line, @1.first_column, TIMES, $1, $3);}
           | arith_expr DIVIDE atomic_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, DIVIDE, $1, $3);}
-          | NOT atomic_expr               {}
-          | MINUS atomic_expr             {}
           | NOT atomic_expr               {$$ = mk_unary_op(@1.first_line, @1.first_column, NOT, $2);}
           | MINUS atomic_expr             {$$ = mk_unary_op(@1.first_line, @1.first_column, MINUS, $2);}
 

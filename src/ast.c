@@ -229,6 +229,50 @@ ASTType *mk_type_array(int line, int col, ASTType *inner_type) {
   return typ;
 }
 
+ASTStmt *mk_type_alias(int line, int col, char *name, ASTType *alias_for) {
+    ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
+    stmt->kind = STMT_TYPE_DECL;
+    stmt->line = line;
+    stmt->col = col;
+    stmt->type_decl = (StmtTypeDecl*)malloc(sizeof(StmtTypeDecl));
+    stmt->type_decl->name = strdup(name);
+    stmt->type_decl->decl_kind = TYPE_DECL_ALIAS;
+    stmt->type_decl->alias = alias_for;
+    return stmt;
+}
+
+ASTStmt *mk_type_struct(int line, int col, char *name, StmtStructField *fields) {
+    ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
+    stmt->kind = STMT_TYPE_DECL;
+    stmt->line = line;
+    stmt->col = col;
+    stmt->type_decl = (StmtTypeDecl*)malloc(sizeof(StmtTypeDecl));
+    stmt->type_decl->name = strdup(name);
+    stmt->type_decl->decl_kind = TYPE_DECL_STRUCT;
+    stmt->type_decl->struct_.fields = fields;
+    return stmt;
+}
+
+ASTStmt *mk_type_enum(int line, int col, char *name, ExprList *values) {
+    ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
+    stmt->kind = STMT_TYPE_DECL;
+    stmt->line = line;
+    stmt->col = col;
+    stmt->type_decl = (StmtTypeDecl*)malloc(sizeof(StmtTypeDecl));
+    stmt->type_decl->name = strdup(name);
+    stmt->type_decl->decl_kind = TYPE_DECL_ENUM;
+    stmt->type_decl->enum_.values = values;
+    return stmt;
+}
+
+StmtStructField* mk_struct_field(ExprList* idents, ASTType* type) {
+    StmtStructField* field = (StmtStructField*)malloc(sizeof(StmtStructField));
+    field->idents = idents;
+    field->type = type;
+    field->next = NULL;
+    return field;
+}
+
 ASTStmt *mk_while_stmt(int line, int col, ASTExpr *cond, StmtList *body) {
   StmtWhile *while_stmt = (StmtWhile *)malloc(sizeof(StmtWhile));
   ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));

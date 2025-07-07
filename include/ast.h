@@ -160,9 +160,28 @@ typedef struct StmtReturn {
   ASTExpr *expr;
 } StmtReturn;
 
-typedef struct StmtTypeDecl {
-  // separar em casos dos construtores?
 
+typedef struct StmtStructField StmtStructField;
+typedef struct StmtStructField {
+    ExprList* idents;
+    ASTType* type;
+    StmtStructField* next;
+} StmtStructField;
+
+typedef enum TypeDeclKind {
+    TYPE_DECL_ALIAS,
+    TYPE_DECL_STRUCT,
+    TYPE_DECL_ENUM
+} TypeDeclKind;
+
+typedef struct StmtTypeDecl {
+    char* name; 
+    TypeDeclKind decl_kind;
+    union {
+        ASTType* alias;
+        struct { StmtStructField* fields; } struct_;
+        struct { ExprList* values; } enum_;
+    };
 } StmtTypeDecl;
 
 typedef struct StmtFuncParams StmtFuncParams;
@@ -202,10 +221,6 @@ typedef struct StmtAssign {
   ASTExpr *ident;
   ASTExpr *expr;
 } StmtAssign;
-
-typedef struct StmtStructField {
-
-} StmtStructField;
 
 typedef struct StmtIf {
   ASTExpr *condition;
@@ -276,3 +291,9 @@ ASTExpr *mk_func_call(int line, int col, char *funcName, ExprList *args);
 ASTType *mk_type_ident(int line, int col, char *type_name);
 ASTType *mk_type_prim(int line, int col, char *type_name);
 ASTType *mk_type_array(int line, int col, ASTType *type_);
+ASTStmt *mk_type_alias(int line, int col, char *name, ASTType *alias_for);
+ASTStmt *mk_type_struct(int line, int col, char *name, StmtStructField *fields);
+ASTStmt *mk_type_enum(int line, int col, char *name, ExprList *values);
+
+StmtStructField* mk_struct_field(ExprList* idents, ASTType* type);
+
