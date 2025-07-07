@@ -61,7 +61,7 @@ rational rational_square(rational a) {
 rational rational_power(rational b, int p) {
   rational r;
 
-  if (p < 0){
+  if (p < 0) {
     int temp = b.top;
     b.top = b.top;
     b.bot = temp;
@@ -76,9 +76,7 @@ rational rational_power(rational b, int p) {
   return r;
 }
 
-rational rational_invert(rational a) {
-  return rational_power(a, -1);
-}
+rational rational_invert(rational a) { return rational_power(a, -1); }
 
 rational rational_simplify(rational r) {
   int common = gcd(r.top, r.bot);

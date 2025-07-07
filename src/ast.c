@@ -151,7 +151,8 @@ ASTExpr *mk_rational_lit(int line, int col, rational value) {
 }
 
 ASTExpr *mk_char_lit(int line, int col, char *value) {
-  ExprCharLiteral *char_lit = (ExprCharLiteral *)malloc(sizeof(ExprCharLiteral));
+  ExprCharLiteral *char_lit =
+      (ExprCharLiteral *)malloc(sizeof(ExprCharLiteral));
   char_lit->value = value;
 
   ASTExpr *expr_node = (ASTExpr *)malloc(sizeof(ASTExpr));
@@ -180,18 +181,17 @@ ASTExpr *mk_binary_op(int line, int col, int op, ASTExpr *left,
 };
 
 ASTExpr *mk_unary_op(int line, int col, int op, ASTExpr *operand) {
-    ASTExpr *node = (ASTExpr *)malloc(sizeof(ASTExpr));
-		ExprUnaryOp* unary_op = (ExprUnaryOp *)malloc(sizeof(ExprUnaryOp));
-    unary_op->op = op;
-    unary_op->operand = operand;
+  ASTExpr *node = (ASTExpr *)malloc(sizeof(ASTExpr));
+  ExprUnaryOp *unary_op = (ExprUnaryOp *)malloc(sizeof(ExprUnaryOp));
+  unary_op->op = op;
+  unary_op->operand = operand;
 
-    node->kind = EXPR_UNARY;
-    node->line = line;
-    node->col = col;
-    node->unary_op = unary_op;
-    return node;
+  node->kind = EXPR_UNARY;
+  node->line = line;
+  node->col = col;
+  node->unary_op = unary_op;
+  return node;
 }
-
 
 ASTType *mk_type_ident(int line, int col, char *type_name) {
   ASTType *typ = (ASTType *)malloc(sizeof(ASTType));
@@ -230,47 +230,48 @@ ASTType *mk_type_array(int line, int col, ASTType *inner_type) {
 }
 
 ASTStmt *mk_type_alias(int line, int col, char *name, ASTType *alias_for) {
-    ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
-    stmt->kind = STMT_TYPE_DECL;
-    stmt->line = line;
-    stmt->col = col;
-    stmt->type_decl = (StmtTypeDecl*)malloc(sizeof(StmtTypeDecl));
-    stmt->type_decl->name = strdup(name);
-    stmt->type_decl->decl_kind = TYPE_DECL_ALIAS;
-    stmt->type_decl->alias = alias_for;
-    return stmt;
+  ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
+  stmt->kind = STMT_TYPE_DECL;
+  stmt->line = line;
+  stmt->col = col;
+  stmt->type_decl = (StmtTypeDecl *)malloc(sizeof(StmtTypeDecl));
+  stmt->type_decl->name = strdup(name);
+  stmt->type_decl->decl_kind = TYPE_DECL_ALIAS;
+  stmt->type_decl->alias = alias_for;
+  return stmt;
 }
 
-ASTStmt *mk_type_struct(int line, int col, char *name, StmtStructField *fields) {
-    ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
-    stmt->kind = STMT_TYPE_DECL;
-    stmt->line = line;
-    stmt->col = col;
-    stmt->type_decl = (StmtTypeDecl*)malloc(sizeof(StmtTypeDecl));
-    stmt->type_decl->name = strdup(name);
-    stmt->type_decl->decl_kind = TYPE_DECL_STRUCT;
-    stmt->type_decl->struct_.fields = fields;
-    return stmt;
+ASTStmt *mk_type_struct(int line, int col, char *name,
+                        StmtStructField *fields) {
+  ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
+  stmt->kind = STMT_TYPE_DECL;
+  stmt->line = line;
+  stmt->col = col;
+  stmt->type_decl = (StmtTypeDecl *)malloc(sizeof(StmtTypeDecl));
+  stmt->type_decl->name = strdup(name);
+  stmt->type_decl->decl_kind = TYPE_DECL_STRUCT;
+  stmt->type_decl->struct_.fields = fields;
+  return stmt;
 }
 
 ASTStmt *mk_type_enum(int line, int col, char *name, ExprList *values) {
-    ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
-    stmt->kind = STMT_TYPE_DECL;
-    stmt->line = line;
-    stmt->col = col;
-    stmt->type_decl = (StmtTypeDecl*)malloc(sizeof(StmtTypeDecl));
-    stmt->type_decl->name = strdup(name);
-    stmt->type_decl->decl_kind = TYPE_DECL_ENUM;
-    stmt->type_decl->enum_.values = values;
-    return stmt;
+  ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
+  stmt->kind = STMT_TYPE_DECL;
+  stmt->line = line;
+  stmt->col = col;
+  stmt->type_decl = (StmtTypeDecl *)malloc(sizeof(StmtTypeDecl));
+  stmt->type_decl->name = strdup(name);
+  stmt->type_decl->decl_kind = TYPE_DECL_ENUM;
+  stmt->type_decl->enum_.values = values;
+  return stmt;
 }
 
-StmtStructField* mk_struct_field(ExprList* idents, ASTType* type) {
-    StmtStructField* field = (StmtStructField*)malloc(sizeof(StmtStructField));
-    field->idents = idents;
-    field->type = type;
-    field->next = NULL;
-    return field;
+StmtStructField *mk_struct_field(ExprList *idents, ASTType *type) {
+  StmtStructField *field = (StmtStructField *)malloc(sizeof(StmtStructField));
+  field->idents = idents;
+  field->type = type;
+  field->next = NULL;
+  return field;
 }
 
 ASTStmt *mk_while_stmt(int line, int col, ASTExpr *cond, StmtList *body) {
@@ -454,42 +455,45 @@ void append_func_params(StmtFuncParams *curr, StmtFuncParams *param) {
   curr->next = param;
 }
 
-ASTExpr* mk_array_access_expr(int line, int col, ASTExpr* base, ASTExpr* index) {
-    ASTExpr* node = (ASTExpr*)malloc(sizeof(ASTExpr));
-    node->kind = EXPR_ARRAY_ACCESS;
-    node->line = line;
-    node->col = col;
-    node->array_access = (ExprArrayAccess*)malloc(sizeof(ExprArrayAccess));
-    node->array_access->base = base;
-    node->array_access->index = index;
-    return node;
+ASTExpr *mk_array_access_expr(int line, int col, ASTExpr *base,
+                              ASTExpr *index) {
+  ASTExpr *node = (ASTExpr *)malloc(sizeof(ASTExpr));
+  node->kind = EXPR_ARRAY_ACCESS;
+  node->line = line;
+  node->col = col;
+  node->array_access = (ExprArrayAccess *)malloc(sizeof(ExprArrayAccess));
+  node->array_access->base = base;
+  node->array_access->index = index;
+  return node;
 }
 
-ASTExpr* mk_attr_access_expr(int line, int col, ASTExpr* base, char* attribute) {
-    ASTExpr* node = (ASTExpr*)malloc(sizeof(ASTExpr));
-    node->kind = EXPR_ATTR_ACCESS;
-    node->line = line;
-    node->col = col;
-    node->attr_access = (ExprAttrAccess*)malloc(sizeof(ExprAttrAccess));
-    node->attr_access->base = base;
-    node->attr_access->attribute = strdup(attribute);
-    return node;
+ASTExpr *mk_attr_access_expr(int line, int col, ASTExpr *base,
+                             char *attribute) {
+  ASTExpr *node = (ASTExpr *)malloc(sizeof(ASTExpr));
+  node->kind = EXPR_ATTR_ACCESS;
+  node->line = line;
+  node->col = col;
+  node->attr_access = (ExprAttrAccess *)malloc(sizeof(ExprAttrAccess));
+  node->attr_access->base = base;
+  node->attr_access->attribute = strdup(attribute);
+  return node;
 }
 
-ASTExpr* mk_array_lit_expr(int line, int col, ExprList* elements) {
-    ASTExpr* node = (ASTExpr*)malloc(sizeof(ASTExpr));
-    node->kind = EXPR_ARRAY_LIT;
-    node->line = line;
-    node->col = col;
-    node->array_lit = (ExprArrayLit*)malloc(sizeof(ExprArrayLit));
-    node->array_lit->elements = elements;
-    return node;
+ASTExpr *mk_array_lit_expr(int line, int col, ExprList *elements) {
+  ASTExpr *node = (ASTExpr *)malloc(sizeof(ASTExpr));
+  node->kind = EXPR_ARRAY_LIT;
+  node->line = line;
+  node->col = col;
+  node->array_lit = (ExprArrayLit *)malloc(sizeof(ExprArrayLit));
+  node->array_lit->elements = elements;
+  return node;
 }
 
-StructFieldAssign* mk_struct_field_assign(char* name, ASTExpr* value) {
-    StructFieldAssign* sfa = (StructFieldAssign*)malloc(sizeof(StructFieldAssign));
-    sfa->name = strdup(name);
-    sfa->value = value;
-    sfa->next = NULL;
-    return sfa;
+StructFieldAssign *mk_struct_field_assign(char *name, ASTExpr *value) {
+  StructFieldAssign *sfa =
+      (StructFieldAssign *)malloc(sizeof(StructFieldAssign));
+  sfa->name = strdup(name);
+  sfa->value = value;
+  sfa->next = NULL;
+  return sfa;
 }

@@ -1,6 +1,5 @@
 #include "hash.h"
 
-
 // Função de hash simples (djb2)
 unsigned long hash(const char *str) {
   unsigned long hash = 5381;
@@ -11,7 +10,8 @@ unsigned long hash(const char *str) {
 }
 
 void hashmap_init(HashMap *map) {
-  for (int i = 0; i < HASHMAP_SIZE; i++) map->buckets[i] = NULL;
+  for (int i = 0; i < HASHMAP_SIZE; i++)
+    map->buckets[i] = NULL;
 }
 
 void hashmap_put(HashMap *map, const char *key, int value) {
@@ -29,7 +29,7 @@ void hashmap_put(HashMap *map, const char *key, int value) {
 
   // Senão, adiciona nova entrada
   Entry *new_entry = malloc(sizeof(Entry));
-  new_entry->key = strdup(key);  // duplica a string
+  new_entry->key = strdup(key); // duplica a string
   new_entry->value = value;
   new_entry->next = map->buckets[index];
   map->buckets[index] = new_entry;

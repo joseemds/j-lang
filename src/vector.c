@@ -1,10 +1,9 @@
 #include "vector.h"
 #include <stdio.h>
 
-
 Vector *vector_init(size_t element_size) {
-  Vector *v = (Vector *)malloc(element_size);  
-  
+  Vector *v = (Vector *)malloc(element_size);
+
   v->element_size = element_size;
   v->size = 0;
   v->capacity = 1;
@@ -31,17 +30,17 @@ void *vector_get(Vector *v, size_t index) {
   return (char *)v->data + index * v->element_size;
 }
 
-void vector_free(Vector *v) {
-  free(v->data);
-}
+void vector_free(Vector *v) { free(v->data); }
 
 int vector_pop(Vector *v, void *out_element) {
-    if (v->size == 0) return 0;
+  if (v->size == 0)
+    return 0;
 
-    v->size--;
-    void *source = (char *)v->data + v->size * v->element_size;
+  v->size--;
+  void *source = (char *)v->data + v->size * v->element_size;
 
-    if (out_element != NULL) memcpy(out_element, source, v->element_size);
+  if (out_element != NULL)
+    memcpy(out_element, source, v->element_size);
 
-    return 1;
+  return 1;
 }

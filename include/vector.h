@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct Vector{
-  void *data;         // Ponteiro genérico para os dados
+typedef struct Vector {
+  void *data;          // Ponteiro genérico para os dados
   size_t element_size; // Tamanho de cada elemento (em bytes)
   size_t size;         // Número de elementos atuais
   size_t capacity;     // Capacidade total

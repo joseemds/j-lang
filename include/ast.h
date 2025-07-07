@@ -101,25 +101,24 @@ typedef struct ExprCharLiteral {
 } ExprCharLiteral;
 
 typedef struct ExprArrayAccess {
-    ASTExpr *base;
-    ASTExpr *index;
+  ASTExpr *base;
+  ASTExpr *index;
 } ExprArrayAccess;
 
 typedef struct ExprAttrAccess {
-    ASTExpr *base;
-    char *attribute;
+  ASTExpr *base;
+  char *attribute;
 } ExprAttrAccess;
 
 typedef struct ExprArrayLit {
-    ExprList *elements;
+  ExprList *elements;
 } ExprArrayLit;
-
 
 typedef struct StructFieldAssign StructFieldAssign;
 typedef struct StructFieldAssign {
-    char* name;
-    ASTExpr* value;
-    StructFieldAssign* next;
+  char *name;
+  ASTExpr *value;
+  StructFieldAssign *next;
 } StructFieldAssign;
 
 typedef struct IdentList {
@@ -142,9 +141,9 @@ typedef struct ASTExpr {
     ExprRationalLiteral *rational_lit;
     ExprCharLiteral *char_lit;
     ExprFuncCall *func_call;
-		ExprArrayLit* array_lit;
-		ExprAttrAccess* attr_access;
-		ExprArrayAccess* array_access;
+    ExprArrayLit *array_lit;
+    ExprAttrAccess *attr_access;
+    ExprArrayAccess *array_access;
   };
 } ASTExpr;
 
@@ -185,28 +184,31 @@ typedef struct StmtReturn {
   ASTExpr *expr;
 } StmtReturn;
 
-
 typedef struct StmtStructField StmtStructField;
 typedef struct StmtStructField {
-    ExprList* idents;
-    ASTType* type;
-    StmtStructField* next;
+  ExprList *idents;
+  ASTType *type;
+  StmtStructField *next;
 } StmtStructField;
 
 typedef enum TypeDeclKind {
-    TYPE_DECL_ALIAS,
-    TYPE_DECL_STRUCT,
-    TYPE_DECL_ENUM
+  TYPE_DECL_ALIAS,
+  TYPE_DECL_STRUCT,
+  TYPE_DECL_ENUM
 } TypeDeclKind;
 
 typedef struct StmtTypeDecl {
-    char* name; 
-    TypeDeclKind decl_kind;
-    union {
-        ASTType* alias;
-        struct { StmtStructField* fields; } struct_;
-        struct { ExprList* values; } enum_;
-    };
+  char *name;
+  TypeDeclKind decl_kind;
+  union {
+    ASTType *alias;
+    struct {
+      StmtStructField *fields;
+    } struct_;
+    struct {
+      ExprList *values;
+    } enum_;
+  };
 } StmtTypeDecl;
 
 typedef struct StmtFuncParams StmtFuncParams;
@@ -255,9 +257,9 @@ typedef struct StmtIf {
 
 typedef struct StructFieldAssign StructFieldAssign;
 typedef struct StructFieldAssign {
-    char* name;
-    ASTExpr* value;
-    StructFieldAssign* next;
+  char *name;
+  ASTExpr *value;
+  StructFieldAssign *next;
 } StructFieldAssign;
 
 struct ASTStmt {
@@ -320,11 +322,12 @@ ASTExpr *mk_rational_lit(int line, int col, rational value);
 ASTExpr *mk_char_lit(int line, int col, char *value);
 ASTExpr *mk_func_call(int line, int col, char *funcName, ExprList *args);
 
-ASTExpr* mk_array_access_expr(int line, int col, ASTExpr* base, ASTExpr* index);
-ASTExpr* mk_attr_access_expr(int line, int col, ASTExpr* base, char* attribute);
-ASTExpr* mk_array_lit_expr(int line, int col, ExprList* elements);
-ASTExpr* mk_struct_cons_expr(int line, int col, ASTType* type, StructFieldAssign* assignments);
-StructFieldAssign* mk_struct_field_assign(char* name, ASTExpr* value);
+ASTExpr *mk_array_access_expr(int line, int col, ASTExpr *base, ASTExpr *index);
+ASTExpr *mk_attr_access_expr(int line, int col, ASTExpr *base, char *attribute);
+ASTExpr *mk_array_lit_expr(int line, int col, ExprList *elements);
+ASTExpr *mk_struct_cons_expr(int line, int col, ASTType *type,
+                             StructFieldAssign *assignments);
+StructFieldAssign *mk_struct_field_assign(char *name, ASTExpr *value);
 
 ASTType *mk_type_ident(int line, int col, char *type_name);
 ASTType *mk_type_prim(int line, int col, char *type_name);
@@ -333,5 +336,4 @@ ASTStmt *mk_type_alias(int line, int col, char *name, ASTType *alias_for);
 ASTStmt *mk_type_struct(int line, int col, char *name, StmtStructField *fields);
 ASTStmt *mk_type_enum(int line, int col, char *name, ExprList *values);
 
-StmtStructField* mk_struct_field(ExprList* idents, ASTType* type);
-
+StmtStructField *mk_struct_field(ExprList *idents, ASTType *type);

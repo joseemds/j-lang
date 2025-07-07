@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +12,7 @@ typedef struct Entry {
   struct Entry *next;
 } Entry;
 
-typedef struct HashMap{
+typedef struct HashMap {
   Entry *buckets[HASHMAP_SIZE];
 } HashMap;
 
