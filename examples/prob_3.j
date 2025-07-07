@@ -47,7 +47,7 @@ func read_matrix(lines, cols : Int) : [[Int]] {
 }
 
 func main() : Void {
-  val inputs_array : [Int] = split(input(), " ");
+  val inputs_array : [Int] = split(input(), ' ');
   -- val lines_1, cols_1, lines_2, cols_2 : Int;
 
   val matrix_1, matrix_2 : [[Int]] = read_matrix(lines_1, cols_1), read_matrix(lines_2, cols_2);

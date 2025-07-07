@@ -26,6 +26,7 @@ WHITESPACE   [ \n\t\r]+
 
 PRIM_TYPE  (Int|String|Bool|Float|Frac)
 
+CHAR_LITERAL  '[^']'
 STRING_LITERAL  \"[^"]*\"
 
 %%
@@ -53,6 +54,10 @@ STRING_LITERAL  \"[^"]*\"
 
 {DIGIT}+              { yylval.iValue = atoi(yytext); return NUMBER;}
 {DIGIT}*\.{DIGIT}+    { return FLOAT; }
+{CHAR_LITERAL}        {
+                        yylval.cValue = strdup(yytext);
+                        return CHAR_LIT;
+                      }
 {STRING_LITERAL}      {
                         yylval.sValue = strdup(yytext);
                         return STRING_LIT;

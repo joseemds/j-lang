@@ -147,6 +147,19 @@ ASTExpr *mk_rational_lit(int line, int col, rational value) {
   return expr_node;
 }
 
+ASTExpr *mk_char_lit(int line, int col, char *value) {
+  ExprCharLiteral *char_lit = (ExprCharLiteral *)malloc(sizeof(ExprCharLiteral));
+  char_lit->value = value;
+
+  ASTExpr *expr_node = (ASTExpr *)malloc(sizeof(ASTExpr));
+  expr_node->kind = EXPR_CHAR_LITERAL;
+  expr_node->line = line;
+  expr_node->col = col;
+  expr_node->char_lit = char_lit;
+
+  return expr_node;
+}
+
 ASTExpr *mk_binary_op(int line, int col, int op, ASTExpr *left,
                       ASTExpr *right) {
   ASTExpr *expr_node = (ASTExpr *)malloc(sizeof(ASTExpr));

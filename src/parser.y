@@ -19,17 +19,18 @@ StmtList* root = NULL;
 %union {
 	int    iValue;
   float  fValue;
-	char   cValue;
-	char * sValue;
-	ASTStmt* stmtValue;
-	ASTExpr* exprValue;
-	ASTType* typeValue;
-	StmtList* stmtList;
-  ExprList* exprList;
+	char *cValue;
+	char *sValue;
+	ASTStmt *stmtValue;
+	ASTExpr *exprValue;
+	ASTType *typeValue;
+	StmtList *stmtList;
+  ExprList *exprList;
   StmtFuncParams* funcParams;
 };
 
 %token <sValue> UID LID STRING_LIT PRIM_TYPE
+%token <cValue> CHAR_LIT
 %token <iValue> NUMBER
 %token <fValue> FLOAT
 %token TYPE FUNC VAL IF ELSE WHILE FOR RETURN IMPORT ENUM BREAK CONTINUE
@@ -154,6 +155,7 @@ atomic_expr: NUMBER {$$ = mk_int_lit(@1.first_line, @1.first_column, $1);}
            | TRUE  {$$ = mk_bool_lit(@1.first_line, @1.first_column, 1);}
            | FALSE {$$ = mk_bool_lit(@1.first_line, @1.first_column, 0);}
            | LID {$$ = mk_ident(@1.first_line, @1.first_column, $1);}
+           | CHAR_LIT {$$ = mk_char_lit(@1.first_line, @1.first_column, $1);}
            | func_call {$$ = $1;}
            | LPAREN expr RPAREN {$$ = $2;}
            | array_access {}

@@ -17,9 +17,11 @@ typedef enum ASTTypeKind { TYPE_IDENT, TYPE_PRIM, TYPE_ARRAY } ASTTypeKind;
 typedef struct TypeIdent {
   char *name;
 } TypeIdent;
+
 typedef struct TypePrim {
   char *name;
 } TypePrim;
+
 typedef struct TypeArray {
   ASTType *inner_type;
 } TypeArray;
@@ -52,7 +54,8 @@ typedef enum ExprKind {
   EXPR_STRING_LITERAL,
   EXPR_BOOL_LITERAL,
   EXPR_IDENT,
-  EXPR_RATIONAL_LITERAL
+  EXPR_RATIONAL_LITERAL,
+  EXPR_CHAR_LITERAL
 } ExprKind;
 
 typedef struct ExprFuncCall {
@@ -69,21 +72,30 @@ typedef struct ExprBinaryOp {
 typedef struct ExprIdent {
   char *name;
 } ExprIdent;
+
 typedef struct ExprIntLiteral {
   int value;
 } ExprIntLiteral;
+
 typedef struct ExprFloatLiteral {
   float value;
 } ExprFloatLiteral;
+
 typedef struct ExprStringLiteral {
   char *value;
 } ExprStringLiteral;
+
 typedef struct ExprBoolLiteral {
   int value;
 } ExprBoolLiteral;
+
 typedef struct ExprRationalLiteral {
   rational value;
 } ExprRationalLiteral;
+
+typedef struct ExprCharLiteral {
+  char *value;
+} ExprCharLiteral;
 
 typedef struct IdentList {
   ExprIdent *ident;
@@ -102,6 +114,7 @@ typedef struct ASTExpr {
     ExprStringLiteral *string_lit;
     ExprBoolLiteral *bool_lit;
     ExprRationalLiteral *rational_lit;
+    ExprCharLiteral *char_lit;
     ExprFuncCall *func_call;
   };
 } ASTExpr;
@@ -145,6 +158,7 @@ typedef struct StmtReturn {
 
 typedef struct StmtTypeDecl {
   // separar em casos dos construtores?
+
 } StmtTypeDecl;
 
 typedef struct StmtFuncParams StmtFuncParams;
@@ -250,6 +264,8 @@ ASTExpr *mk_int_lit(int line, int col, int value);
 ASTExpr *mk_float_lit(int line, int col, float value);
 ASTExpr *mk_string_lit(int line, int col, char *value);
 ASTExpr *mk_bool_lit(int line, int col, int value);
+ASTExpr *mk_rational_lit(int line, int col, rational value);
+ASTExpr *mk_char_lit(int line, int col, char *value);
 ASTExpr *mk_func_call(int line, int col, char *funcName, ExprList *args);
 
 ASTType *mk_type_ident(int line, int col, char *type_name);

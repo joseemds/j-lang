@@ -71,6 +71,14 @@ void pp_binary_op(int op) {
   case MOD:
     printf(" %% ");
     break;
+  case OR:
+    printf(" || ");
+    break;
+  case AND:
+    printf(" && ");
+    break;
+  case NOT:
+    printf("!");
   }
 }
 
@@ -114,7 +122,9 @@ void pp_expr(ASTExpr *expr) {
     break;
   case EXPR_RATIONAL_LITERAL:
     break;
-
+  case EXPR_CHAR_LITERAL:
+    pp_string(expr->char_lit->value);
+    break;
   default:
     printf("Unknown expr kind");
   }
