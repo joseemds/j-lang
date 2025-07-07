@@ -1,4 +1,5 @@
 #include "rational.h"
+#include "jmath.h"
 
 rational rational_add(rational a, rational b) {
   rational r;

@@ -1,4 +1,5 @@
 #include "printers.h"
+#include "y.tab.h"
 #include <stdio.h>
 
 void pp_string(char *ident) { printf("%s", ident); }

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "jmath.h"
-
 typedef struct rational {
   int top;
   int bot;
