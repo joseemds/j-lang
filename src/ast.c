@@ -296,6 +296,7 @@ ASTStmt *mk_for_stmt(int line, int col, ASTStmt *var, ASTExpr *cond,
   for_stmt->cond = cond;
   for_stmt->var = var;
   for_stmt->inc = inc;
+  for_stmt->body = body;
 
   stmt->kind = STMT_FOR;
   stmt->line = line;
@@ -451,4 +452,44 @@ void append_func_params(StmtFuncParams *curr, StmtFuncParams *param) {
     curr = curr->next;
   }
   curr->next = param;
+}
+
+ASTExpr* mk_array_access_expr(int line, int col, ASTExpr* base, ASTExpr* index) {
+    ASTExpr* node = (ASTExpr*)malloc(sizeof(ASTExpr));
+    node->kind = EXPR_ARRAY_ACCESS;
+    node->line = line;
+    node->col = col;
+    node->array_access = (ExprArrayAccess*)malloc(sizeof(ExprArrayAccess));
+    node->array_access->base = base;
+    node->array_access->index = index;
+    return node;
+}
+
+ASTExpr* mk_attr_access_expr(int line, int col, ASTExpr* base, char* attribute) {
+    ASTExpr* node = (ASTExpr*)malloc(sizeof(ASTExpr));
+    node->kind = EXPR_ATTR_ACCESS;
+    node->line = line;
+    node->col = col;
+    node->attr_access = (ExprAttrAccess*)malloc(sizeof(ExprAttrAccess));
+    node->attr_access->base = base;
+    node->attr_access->attribute = strdup(attribute);
+    return node;
+}
+
+ASTExpr* mk_array_lit_expr(int line, int col, ExprList* elements) {
+    ASTExpr* node = (ASTExpr*)malloc(sizeof(ASTExpr));
+    node->kind = EXPR_ARRAY_LIT;
+    node->line = line;
+    node->col = col;
+    node->array_lit = (ExprArrayLit*)malloc(sizeof(ExprArrayLit));
+    node->array_lit->elements = elements;
+    return node;
+}
+
+StructFieldAssign* mk_struct_field_assign(char* name, ASTExpr* value) {
+    StructFieldAssign* sfa = (StructFieldAssign*)malloc(sizeof(StructFieldAssign));
+    sfa->name = strdup(name);
+    sfa->value = value;
+    sfa->next = NULL;
+    return sfa;
 }

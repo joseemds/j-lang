@@ -112,7 +112,7 @@ assign: LID EQUAL expr {$$ = mk_assign_stmt(@1.first_line, @1.first_column, mk_i
       | array_access EQUAL expr {}
       | attr_access EQUAL expr {}
 
-array_access: atomic_expr LBRACKET arith_expr RBRACKET {} // possível erro com o uso de atomic_expr
+array_access: atomic_expr LBRACKET arith_expr RBRACKET {mk_array_access_expr(@2.first_line, @2.first_column, $1, $3);}
 
 val_decl: VAL idents COLON usable_type {$$ = mk_val_decl_stmt(@1.first_line, @1.first_column, $2, $4);} 
 				| VAL idents[ids] COLON usable_type[typ] EQUAL expr_list[values] {$$ = mk_val_init_stmt(@1.first_line, @1.first_column, $ids, $typ, $values);}
@@ -174,7 +174,7 @@ atomic_expr: NUMBER {$$ = mk_int_lit(@1.first_line, @1.first_column, $1);}
            | array_notation {}
            | struct_cons {}
 
-attr_access: atomic_expr DOT LID {} // possível erro com o uso de atomic_expr
+attr_access: atomic_expr DOT LID {mk_attr_access_expr(@2.first_line, @2.first_column, $1, $3);}
 
 array_notation: LBRACKET expr_list_opt RBRACKET {}
 

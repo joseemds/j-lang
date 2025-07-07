@@ -4,8 +4,8 @@ type Array = [Type1];
 
 type Type3 = {
   x, y, z : Type1;
-  b : Bool = false;
-}
+  b : Bool;
+};
 
 type Type4 = enum {"e1", "e2", "e3"};
 
@@ -13,9 +13,9 @@ val a : Type2 = 5;
 
 
 type Pessoa = {
-  nome: String = "Carlos";
+  nome: String;
   idade: Int;
-}
+};
 
 type Pessoas = [Pessoa];
 

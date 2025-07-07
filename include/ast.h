@@ -100,6 +100,28 @@ typedef struct ExprCharLiteral {
   char *value;
 } ExprCharLiteral;
 
+typedef struct ExprArrayAccess {
+    ASTExpr *base;
+    ASTExpr *index;
+} ExprArrayAccess;
+
+typedef struct ExprAttrAccess {
+    ASTExpr *base;
+    char *attribute;
+} ExprAttrAccess;
+
+typedef struct ExprArrayLit {
+    ExprList *elements;
+} ExprArrayLit;
+
+
+typedef struct StructFieldAssign StructFieldAssign;
+typedef struct StructFieldAssign {
+    char* name;
+    ASTExpr* value;
+    StructFieldAssign* next;
+} StructFieldAssign;
+
 typedef struct IdentList {
   ExprIdent *ident;
   IdentList *next;
@@ -120,6 +142,9 @@ typedef struct ASTExpr {
     ExprRationalLiteral *rational_lit;
     ExprCharLiteral *char_lit;
     ExprFuncCall *func_call;
+		ExprArrayLit* array_lit;
+		ExprAttrAccess* attr_access;
+		ExprArrayAccess* array_access;
   };
 } ASTExpr;
 
@@ -228,6 +253,13 @@ typedef struct StmtIf {
   StmtList *else_;
 } StmtIf;
 
+typedef struct StructFieldAssign StructFieldAssign;
+typedef struct StructFieldAssign {
+    char* name;
+    ASTExpr* value;
+    StructFieldAssign* next;
+} StructFieldAssign;
+
 struct ASTStmt {
   StmtKind kind;
   int line;
@@ -287,6 +319,12 @@ ASTExpr *mk_bool_lit(int line, int col, int value);
 ASTExpr *mk_rational_lit(int line, int col, rational value);
 ASTExpr *mk_char_lit(int line, int col, char *value);
 ASTExpr *mk_func_call(int line, int col, char *funcName, ExprList *args);
+
+ASTExpr* mk_array_access_expr(int line, int col, ASTExpr* base, ASTExpr* index);
+ASTExpr* mk_attr_access_expr(int line, int col, ASTExpr* base, char* attribute);
+ASTExpr* mk_array_lit_expr(int line, int col, ExprList* elements);
+ASTExpr* mk_struct_cons_expr(int line, int col, ASTType* type, StructFieldAssign* assignments);
+StructFieldAssign* mk_struct_field_assign(char* name, ASTExpr* value);
 
 ASTType *mk_type_ident(int line, int col, char *type_name);
 ASTType *mk_type_prim(int line, int col, char *type_name);
