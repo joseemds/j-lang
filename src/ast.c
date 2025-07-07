@@ -179,6 +179,20 @@ ASTExpr *mk_binary_op(int line, int col, int op, ASTExpr *left,
   return expr_node;
 };
 
+ASTExpr *mk_unary_op(int line, int col, int op, ASTExpr *operand) {
+    ASTExpr *node = (ASTExpr *)malloc(sizeof(ASTExpr));
+		ExprUnaryOp* unary_op = (ExprUnaryOp *)malloc(sizeof(ExprUnaryOp));
+    unary_op->op = op;
+    unary_op->operand = operand;
+
+    node->kind = EXPR_UNARY;
+    node->line = line;
+    node->col = col;
+    node->unary_op = unary_op;
+    return node;
+}
+
+
 ASTType *mk_type_ident(int line, int col, char *type_name) {
   ASTType *typ = (ASTType *)malloc(sizeof(ASTType));
   TypeIdent *ident = (TypeIdent *)malloc(sizeof(TypeIdent));

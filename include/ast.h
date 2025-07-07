@@ -41,6 +41,7 @@ typedef struct ASTType {
 
 typedef enum ExprKind {
   EXPR_BINARY,
+  EXPR_UNARY,
   EXPR_FUNC_CALL,
   EXPR_INT_LITERAL,
   EXPR_FLOAT_LITERAL,
@@ -65,6 +66,11 @@ typedef struct ExprBinaryOp {
   ASTExpr *left;
   ASTExpr *right;
 } ExprBinaryOp;
+
+typedef struct ExprUnaryOp {
+  int op;
+  ASTExpr *operand;
+} ExprUnaryOp;
 
 typedef struct ExprIdent {
   char *name;
@@ -105,6 +111,7 @@ typedef struct ASTExpr {
   int line;
   union {
     ExprBinaryOp *binary_op;
+    ExprUnaryOp *unary_op;
     ExprIdent *ident;
     ExprIntLiteral *int_lit;
     ExprFloatLiteral *float_lit;
@@ -255,6 +262,7 @@ ASTStmt *mk_break_stmt(int line, int col);
 ASTStmt *mk_continue_stmt(int line, int col);
 ASTStmt *mk_expr_stmt(int line, int col, ASTExpr *expr);
 
+ASTExpr *mk_unary_op(int line, int col, int op, ASTExpr *operand);
 ASTExpr *mk_binary_op(int line, int col, int op, ASTExpr *left, ASTExpr *right);
 ASTExpr *mk_ident(int line, int col, char *ident);
 ASTExpr *mk_int_lit(int line, int col, int value);

@@ -148,6 +148,8 @@ arith_expr: atomic_expr                   {$$ = $1;}
           | arith_expr DIVIDE atomic_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, DIVIDE, $1, $3);}
           | NOT atomic_expr               {}
           | MINUS atomic_expr             {}
+          | NOT atomic_expr               {$$ = mk_unary_op(@1.first_line, @1.first_column, NOT, $2);}
+          | MINUS atomic_expr             {$$ = mk_unary_op(@1.first_line, @1.first_column, MINUS, $2);}
 
 atomic_expr: NUMBER {$$ = mk_int_lit(@1.first_line, @1.first_column, $1);}
            | FLOAT {$$ = mk_float_lit(@1.first_line, @1.first_column, $1);}
