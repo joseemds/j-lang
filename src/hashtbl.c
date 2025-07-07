@@ -1,4 +1,4 @@
-#include "hash.h"
+#include "hashtbl.h"
 
 // Função de hash simples (djb2)
 unsigned long hash(const char *str) {
@@ -6,15 +6,15 @@ unsigned long hash(const char *str) {
   int c;
   while ((c = *str++))
     hash = ((hash << 5) + hash) + c;
-  return hash % HASHMAP_SIZE;
+  return hash % SIZE;
 }
 
-void hashmap_init(HashMap *map) {
-  for (int i = 0; i < HASHMAP_SIZE; i++)
+void hashmap_init(HashTable *map) {
+  for (int i = 0; i < SIZE; i++)
     map->buckets[i] = NULL;
 }
 
-void hashmap_put(HashMap *map, const char *key, int value) {
+void hashmap_put(HashTable *map, const char *key, int value) {
   unsigned long index = hash(key);
   Entry *entry = map->buckets[index];
 
@@ -35,7 +35,7 @@ void hashmap_put(HashMap *map, const char *key, int value) {
   map->buckets[index] = new_entry;
 }
 
-int hashmap_get(HashMap *map, const char *key, int *out_value) {
+int hashmap_get(HashTable *map, const char *key, int *out_value) {
   unsigned long index = hash(key);
   Entry *entry = map->buckets[index];
 
@@ -49,8 +49,8 @@ int hashmap_get(HashMap *map, const char *key, int *out_value) {
   return 0; // não encontrado
 }
 
-void hashmap_free(HashMap *map) {
-  for (int i = 0; i < HASHMAP_SIZE; i++) {
+void hashmap_free(HashTable *map) {
+  for (int i = 0; i < SIZE; i++) {
     Entry *entry = map->buckets[i];
     while (entry != NULL) {
       Entry *next = entry->next;
