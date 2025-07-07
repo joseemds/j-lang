@@ -47,7 +47,7 @@ StmtList* root = NULL;
 
 
 %type <structAssign> struct_assign struct_assign_opt
-%type <exprValue> atomic_expr arith_expr expr func_call attr_access array_access array_notation
+%type <exprValue> atomic_expr arith_expr expr func_call attr_access array_access array_notation struct_cons
 %type <stmtValue> stmt type_decl func_decl variable_stmt for_stmt while_stmt if_stmt return_stmt assign val_decl
 %type <stmtList> program stmt_list stmts
 %type <typeValue> usable_type array_type
@@ -174,7 +174,7 @@ atomic_expr: NUMBER {$$ = mk_int_lit(@1.first_line, @1.first_column, $1);}
            | array_access {$$ = $1;}
            | attr_access {$$ = $1;}
            | array_notation {$$ = $1;}
-           | struct_cons {}
+           | struct_cons {$$ = $1;}
 
 attr_access: atomic_expr DOT LID {$$ = mk_attr_access_expr(@2.first_line, @2.first_column, $1, $3);}
 
@@ -186,7 +186,7 @@ expr_list_opt: %empty {$$ = NULL;}
 expr_list: expr {$$ = mk_expr_list($1);}
          | expr_list COMMA expr {append_expr_list($1, $3); $$ = $1;}
 
-struct_cons: usable_type LBRACE struct_assign_opt RBRACE
+struct_cons: usable_type LBRACE struct_assign_opt RBRACE {$$ = mk_struct_cons_expr(@1.first_line, @1.first_column, $1, $3);}
 
 struct_assign_opt: %empty {$$ = NULL;}
              | struct_assign {$$ = $1;}

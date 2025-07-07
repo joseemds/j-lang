@@ -48,7 +48,7 @@ typedef enum ExprKind {
   EXPR_ARRAY_LIT,
   EXPR_ARRAY_ACCESS,
   EXPR_ATTR_ACCESS,
-  EXPR_CONS,
+  EXPR_STRUCT_CONS,
   EXPR_STRING_LITERAL,
   EXPR_BOOL_LITERAL,
   EXPR_IDENT,
@@ -121,6 +121,11 @@ typedef struct StructFieldAssign {
   StructFieldAssign *next;
 } StructFieldAssign;
 
+typedef struct ExprStructCons {
+  ASTType *type;
+  StructFieldAssign *fields;
+} ExprStructCons;
+
 typedef struct IdentList {
   ExprIdent *ident;
   IdentList *next;
@@ -144,6 +149,7 @@ typedef struct ASTExpr {
     ExprArrayLit *array_lit;
     ExprAttrAccess *attr_access;
     ExprArrayAccess *array_access;
+    ExprStructCons *struct_cons;
   };
 } ASTExpr;
 

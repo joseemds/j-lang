@@ -153,8 +153,11 @@ void pp_expr(ASTExpr *expr) {
     pp_string(expr->attr_access->attribute);
     break;
 
-  case EXPR_CONS:
-    printf("TODO: struct construct");
+  case EXPR_STRUCT_CONS:
+    pp_type(expr->struct_cons->type);
+    printf("{");
+    pp_struct_field_assigns(expr->struct_cons->fields);
+    printf("}");
     break;
 
   case EXPR_RATIONAL_LITERAL:
@@ -332,6 +335,19 @@ void pp_struct_fields(StmtStructField *fields) {
     pp_type(fields->type);
     printf(")\n");
     fields = fields->next;
+  }
+}
+
+void pp_struct_field_assigns(StructFieldAssign *assigns) {
+  while (assigns != NULL) {
+    pp_string(assigns->name);
+    printf(": ");
+    pp_expr(assigns->value);
+
+    if (assigns->next != NULL) {
+      printf(", ");
+    }
+    assigns = assigns->next;
   }
 }
 

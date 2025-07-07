@@ -497,3 +497,15 @@ StructFieldAssign *mk_struct_field_assign(char *name, ASTExpr *value) {
   sfa->next = NULL;
   return sfa;
 }
+
+ASTExpr *mk_struct_cons_expr(int line, int col, ASTType *type,
+                             StructFieldAssign *fields) {
+  ASTExpr *node = (ASTExpr *)malloc(sizeof(ASTExpr));
+  node->kind = EXPR_STRUCT_CONS;
+  node->line = line;
+  node->col = col;
+  node->struct_cons = (ExprStructCons *)malloc(sizeof(ExprStructCons));
+  node->struct_cons->type = type;
+  node->struct_cons->fields = fields;
+  return node;
+}
