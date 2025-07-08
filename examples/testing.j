@@ -1,8 +1,12 @@
-func is_even(x,y, z : Int) : Bool {
-	val w : Int = 2;
-  if (x % y + 1 == 0){
+func is_sum_even(x,y : Int) : Bool {
+  if ((x + y) % 2 == 0){
     return true;
   } else {
-    return x > y;
+    return x % 2 == 0;
   }
+}
+
+
+func main() : Bool {
+	 return is_sum_even(1,2 );
 }

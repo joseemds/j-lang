@@ -230,7 +230,8 @@ int main (void) {
 	printf("Parsed with status: %d\n", status);
 	if (root){
 		// pp_stmt_list(root);
-		transpile_stmt_list(root);
+		// transpile_stmt_list(root);
+		transpile(root);
 	}
 	return status;
 }
