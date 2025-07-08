@@ -117,10 +117,35 @@ void transpile_func_decl (StmtFuncDecl* func_decl){
 }
 
 
+
 void transpile_stmt(ASTStmt* stmt){
 	switch (stmt->kind) {
-		case STMT_TYPE_DECL: transpile_type_decl(stmt->type_decl);
-		case STMT_FUNC_DECL: transpile_func_decl(stmt->func_decl);
+		case STMT_TYPE_DECL: transpile_type_decl(stmt->type_decl); break;
+		case STMT_FUNC_DECL: transpile_func_decl(stmt->func_decl); break;
+		case STMT_VAR_DECL:
+			transpile_type(stmt->val_decl->type);
+			printf(" ");
+			transpile_expr_list(stmt->val_decl->idents);
+			printf(";");
+			break;
+		case STMT_VAR_INIT:
+			transpile_type(stmt->val_init->type);
+			printf(" ");
+			transpile_expr_list(stmt->val_init->idents);
+			printf(" = ");
+			transpile_expr_list(stmt->val_init->exprs);
+			printf(";");
+			break;
+
+		case STMT_ASSIGN:
+			transpile_expr(stmt->assign->ident);
+			printf(" = ");
+			transpile_expr(stmt->assign->expr);
+			printf(";");
+			break;
+
+
+
 		default: printf("Unimplemented");
 	
 	}
