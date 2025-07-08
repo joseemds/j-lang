@@ -20,10 +20,5 @@ func main() : Void {
     val numero2 : Int = 18;
     val resultado : Int = mdc(numero1, numero2);
     
-    print("MDC de ");
-    print(numero1);
-    print(" e ");
-    print(numero2);
-    print(" é: ");
-    print(resultado);
+    print("MDC de " + numero1 + " e " + numero2 + " é: " + resultado);
 }

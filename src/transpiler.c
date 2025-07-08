@@ -142,6 +142,7 @@ void transpile_expr(ASTExpr *expr) {
     printf("%s(", expr->func_call->func_name);
     transpile_expr_list(expr->func_call->params);
     printf(")"); // not putting semicolon when called as a single stmt
+    // printf(");\n");
     break;
 
   case EXPR_BINARY:
@@ -181,9 +182,13 @@ void transpile_val_init(ExprList *idents_list, ExprList *inits_list) {
 
 void transpile_struct_fields(StmtStructField *fields) {
   while (fields != NULL) {
-    transpile_expr_list(fields->idents);
-    printf(" : ");
+    // transpile_expr_list(fields->idents);
+    // printf(" : ");
     transpile_type(fields->type);
+    printf(" ");
+    transpile_val_init(fields->idents, NULL);
+    printf(";\n");
+    fields = fields->next;
   }
 }
 
@@ -195,13 +200,15 @@ void transpile_type_decl(StmtTypeDecl *type_decl) {
     printf(" %s;\n", type_decl->name);
     break;
   case TYPE_DECL_STRUCT:
-    printf("struct %s {\n", type_decl->name);
-    printf("};\n");
+  // printf("struct %s {\n", type_decl->name); // "typedef struct name;" above? to use without needing struct keyword
+    printf("typedef struct %s {\n", type_decl->name); // "typedef struct name;" above? to use without needing struct keyword
+    transpile_struct_fields(type_decl->struct_.fields);
+    printf("} %s;\n", type_decl->name);
     break;
   case TYPE_DECL_ENUM:
     printf("enum %s {", type_decl->name);
-    pp_expr_list(type_decl->enum_.values);
-    printf("}");
+    pp_expr_list(type_decl->enum_.values); // error because in C the values aren't strings
+    printf("};");
 
     break;
   }
@@ -307,11 +314,11 @@ void transpile_stmt(ASTStmt *stmt) {
     break;
 
   case STMT_BREAK:
-    printf("break;");
+    printf("break;\n");
     break;
 
   case STMT_CONTINUE:
-    printf("continue;");
+    printf("continue;\n");
     break;
 
   default:

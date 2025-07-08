@@ -3,9 +3,9 @@ func main () : Void {
   while(true) {
     val input : Int = str_to_int(input());
     if (input < 0) { break; }
-    if (input < 26) { till_25 = till_25 + 1; }
-    if (input < 51)  { till_50 = till_50 + 1; }
-    if (input < 76) { till_75 = till_75 + 1; }
+    if (input < 26) { till_25 = till_25 + 1; continue; }
+    if (input < 51)  { till_50 = till_50 + 1; continue; }
+    if (input < 76) { till_75 = till_75 + 1; continue; }
     if (input < 101) {till_100 = till_100 + 1; }
   }
   print("[0, 25]: " + int_to_string(till_25));
