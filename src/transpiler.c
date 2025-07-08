@@ -141,7 +141,7 @@ void transpile_expr(ASTExpr *expr) {
   case EXPR_FUNC_CALL:
     printf("%s(", expr->func_call->func_name);
     transpile_expr_list(expr->func_call->params);
-    printf(")");
+    printf(")"); // not putting semicolon when called as a single stmt
     break;
 
   case EXPR_BINARY:
@@ -265,7 +265,53 @@ void transpile_stmt(ASTStmt *stmt) {
     break;
 
   case STMT_EXPR:
-    transpile_expr(stmt->expr->expr);
+    transpile_expr(stmt->expr->expr); // not putting semicolon when called as a single stmt
+    break;
+
+  case STMT_RETURN:
+    printf("return ");
+    transpile_expr(stmt->return_stmt->expr);
+    printf(";\n");
+    break;
+
+  case STMT_IF:
+    printf("if (");
+    transpile_expr(stmt->if_stmt->condition);
+    printf(") {\n");
+    transpile_stmt_list(stmt->if_stmt->then);
+    if (stmt->if_stmt->else_ != NULL) {
+      printf("} else {\n");
+      transpile_stmt_list(stmt->if_stmt->else_);
+    }
+    printf("}");
+    break;
+
+  case STMT_FOR:
+    printf("for (");
+    transpile_stmt(stmt->for_stmt->var);
+    // printf(";"); // the above statement can come with ";\n" or not
+    transpile_expr(stmt->for_stmt->cond);
+    printf(";");
+    transpile_stmt(stmt->for_stmt->inc); // this assign comes with an ";\n"
+    printf(") {\n");
+    transpile_stmt_list(stmt->for_stmt->body);
+    printf("}\n");
+    break;
+
+  case STMT_WHILE:
+    printf("while (");
+    transpile_expr(stmt->while_stmt->cond);
+    printf(") {\n");
+    transpile_stmt_list(stmt->while_stmt->body);
+    printf("}\n");
+    break;
+
+  case STMT_BREAK:
+    printf("break;");
+    break;
+
+  case STMT_CONTINUE:
+    printf("continue;");
     break;
 
   default:

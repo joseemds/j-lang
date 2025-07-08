@@ -9,7 +9,7 @@ func if_() : Bool {
 func if_else() : Bool {
   val b : Bool = true;
 
-  if (b == 0) {
+  if (b == false) {
     return true;
   } else {
     return false;
@@ -17,7 +17,7 @@ func if_else() : Bool {
 }
 
 func nested_ifs() : Int {
-  val n : Bool = 5;
+  val n : Int = 5;
 
   if (n < 5) {
     return 0;

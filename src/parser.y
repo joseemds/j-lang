@@ -221,7 +221,7 @@ while_stmt: WHILE LPAREN expr[cond] RPAREN LBRACE stmt_list[body] RBRACE {$$ = m
 int main (void) {
 	int status = yyparse ();
 	printf("Parsed with status: %d\n", status);
-	if(root){
+	if (root){
 		// pp_stmt_list(root);
 		transpile_stmt_list(root);
 	}
