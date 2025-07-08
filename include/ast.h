@@ -261,12 +261,6 @@ typedef struct StmtIf {
   StmtList *else_;
 } StmtIf;
 
-typedef struct StructFieldAssign {
-  char *name;
-  ASTExpr *value;
-  StructFieldAssign *next;
-} StructFieldAssign;
-
 struct ASTStmt {
   StmtKind kind;
   int line;
