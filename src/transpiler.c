@@ -94,10 +94,33 @@ void transpile_type_decl(StmtTypeDecl* type_decl){
 	}
 }
 
+void transpile_func_params(StmtFuncParams* params){
+	while (params != NULL) {
+		transpile_type(params->type);
+		printf(" ");
+		transpile_expr_list(params->idents);
+    if (params->next != NULL) {
+      printf(", ");
+    }
+		params = params->next;
+	}
+}
+
+void transpile_func_decl (StmtFuncDecl* func_decl){
+	transpile_type(func_decl->return_typ);
+	printf(" ");
+	printf("%s(", func_decl->name);
+	transpile_func_params(func_decl->params);
+	printf("){\n");
+	transpile_stmt_list(func_decl->body);
+	printf("}");
+}
+
 
 void transpile_stmt(ASTStmt* stmt){
 	switch (stmt->kind) {
 		case STMT_TYPE_DECL: transpile_type_decl(stmt->type_decl);
+		case STMT_FUNC_DECL: transpile_func_decl(stmt->func_decl);
 		default: printf("Unimplemented");
 	
 	}
