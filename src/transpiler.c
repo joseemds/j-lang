@@ -1,5 +1,6 @@
 #include "transpiler.h"
 #include "ast.h"
+#include "y.tab.h"
 #include "printers.h"
 #include <stdio.h>
 #include <string.h>
@@ -41,12 +42,73 @@ void transpile_type(ASTType *type) {
     }
 }
 
+void trasnpile_binary_op(int op) {
+  switch (op) {
+  case CMP:
+    printf(" == ");
+    break;
+  case LEQ:
+    printf(" <= ");
+    break;
+  case LT:
+    printf(" < ");
+    break;
+  case GEQ:
+    printf(" >= ");
+    break;
+  case GT:
+    printf(" > ");
+    break;
+  case NEQ:
+    printf(" != ");
+    break;
+  case PLUS:
+    printf(" + ");
+    break;
+  case MINUS:
+    printf(" - ");
+    break;
+  case TIMES:
+    printf(" * ");
+    break;
+  case DIVIDE:
+    printf(" / ");
+    break;
+  case MOD:
+    printf(" %% ");
+    break;
+  case OR:
+    printf(" || ");
+    break;
+  case AND:
+    printf(" && ");
+    break;
+  default:
+    printf(" unknown_binary_op ");
+    break;
+  }
+}
+
 
 void transpile_expr(ASTExpr* expr) {
 	switch (expr->kind) {
 		case EXPR_IDENT:
 			printf("%s", expr->ident->name);
 			break;
+
+		case EXPR_FUNC_CALL:
+			printf("%s(", expr->func_call->func_name);
+			transpile_expr_list(expr->func_call->params);
+			printf(")");
+			break;
+			
+
+		case EXPR_BINARY:
+			transpile_expr(expr->binary_op->left);
+			trasnpile_binary_op(expr->binary_op->op);
+			transpile_expr(expr->binary_op->right);
+		break;
+
 
 		default:
 			printf("Unimplemented");
@@ -113,7 +175,7 @@ void transpile_func_decl (StmtFuncDecl* func_decl){
 	transpile_func_params(func_decl->params);
 	printf("){\n");
 	transpile_stmt_list(func_decl->body);
-	printf("}");
+	printf("\n}");
 }
 
 
@@ -126,7 +188,7 @@ void transpile_stmt(ASTStmt* stmt){
 			transpile_type(stmt->val_decl->type);
 			printf(" ");
 			transpile_expr_list(stmt->val_decl->idents);
-			printf(";");
+			printf(";\n");
 			break;
 		case STMT_VAR_INIT:
 			transpile_type(stmt->val_init->type);
@@ -134,19 +196,20 @@ void transpile_stmt(ASTStmt* stmt){
 			transpile_expr_list(stmt->val_init->idents);
 			printf(" = ");
 			transpile_expr_list(stmt->val_init->exprs);
-			printf(";");
+			printf(";\n");
 			break;
-
 		case STMT_ASSIGN:
 			transpile_expr(stmt->assign->ident);
 			printf(" = ");
 			transpile_expr(stmt->assign->expr);
-			printf(";");
+			printf(";\n");
 			break;
 
+		case STMT_EXPR:
+			transpile_expr(stmt->expr->expr);
+			break;
 
-
-		default: printf("Unimplemented");
+		default: printf("Unimplemented"); break;
 	
 	}
 }
