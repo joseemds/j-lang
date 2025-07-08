@@ -24,7 +24,7 @@ UPPERCASE_IDENTIFIER   [A-Z][a-zA-Z0-9_]*
 LOWERCASE_IDENTIFIER   [a-z_][a-zA-Z0-9_]*
 WHITESPACE   [ \n\t\r]+
 
-PRIM_TYPE  (Int|String|Bool|Float|Frac)
+PRIM_TYPE  (Int|String|Bool|Float|Frac|Void)
 
 CHAR_LITERAL  '[^']'
 STRING_LITERAL  \"[^"]*\"

@@ -2,6 +2,7 @@
 #include "ast.h"
 #include "printers.h"
 #include "y.tab.h"
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -21,6 +22,7 @@ void transpile_type(ASTType *type) {
     } else if (strcmp(type->prim->name, "Bool") == 0) {
       printf("int");
     } else {
+      type->prim->name[0] = tolower(type->prim->name[0]);
       printf("%s", type->prim->name);
     }
     break;
@@ -89,23 +91,23 @@ void trasnpile_binary_op(int op) {
   }
 }
 
-void transpile_unary_op(int op){
-	switch (op) {
-		case NOT:
-			printf("!");
-			break;
-		case MINUS:
-			printf("-");
-			break;
-	}
+void transpile_unary_op(int op) {
+  switch (op) {
+  case NOT:
+    printf("!");
+    break;
+  case MINUS:
+    printf("-");
+    break;
+  }
 }
 
 void transpile_expr(ASTExpr *expr) {
   switch (expr->kind) {
-	case EXPR_UNARY:
-		transpile_unary_op(expr->unary_op->op);
-		transpile_expr(expr->unary_op->operand);
-		break;
+  case EXPR_UNARY:
+    transpile_unary_op(expr->unary_op->op);
+    transpile_expr(expr->unary_op->operand);
+    break;
 
   case EXPR_IDENT:
     printf("%s", expr->ident->name);
@@ -190,11 +192,16 @@ void transpile_type_decl(StmtTypeDecl *type_decl) {
 
 void transpile_func_params(StmtFuncParams *params) {
   while (params != NULL) {
-    transpile_type(params->type);
-    printf(" ");
-    transpile_expr_list(params->idents);
-    if (params->next != NULL) {
-      printf(", ");
+    ExprList *ident = params->idents;
+    while (ident != NULL) {
+      transpile_type(params->type);
+      printf(" ");
+      transpile_expr(ident->expr);
+      if (ident->next != NULL || params->next != NULL) {
+        printf(", ");
+      }
+
+      ident = ident->next;
     }
     params = params->next;
   }
@@ -207,7 +214,7 @@ void transpile_func_decl(StmtFuncDecl *func_decl) {
   transpile_func_params(func_decl->params);
   printf("){\n");
   transpile_stmt_list(func_decl->body);
-  printf("\n}");
+  printf("\n}\n");
 }
 
 void transpile_stmt(ASTStmt *stmt) {
