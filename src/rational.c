@@ -1,6 +1,10 @@
 #include "rational.h"
 #include "jmath.h"
 
+rational rational_create(int top, int bot) {
+  return (rational){.top = top, .bot = bot};
+}
+
 rational rational_add(rational a, rational b) {
   rational r;
 

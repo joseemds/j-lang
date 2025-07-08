@@ -89,10 +89,47 @@ void trasnpile_binary_op(int op) {
   }
 }
 
+void transpile_unary_op(int op){
+	switch (op) {
+		case NOT:
+			printf("!");
+			break;
+		case MINUS:
+			printf("-");
+			break;
+	}
+}
+
 void transpile_expr(ASTExpr *expr) {
   switch (expr->kind) {
+	case EXPR_UNARY:
+		transpile_unary_op(expr->unary_op->op);
+		transpile_expr(expr->unary_op->operand);
+		break;
+
   case EXPR_IDENT:
     printf("%s", expr->ident->name);
+    break;
+
+  case EXPR_STRING_LITERAL:
+    printf("%s", expr->ident->name);
+    break;
+
+  case EXPR_INT_LITERAL:
+    printf("%d", expr->int_lit->value);
+    break;
+
+  case EXPR_BOOL_LITERAL:
+    printf("%d", expr->bool_lit->value);
+    break;
+
+  case EXPR_FLOAT_LITERAL:
+    printf("%f", expr->float_lit->value);
+    break;
+
+  case EXPR_RATIONAL_LITERAL:
+    printf("rational_create(%d, %d);", expr->rational_lit->value.top,
+           expr->rational_lit->value.bot);
     break;
 
   case EXPR_FUNC_CALL:

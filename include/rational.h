@@ -5,6 +5,8 @@ typedef struct rational {
   int bot;
 } rational;
 
+rational rational_create(int top, int bot);
+
 rational rational_add(rational a, rational b);
 
 rational rational_sub(rational a, rational b);

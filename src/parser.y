@@ -220,7 +220,7 @@ int main (void) {
 	int status = yyparse ();
 	printf("Parsed with status: %d\n", status);
 	if(root){
-		pp_stmt_list(root);
+		// pp_stmt_list(root);
 		transpile_stmt_list(root);
 	}
 	return status;
