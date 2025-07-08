@@ -261,7 +261,6 @@ typedef struct StmtIf {
   StmtList *else_;
 } StmtIf;
 
-typedef struct StructFieldAssign StructFieldAssign;
 typedef struct StructFieldAssign {
   char *name;
   ASTExpr *value;

@@ -6,3 +6,7 @@ y.output
 y.gv
 y.vcg
 bin/
+
+.cache/
+compile-commands.json
+.clangd/

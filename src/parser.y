@@ -4,6 +4,7 @@
 #include <string.h>
 #include <ast.h>
 #include <printers.h>
+#include <transpiler.h>
 
 int yylex(void);
 int yyerror(const char *s);
@@ -220,6 +221,7 @@ int main (void) {
 	printf("Parsed with status: %d\n", status);
 	if(root){
 		pp_stmt_list(root);
+		transpile_stmt_list(root);
 	}
 	return status;
 }
