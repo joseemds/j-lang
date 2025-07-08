@@ -124,13 +124,13 @@ void pp_expr(ASTExpr *expr) {
     pp_float(expr->float_lit->value);
     break;
   case EXPR_STRING_LITERAL:
-    printf("\"%s\"", expr->string_lit->value);
+    printf("%s", expr->string_lit->value);
     break;
   case EXPR_BOOL_LITERAL:
     pp_bool(expr->bool_lit->value);
     break;
   case EXPR_CHAR_LITERAL:
-    printf("'%s'", expr->char_lit->value);
+    printf("%s", expr->char_lit->value);
     break;
   case EXPR_IDENT:
     pp_string(expr->ident->name);
