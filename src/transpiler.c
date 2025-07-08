@@ -151,6 +151,12 @@ void transpile_expr(ASTExpr *expr) {
     transpile_expr(expr->binary_op->right);
     break;
 
+  case EXPR_ATTR_ACCESS:
+    transpile_expr(expr->array_access->base);
+    printf(".");
+    transpile_expr(expr->array_access->index);
+    break;
+
   default:
     printf("Unimplemented");
     break;
