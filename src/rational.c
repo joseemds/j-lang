@@ -67,7 +67,7 @@ rational rational_power(rational b, int p) {
 
   if (p < 0) {
     int temp = b.top;
-    b.top = b.top;
+    b.top = b.bot;
     b.bot = temp;
     p *= -1;
   }
