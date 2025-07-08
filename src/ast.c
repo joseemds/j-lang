@@ -340,7 +340,7 @@ ASTStmt *mk_continue_stmt(int line, int col) {
   return stmt;
 }
 
-// ASTStmt* mk_type_decl_stmt(int line, int col, ... ){}
+// ASTStmt *mk_type_decl_stmt(int line, int col, ... ){}
 
 ASTStmt *mk_val_decl_stmt(int line, int col, ExprList *idents, ASTType *typ) {
   StmtValDecl *val_decl_stmt = (StmtValDecl *)malloc(sizeof(StmtValDecl));

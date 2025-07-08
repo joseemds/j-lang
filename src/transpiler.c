@@ -113,8 +113,12 @@ void transpile_expr(ASTExpr *expr) {
     printf("%s", expr->ident->name);
     break;
 
+  case EXPR_CHAR_LITERAL:
+    printf("%s", expr->char_lit->value);
+    break;
+
   case EXPR_STRING_LITERAL:
-    printf("%s", expr->ident->name);
+    printf("%s", expr->string_lit->value);
     break;
 
   case EXPR_INT_LITERAL:
@@ -155,10 +159,23 @@ void transpile_expr(ASTExpr *expr) {
 void transpile_expr_list(ExprList *expr_list) {
   while (expr_list != NULL) {
     transpile_expr(expr_list->expr);
-    if (expr_list->next != NULL) {
+    if (expr_list->next != NULL)
       printf(", ");
-    }
     expr_list = expr_list->next;
+  }
+}
+
+void transpile_val_init(ExprList *idents_list, ExprList *inits_list) {
+  while(idents_list != NULL) {
+    transpile_expr(idents_list->expr);
+    if (inits_list != NULL) {
+      printf(" = ");
+      transpile_expr(inits_list->expr);
+      inits_list = inits_list->next;
+    }
+    if (idents_list->next != NULL)
+      printf(", ");
+    idents_list = idents_list->next;
   }
 }
 
@@ -234,9 +251,10 @@ void transpile_stmt(ASTStmt *stmt) {
   case STMT_VAR_INIT:
     transpile_type(stmt->val_init->type);
     printf(" ");
-    transpile_expr_list(stmt->val_init->idents);
-    printf(" = ");
-    transpile_expr_list(stmt->val_init->exprs);
+    // transpile_expr_list(stmt->val_init->idents);
+    // printf(" = ");
+    // transpile_expr_list(stmt->val_init->exprs);
+    transpile_val_init(stmt->val_init->idents, stmt->val_init->exprs);
     printf(";\n");
     break;
   case STMT_ASSIGN:

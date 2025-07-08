@@ -9,8 +9,8 @@
 int yylex(void);
 int yyerror(const char *s);
 extern int yylineno;
-extern char * yytext;
-StmtList* root = NULL;
+extern char *yytext;
+StmtList *root = NULL;
 %}
 
 %code requires {
@@ -27,9 +27,9 @@ StmtList* root = NULL;
 	ASTType *typeValue;
 	StmtList *stmtList;
   ExprList *exprList;
-  StmtFuncParams* funcParams;
-	StmtStructField* structFields;
-	StructFieldAssign* structAssign;
+  StmtFuncParams *funcParams;
+	StmtStructField *structFields;
+	StructFieldAssign *structAssign;
 };
 
 %token <sValue> UID LID STRING_LIT PRIM_TYPE
@@ -196,8 +196,10 @@ struct_assign: LID COLON expr {$$ = mk_struct_field_assign($1, $3);} // lhs tem 
              | struct_assign COMMA LID COLON expr {} // Isso ta certo?
 
 for_stmt: FOR LPAREN variable_stmt[var] SEMICOLON expr[cond] SEMICOLON assign[inc] RPAREN LBRACE stmt_list[body] RBRACE {$$ = mk_for_stmt(@1.first_line, @1.first_column, $var, $cond, $inc, $body);}
-        | FOR LPAREN LID[var] SEMICOLON expr[cond] SEMICOLON assign[inc] RPAREN LBRACE stmt_list[body] RBRACE { ASTExpr* ident = mk_ident(@1.first_line, @1.first_column, $var);
-				$$ = mk_for_stmt(@1.first_line, @1.first_column, mk_expr_stmt(@var.first_line, @var.first_column, ident), $cond, $inc, $body);}
+        | FOR LPAREN LID[var] SEMICOLON expr[cond] SEMICOLON assign[inc] RPAREN LBRACE stmt_list[body] RBRACE { 
+            ASTExpr *ident = mk_ident(@1.first_line, @1.first_column, $var);
+            $$ = mk_for_stmt(@1.first_line, @1.first_column, mk_expr_stmt(@var.first_line, @var.first_column, ident), $cond, $inc, $body);
+          }
 
 func_call: LID LPAREN arg_list_opt RPAREN {
 				 $$ = mk_func_call(@1.first_line, @1.first_column, $1, $3);
