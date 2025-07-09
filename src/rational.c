@@ -5,7 +5,8 @@
 
 rational rational_create(int top, int bot) {
   if (bot == 0) {
-    fprintf(stderr, "Not possible to create a rational with 0 as the denominator\n");
+    fprintf(stderr,
+            "Not possible to create a rational with 0 as the denominator\n");
     exit(EXIT_FAILURE);
   }
   return (rational){.top = top, .bot = bot};

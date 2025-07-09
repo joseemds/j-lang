@@ -64,7 +64,7 @@ void transpile_type(ASTType *type) {
       printf("char*");
     } else if (strcmp(type->prim->name, "Bool") == 0) {
       printf("int");
-    } else if (strcmp(type->prim->name,  "Frac") == 0) {
+    } else if (strcmp(type->prim->name, "Frac") == 0) {
       printf("rational");
     } else {
       type->prim->name[0] = tolower(type->prim->name[0]);
@@ -149,16 +149,16 @@ void transpile_unary_op(int op) {
 
 void transpile_frac_cons(ASTExpr *expr) {
   switch (expr->frac_cons->kind) {
-    case FRAC_RATIONAL:
-      printf("rational_create(%d, %d)", expr->frac_cons->rational_lit.top,
-        expr->frac_cons->rational_lit.bot);
-      break;
-    case FRAC_EXPRS:
-      printf("rational_create(");
-      pp_expr(expr->frac_cons->exprs.top);
-      printf(", ");
-      pp_expr(expr->frac_cons->exprs.bot);
-      printf(");");
+  case FRAC_RATIONAL:
+    printf("rational_create(%d, %d)", expr->frac_cons->rational_lit.top,
+           expr->frac_cons->rational_lit.bot);
+    break;
+  case FRAC_EXPRS:
+    printf("rational_create(");
+    pp_expr(expr->frac_cons->exprs.top);
+    printf(", ");
+    pp_expr(expr->frac_cons->exprs.bot);
+    printf(");");
   }
 }
 
@@ -241,7 +241,7 @@ void transpile_expr_list(ExprList *expr_list) {
 }
 
 void transpile_val_init(ExprList *idents_list, ExprList *inits_list) {
-  while(idents_list != NULL) {
+  while (idents_list != NULL) {
     transpile_expr(idents_list->expr);
     if (inits_list != NULL) {
       printf(" = ");
@@ -274,8 +274,11 @@ void transpile_type_decl(StmtTypeDecl *type_decl) {
     printf(" %s;\n", type_decl->name);
     break;
   case TYPE_DECL_STRUCT:
-  // printf("struct %s {\n", type_decl->name); // "typedef struct name;" above? to use without needing struct keyword
-    printf("typedef struct %s {\n", type_decl->name); // "typedef struct name;" above? to use without needing struct keyword
+    // printf("struct %s {\n", type_decl->name); // "typedef struct name;"
+    // above? to use without needing struct keyword
+    printf("typedef struct %s {\n",
+           type_decl->name); // "typedef struct name;" above? to use without
+                             // needing struct keyword
     transpile_struct_fields(type_decl->struct_.fields);
     printf("} %s;\n", type_decl->name);
     break;
@@ -284,7 +287,8 @@ void transpile_type_decl(StmtTypeDecl *type_decl) {
     pp_expr_list(type_decl->enum_
                      .values); // error because in C the values aren't strings
     printf("};\n");
-    pp_expr_list(type_decl->enum_.values); // error because in C the values aren't strings
+    pp_expr_list(type_decl->enum_
+                     .values); // error because in C the values aren't strings
     printf("};");
 
     break;
@@ -417,7 +421,8 @@ void transpile_stmt(ASTStmt *stmt) {
     break;
 
   case STMT_EXPR:
-    transpile_expr(stmt->expr->expr); // not putting semicolon when called as a single stmt
+    transpile_expr(
+        stmt->expr->expr); // not putting semicolon when called as a single stmt
     break;
 
   case STMT_RETURN:

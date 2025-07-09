@@ -1,5 +1,6 @@
 #pragma once
 
+#include "symbol.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,7 +9,7 @@
 
 typedef struct Entry {
   char *key;
-  int value;
+  Symbol *value;
   struct Entry *next;
 } Entry;
 
@@ -23,6 +24,6 @@ HashTable *hashtbl_init();
 
 void hashtbl_put(HashTable *tbl, const char *key, Symbol *value);
 
-int hashtbl_get(HashTable *tbl, const char *key, int *out_value);
+Symbol *hashtbl_get(HashTable *tbl, const char *key);
 
 void hashtbl_free(HashTable *tbl);

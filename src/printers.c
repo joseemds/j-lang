@@ -98,14 +98,14 @@ void pp_binary_op(int op) {
 
 void pp_frac_cons(ASTExpr *expr) {
   switch (expr->frac_cons->kind) {
-    case FRAC_RATIONAL:
-      printf("%d//%d", expr->frac_cons->rational_lit.top,
-        expr->frac_cons->rational_lit.bot);
-      break;
-    case FRAC_EXPRS:
-      pp_expr(expr->frac_cons->exprs.top);
-      printf(" // ");
-      pp_expr(expr->frac_cons->exprs.top);
+  case FRAC_RATIONAL:
+    printf("%d//%d", expr->frac_cons->rational_lit.top,
+           expr->frac_cons->rational_lit.bot);
+    break;
+  case FRAC_EXPRS:
+    pp_expr(expr->frac_cons->exprs.top);
+    printf(" // ");
+    pp_expr(expr->frac_cons->exprs.top);
   }
 }
 

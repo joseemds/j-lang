@@ -42,10 +42,9 @@ int symbol_table_insert(SymbolTable *st, Symbol *symbol) {
     return 0;
   }
 
-	if (symbol_table_lookup_current_scope(st, symbol->name) != NULL) {
-		return 0;
-	}
-
+  if (symbol_table_lookup_current_scope(st, symbol->name) != NULL) {
+    return 0;
+  }
 
   hashtbl_put(st->scope_stack[st->scope_level], symbol->name, symbol);
   return 1;

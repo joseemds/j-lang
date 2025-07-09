@@ -8,10 +8,12 @@
 
 void return_error(char *reason, int line, int col) {
   fprintf(stderr, "Error em %d:%d: %s\n", line, col, reason);
+  exit(1);
 }
 
 void type_error(char *reason, int line, int col) {
   fprintf(stderr, "TypeError em %d:%d: %s\n", line, col, reason);
+  exit(1);
 }
 
 int check_redeclaration(ASTExpr *expr, SymbolTable *st) {
@@ -199,7 +201,7 @@ void check_stmt(ASTStmt *stmt, SymbolTable *st) {
 
   case STMT_WHILE:
     check_expr(stmt->while_stmt->cond, st);
-		break;
+    break;
     // Checar se é Bool
     // if(stmt->while_stmt->cond->inferred_type);
 
@@ -216,4 +218,3 @@ int check_program(StmtList *program) {
   // symbol_table_free(st);
   return 0;
 }
->>>>>>> Conflict 1 of 1 ends
