@@ -8,5 +8,5 @@ y.vcg
 bin/
 
 .cache/
-compile-commands.json
+compile_commands.json
 .clangd/

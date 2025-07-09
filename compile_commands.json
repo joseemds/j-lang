@@ -1,0 +1,167 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Iinclude",
+      "-o",
+      "bin/j-lang",
+      "scanner.yy.c"
+    ],
+    "directory": "/home/josee/dev/ufrn/J-lang",
+    "file": "/home/josee/dev/ufrn/J-lang/scanner.yy.c",
+    "output": "/home/josee/dev/ufrn/J-lang/bin/j-lang"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Iinclude",
+      "-o",
+      "bin/j-lang",
+      "y.tab.c"
+    ],
+    "directory": "/home/josee/dev/ufrn/J-lang",
+    "file": "/home/josee/dev/ufrn/J-lang/y.tab.c",
+    "output": "/home/josee/dev/ufrn/J-lang/bin/j-lang"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Iinclude",
+      "-o",
+      "bin/j-lang",
+      "src/ast.c"
+    ],
+    "directory": "/home/josee/dev/ufrn/J-lang",
+    "file": "/home/josee/dev/ufrn/J-lang/src/ast.c",
+    "output": "/home/josee/dev/ufrn/J-lang/bin/j-lang"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Iinclude",
+      "-o",
+      "bin/j-lang",
+      "src/hashtbl.c"
+    ],
+    "directory": "/home/josee/dev/ufrn/J-lang",
+    "file": "/home/josee/dev/ufrn/J-lang/src/hashtbl.c",
+    "output": "/home/josee/dev/ufrn/J-lang/bin/j-lang"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Iinclude",
+      "-o",
+      "bin/j-lang",
+      "src/jmath.c"
+    ],
+    "directory": "/home/josee/dev/ufrn/J-lang",
+    "file": "/home/josee/dev/ufrn/J-lang/src/jmath.c",
+    "output": "/home/josee/dev/ufrn/J-lang/bin/j-lang"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Iinclude",
+      "-o",
+      "bin/j-lang",
+      "src/printers.c"
+    ],
+    "directory": "/home/josee/dev/ufrn/J-lang",
+    "file": "/home/josee/dev/ufrn/J-lang/src/printers.c",
+    "output": "/home/josee/dev/ufrn/J-lang/bin/j-lang"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Iinclude",
+      "-o",
+      "bin/j-lang",
+      "src/rational.c"
+    ],
+    "directory": "/home/josee/dev/ufrn/J-lang",
+    "file": "/home/josee/dev/ufrn/J-lang/src/rational.c",
+    "output": "/home/josee/dev/ufrn/J-lang/bin/j-lang"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Iinclude",
+      "-o",
+      "bin/j-lang",
+      "src/semantic.c"
+    ],
+    "directory": "/home/josee/dev/ufrn/J-lang",
+    "file": "/home/josee/dev/ufrn/J-lang/src/semantic.c",
+    "output": "/home/josee/dev/ufrn/J-lang/bin/j-lang"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Iinclude",
+      "-o",
+      "bin/j-lang",
+      "src/symbol_table.c"
+    ],
+    "directory": "/home/josee/dev/ufrn/J-lang",
+    "file": "/home/josee/dev/ufrn/J-lang/src/symbol_table.c",
+    "output": "/home/josee/dev/ufrn/J-lang/bin/j-lang"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Iinclude",
+      "-o",
+      "bin/j-lang",
+      "src/transpiler.c"
+    ],
+    "directory": "/home/josee/dev/ufrn/J-lang",
+    "file": "/home/josee/dev/ufrn/J-lang/src/transpiler.c",
+    "output": "/home/josee/dev/ufrn/J-lang/bin/j-lang"
+  },
+  {
+    "arguments": [
+      "/usr/bin/cc",
+      "-c",
+      "-g",
+      "-Wall",
+      "-Iinclude",
+      "-o",
+      "bin/j-lang",
+      "src/vector.c"
+    ],
+    "directory": "/home/josee/dev/ufrn/J-lang",
+    "file": "/home/josee/dev/ufrn/J-lang/src/vector.c",
+    "output": "/home/josee/dev/ufrn/J-lang/bin/j-lang"
+  }
+]

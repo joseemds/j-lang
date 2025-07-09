@@ -36,7 +36,7 @@ int get_current_continue_label() {
     return loop_label_stack[loop_label_top].continue_label;
   }
   fprintf(stderr, "Error: 'continue' used outside of a loop.\n");
-  return -1; // Error case
+  return -1;
 }
 
 int get_current_break_label() {
@@ -44,7 +44,7 @@ int get_current_break_label() {
     return loop_label_stack[loop_label_top].break_label;
   }
   fprintf(stderr, "Error: 'break' used outside of a loop.\n");
-  return -1; // Error case
+  return -1;
 }
 
 int label_count = 0;
@@ -512,7 +512,7 @@ void transpile_stmt(ASTStmt *stmt) {
 }
 
 void print_headers() {
-  printf("// Código gerado automaticamente pela J-Lang");
+  printf("// Código gerado automaticamente pela J-Lang\n");
   printf("#include <stdio.h>\n");
   printf("#include <stdlib.h>\n");
   printf("#include <string.h>\n");

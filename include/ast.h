@@ -25,6 +25,7 @@ typedef struct TypeArray {
 
 typedef struct ExprList {
   ASTExpr *expr;
+  ASTType *inferred_type; // Feito na analise semantica
   ExprList *next;
 } ExprList;
 
