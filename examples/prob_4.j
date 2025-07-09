@@ -30,3 +30,5 @@ func neg_rational(a : Frac) : Frac {
 func inv_rational(a : Frac) : Frac {
   return (1 // 1 / a);
 }
+
+func main() : Void {}

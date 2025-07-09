@@ -61,3 +61,5 @@ func get_upper_bound(root : BinTreeNode) : Int {
 
   return root;
 }
+
+func main() : Void {}

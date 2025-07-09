@@ -9,5 +9,5 @@ func is_sum_even(x,y : Int) : Bool {
 
 
 func main() : Bool {
-	 return is_sum_even(1,2);
+	return is_sum_even(1,2);
 }

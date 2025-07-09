@@ -18,7 +18,11 @@ void type_error(char *reason, int line, int col) {
 
 int check_redeclaration(ASTExpr *expr, SymbolTable *st) {
   if (symbol_table_lookup_current_scope(st, expr->ident->name) != NULL) {
+    // char err_msg[128];
+    // sprintf(err_msg, "Redeclaração da variavel %s no mesmo escopo", expr->ident->name);
+    // return_error(err_msg, expr->line, expr->col);
     return_error("Redeclaração de variavel", expr->line, expr->col);
+
   }
 
   return 0;
@@ -47,54 +51,78 @@ void check_stmt_list(StmtList *list, SymbolTable *st) {
 }
 
 void check_expr(ASTExpr *expr, SymbolTable *st) {
+  if (!expr) {
+    return_error("Expressão nula", expr->line, expr->col);
+    exit(EXIT_FAILURE);
+  }
   switch (expr->kind) {
-  case EXPR_INT_LITERAL:
-    expr->inferred_type = mk_type_prim(expr->line, expr->col, "Int");
-    break;
+    case EXPR_INT_LITERAL:
+      expr->inferred_type = mk_type_prim(expr->line, expr->col, "Int");
+      break;
 
-  case EXPR_FLOAT_LITERAL:
-    expr->inferred_type = mk_type_prim(expr->line, expr->col, "Float");
-    break;
+    case EXPR_FLOAT_LITERAL:
+      expr->inferred_type = mk_type_prim(expr->line, expr->col, "Float");
+      break;
 
-  case EXPR_BOOL_LITERAL:
-    expr->inferred_type = mk_type_prim(expr->line, expr->col, "Bool");
-    break;
+    case EXPR_BOOL_LITERAL:
+      expr->inferred_type = mk_type_prim(expr->line, expr->col, "Bool");
+      break;
       
-  case EXPR_STRING_LITERAL:
-    expr->inferred_type = mk_type_prim(expr->line, expr->col, "String");
-    break;
-  case EXPR_IDENT: {
-    Symbol *symbol = symbol_table_lookup(st, expr->ident->name);
-    if (!symbol) {
-      return_error("Identificador não declarado", expr->line, expr->col);
-      expr->inferred_type = NULL;
-    } else {
-      expr->inferred_type = symbol->type;
-    }
-    break;
-  }
-
-  case EXPR_FUNC_CALL: {
-    Symbol *func = symbol_table_lookup(st, expr->func_call->func_name);
-    if (!func || func->kind != SYMBOL_FUNC) {
-      return_error("Função não declarada ou identificador não é função",
-                   expr->line, expr->col);
+    case EXPR_STRING_LITERAL:
+      expr->inferred_type = mk_type_prim(expr->line, expr->col, "String");
+      break;
+    case EXPR_IDENT: {
+      Symbol *symbol = symbol_table_lookup(st, expr->ident->name);
+      if (!symbol) {
+        // char err_msg[128];
+        // sprintf(err_msg, "Identificador %s não declarado.", expr->ident->name);
+        // return_error(err_msg, expr->line, expr->col);
+        return_error("Identificador não declarado", expr->line, expr->col);
+        expr->inferred_type = NULL;
+      } else {
+        expr->inferred_type = symbol->type;
+      }
+      break;
     }
 
-    // TODO: Verificar parametros esperados vs passados
-    // Tipo retorno da função
-    expr->inferred_type = func->type;
-  }
+    case EXPR_FUNC_CALL: {
+      Symbol *func = symbol_table_lookup(st, expr->func_call->func_name);
+      if (!func) {
+        // char err_msg[128];
+        // sprintf(err_msg, "Função %s não declarada.", expr->func_call->func_name);
+        // return_error(err_msg, expr->line, expr->col);
+        return_error("Função não declarada.",
+                    expr->line, expr->col);
+      } else if (func->kind != SYMBOL_FUNC) {
+        return_error("Identificador não é função", expr->line, expr->col);
+      }
+          
 
-  case EXPR_BINARY:
-    check_expr(expr->binary_op->left, st);
-    check_expr(expr->binary_op->right, st);
-    ASTType *lhs_type = expr->binary_op->left->inferred_type;
-    ASTType *rhs_type = expr->binary_op->right->inferred_type;
-
-    if (!cmp_types(lhs_type, rhs_type)) {
-      type_error("Tipo de operandos diferente", expr->line, expr->col);
+      // TODO: Verificar parametros esperados vs passados
+      // Tipo retorno da função
+      expr->inferred_type = func->type;
     }
+
+    case EXPR_BINARY:
+      check_expr(expr->binary_op->left, st);
+      check_expr(expr->binary_op->right, st);
+      ASTType *lhs_type = expr->binary_op->left->inferred_type;
+      ASTType *rhs_type = expr->binary_op->right->inferred_type;
+
+      if (!cmp_types(lhs_type, rhs_type)) {
+        // char err_msg[128];
+        // sprintf(err_msg, "Tipos de operandos diferentes: %s e %s",
+        //         lhs_type ? lhs_type->prim->name : "null",
+        //         rhs_type ? rhs_type->prim->name : "null");
+        // type_error(err_msg, expr->line, expr->col);
+        type_error("Tipos de operandos diferente", expr->line, expr->col);
+      }
+
+      if (expr->binary_op->op >= 278 && expr->binary_op->op <= 284) // operadores relacionais
+        expr->inferred_type = mk_type_prim(expr->line, expr->col, "Bool");
+      else 
+        expr->inferred_type = lhs_type; // ou rhs_type, ambos são iguais
+      break;
   }
 }
 
@@ -104,10 +132,11 @@ void check_stmt(ASTStmt *stmt, SymbolTable *st) {
     ExprList *idents = stmt->val_decl->idents;
     while (idents != NULL) {
       // TODO: nao ta funcionando
-      if (symbol_table_lookup_current_scope(st, idents->expr->ident->name)) {
-        return_error("Redeclaração de variável", idents->expr->line,
-                     idents->expr->col);
-      } else {
+      // if (symbol_table_lookup_current_scope(st, idents->expr->ident->name)) {
+      //   return_error("Redeclaração de variável", idents->expr->line,
+      //                idents->expr->col);
+      // } else {
+      if (!check_redeclaration(idents->expr, st)) {
         Symbol *ident = malloc(sizeof(Symbol));
         ident->name = idents->expr->ident->name;
         ident->kind = SYMBOL_VAR;
@@ -141,6 +170,7 @@ void check_stmt(ASTStmt *stmt, SymbolTable *st) {
         return_error("Redeclaração de variavel no mesmo escopo",
                      current_ident->expr->line, current_ident->expr->col);
       } else {
+      // if (!check_redeclaration(name, st)) { // não funcionou
         Symbol *new_symbol = malloc(sizeof(Symbol));
         new_symbol->name = strdup(name);
         new_symbol->kind = SYMBOL_VAR;
@@ -190,6 +220,7 @@ void check_stmt(ASTStmt *stmt, SymbolTable *st) {
     ASTType *cond_type = stmt->if_stmt->condition->inferred_type;
     if (cond_type && (cond_type->kind != TYPE_PRIM ||
                       strcmp(cond_type->prim->name, "Bool") != 0)) {
+      // printf("Cond type: %s\n", cond_type->prim->name);
       return_error("Type Error: Condição deve ser booleana",
                    stmt->if_stmt->condition->line,
                    stmt->if_stmt->condition->col);
@@ -207,6 +238,28 @@ void check_stmt(ASTStmt *stmt, SymbolTable *st) {
     break;
     // Checar se é Bool
     // if(stmt->while_stmt->cond->inferred_type);
+  
+  case STMT_FOR:
+    check_stmt(stmt->for_stmt->var, st);
+    // Checar se é Bool
+    check_expr(stmt->for_stmt->cond, st);
+    check_stmt(stmt->for_stmt->inc, st);
+
+    ASTType *var_type = stmt->for_stmt->var->val_decl ? 
+      stmt->for_stmt->var->val_init->type : stmt->for_stmt->var->assign->expr->inferred_type; ;
+    ASTType *cond_type_ = stmt->for_stmt->cond->inferred_type;
+    ASTType *inc_type = stmt->for_stmt->inc->assign->ident->inferred_type;
+
+    
+
+    if (var_type && cond_type_ && inc_type &&
+        (!strcmp(cond_type_->prim->name, "Bool") == 0)) {
+      return_error("Type Error: tipos diferentes entre variavel, condicao e incremento",
+                   stmt->line, stmt->col);
+    }
+
+    check_stmt_list(stmt->for_stmt->body, st);
+    break;  
 
   default:
     break;

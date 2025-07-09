@@ -229,7 +229,7 @@ int main (void) {
 	int status = yyparse ();
 	// printf("Parsed with status: %d\n", status);
 	if (root){
-		printf("checagem %d\n", check_program(root));
+		printf("// checagem %d\n", check_program(root));
  		// transpile_stmt_list(root);
  		transpile(root);
 	}

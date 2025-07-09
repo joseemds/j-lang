@@ -26,8 +26,10 @@ all: $(TARGET)
 .PHONY: test
 test: $(TARGET)
 	@echo "--- Rodando teste da linguagem nos arquivos de exemplo ---"
+	@mkdir -p ./out
 	@for file in $(EXAMPLE_FILES); do \
-		$(TARGET) < $$file > /dev/null 2>&1 && echo "    $$file OK" || (echo "    $$file FALHOU"; exit 1); \
+		filename=$$(basename $$file .j); \
+		$(TARGET) < $$file > ./out/$$filename.c 2>&1 && echo "    $$file OK" || (echo "    $$file FALHOU"; exit 1); \
 	done
 	@echo "--- Todos os testes passaram com sucesso! ---"
 

@@ -1,9 +1,10 @@
 func if_() : Bool {
-val b : Bool = false;
+  val b : Bool = false;
 
   if (b) {
     return false;
   }
+  return true;
 }
 
 func if_else() : Bool {
@@ -42,3 +43,5 @@ func dangling_else() : Int {
   }
   return 1;
 }
+
+func main() : Void {}

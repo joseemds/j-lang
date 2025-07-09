@@ -24,3 +24,5 @@ val carlos : Pessoas = [Pessoa {nome: "Carlos Breno", idade: 18}, Pessoa {nome: 
 carlos[0].nome = "";
 
 print(carlos[1].nome);
+
+func main() : Void {}
