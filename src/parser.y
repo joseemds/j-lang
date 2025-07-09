@@ -71,8 +71,8 @@ stmts: stmt {$$ = mk_stmt_list($1);}
      | stmts stmt {append_stmt_list($1, $2); $$ = $1;}
 
 stmt: 
-    type_decl 
-    | variable_stmt SEMICOLON
+    type_decl  {$$ = $1;}
+    | variable_stmt SEMICOLON {$$ = $1;}
     | func_decl  {$$ = $1;}
     | expr SEMICOLON {$$ = mk_expr_stmt(@1.first_line, @1.first_column, $1);}
     | return_stmt {$$ = $1;}
@@ -230,11 +230,10 @@ int main (void) {
 	int status = yyparse ();
 	// printf("Parsed with status: %d\n", status);
 	if (root){
-		// pp_stmt_list(root);
-		// transpile_stmt_list(root);
 		transpile(root);
 		printf("checagem %d\n", check_program(root));
- 		transpile_stmt_list(root);
+ 		// transpile_stmt_list(root);
+ 		transpile(root);
 	}
 	return status;
 }

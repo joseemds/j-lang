@@ -21,9 +21,9 @@ HashTable *hashtbl_init() {
   return tbl;
 }
 
-void hashtbl_put(HashTable *tbl, const char *key, Symbol *value) {
+void hashmap_put(HashTable *map, const char *key, int value) {
   unsigned long index = hash(key);
-  Entry *entry = tbl->buckets[index];
+  Entry *entry = map->buckets[index];
 
   while (entry != NULL) {
     if (strcmp(entry->key, key) == 0) {
@@ -36,26 +36,27 @@ void hashtbl_put(HashTable *tbl, const char *key, Symbol *value) {
   Entry *new_entry = malloc(sizeof(Entry));
   new_entry->key = strdup(key);
   new_entry->value = value;
-  new_entry->next = tbl->buckets[index];
-  tbl->buckets[index] = new_entry;
+  new_entry->next = map->buckets[index];
+  map->buckets[index] = new_entry;
 }
 
-Symbol *hashtbl_get(HashTable *tbl, const char *key) {
+int hashmap_get(HashTable *map, const char *key, int *out_value) {
   unsigned long index = hash(key);
-  Entry *entry = tbl->buckets[index];
+  Entry *entry = map->buckets[index];
 
   while (entry != NULL) {
     if (strcmp(entry->key, key) == 0) {
-      return entry->value;
+      *out_value = entry->value;
+      return 1; // sucesso
     }
     entry = entry->next;
   }
-  return NULL;
+  return 0; // não encontrado
 }
 
-void hashtbl_free(HashTable *tbl) {
+void hashmap_free(HashTable *map) {
   for (int i = 0; i < SIZE; i++) {
-    Entry *entry = tbl->buckets[i];
+    Entry *entry = map->buckets[i];
     while (entry != NULL) {
       Entry *next = entry->next;
       free(entry->key);

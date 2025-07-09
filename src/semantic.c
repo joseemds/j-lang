@@ -61,13 +61,25 @@ void check_expr(ASTExpr *expr, SymbolTable *st) {
   case EXPR_IDENT: {
     Symbol *symbol = symbol_table_lookup(st, expr->ident->name);
     if (!symbol) {
-      return_error("Identifier not declared", expr->line, expr->col);
+      return_error("Identificador não declarado", expr->line, expr->col);
       expr->inferred_type = NULL;
     } else {
       expr->inferred_type = symbol->type;
     }
     break;
-	}
+  }
+
+  case EXPR_FUNC_CALL: {
+    Symbol *func = symbol_table_lookup(st, expr->func_call->func_name);
+    if (!func || func->kind != SYMBOL_FUNC) {
+      return_error("Função não declarada ou identificador não é função",
+                   expr->line, expr->col);
+    }
+
+    // TODO: Verificar parametros esperados vs passados
+    // Tipo retorno da função
+    expr->inferred_type = func->type;
+  }
 
   case EXPR_BINARY:
     check_expr(expr->binary_op->left, st);
@@ -86,7 +98,7 @@ void check_stmt(ASTStmt *stmt, SymbolTable *st) {
   case STMT_VAR_DECL: {
     ExprList *idents = stmt->val_decl->idents;
     while (idents != NULL) {
-			// TODO: nao ta funcionando
+      // TODO: nao ta funcionando
       if (symbol_table_lookup_current_scope(st, idents->expr->ident->name)) {
         return_error("Redeclaração de variável", idents->expr->line,
                      idents->expr->col);
@@ -101,7 +113,7 @@ void check_stmt(ASTStmt *stmt, SymbolTable *st) {
       idents = idents->next;
     }
     break;
-	}
+  }
   case STMT_VAR_INIT: {
 
     check_expr(stmt->val_init->exprs->expr, st);
@@ -185,6 +197,12 @@ void check_stmt(ASTStmt *stmt, SymbolTable *st) {
     check_expr(stmt->expr->expr, st);
     break;
 
+  case STMT_WHILE:
+    check_expr(stmt->while_stmt->cond, st);
+		break;
+    // Checar se é Bool
+    // if(stmt->while_stmt->cond->inferred_type);
+
   default:
     break;
   }
@@ -198,3 +216,4 @@ int check_program(StmtList *program) {
   // symbol_table_free(st);
   return 0;
 }
+>>>>>>> Conflict 1 of 1 ends
