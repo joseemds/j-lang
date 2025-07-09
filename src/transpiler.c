@@ -21,6 +21,8 @@ void transpile_type(ASTType *type) {
       printf("char*");
     } else if (strcmp(type->prim->name, "Bool") == 0) {
       printf("int");
+    } else if (strcmp(type->prim->name,  "Frac") == 0) {
+      printf("rational");
     } else {
       type->prim->name[0] = tolower(type->prim->name[0]);
       printf("%s", type->prim->name);
@@ -102,6 +104,21 @@ void transpile_unary_op(int op) {
   }
 }
 
+void transpile_frac_cons(ASTExpr *expr) {
+  switch (expr->frac_cons->kind) {
+    case FRAC_RATIONAL:
+      printf("rational_create(%d, %d)", expr->frac_cons->rational_lit.top,
+        expr->frac_cons->rational_lit.bot);
+      break;
+    case FRAC_EXPRS:
+      printf("rational_create(");
+      pp_expr(expr->frac_cons->exprs.top);
+      printf(", ");
+      pp_expr(expr->frac_cons->exprs.bot);
+      printf(");");
+  }
+}
+
 void transpile_expr(ASTExpr *expr) {
   switch (expr->kind) {
   case EXPR_UNARY:
@@ -133,9 +150,8 @@ void transpile_expr(ASTExpr *expr) {
     printf("%f", expr->float_lit->value);
     break;
 
-  case EXPR_RATIONAL_LITERAL:
-    printf("rational_create(%d, %d);", expr->rational_lit->value.top,
-           expr->rational_lit->value.bot);
+  case EXPR_FRAC_CONS:
+    transpile_frac_cons(expr);
     break;
 
   case EXPR_FUNC_CALL:
@@ -152,9 +168,9 @@ void transpile_expr(ASTExpr *expr) {
     break;
 
   case EXPR_ATTR_ACCESS:
-    transpile_expr(expr->array_access->base);
+    transpile_expr(expr->attr_access->base);
     printf(".");
-    transpile_expr(expr->array_access->index);
+    printf("%s", expr->attr_access->attribute);
     break;
 
   default:

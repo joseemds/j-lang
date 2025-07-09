@@ -96,6 +96,19 @@ void pp_binary_op(int op) {
   }
 }
 
+void pp_frac_cons(ASTExpr *expr) {
+  switch (expr->frac_cons->kind) {
+    case FRAC_RATIONAL:
+      printf("%d//%d", expr->frac_cons->rational_lit.top,
+        expr->frac_cons->rational_lit.bot);
+      break;
+    case FRAC_EXPRS:
+      pp_expr(expr->frac_cons->exprs.top);
+      printf(" // ");
+      pp_expr(expr->frac_cons->exprs.top);
+  }
+}
+
 void pp_expr(ASTExpr *expr) {
   if (!expr)
     return;
@@ -160,10 +173,10 @@ void pp_expr(ASTExpr *expr) {
     printf("}");
     break;
 
-  case EXPR_RATIONAL_LITERAL:
-    printf("%d/%d", expr->rational_lit->value.top,
-           expr->rational_lit->value.bot);
+  case EXPR_FRAC_CONS:
+    pp_frac_cons(expr);
     break;
+
   default:
     printf("Unknown_Expr_Kind");
     break;

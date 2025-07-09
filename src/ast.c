@@ -136,16 +136,47 @@ ASTExpr *mk_string_lit(int line, int col, char *value) {
   return expr_node;
 }
 
-ASTExpr *mk_rational_lit(int line, int col, rational value) {
-  ExprRationalLiteral *rational_lit =
-      (ExprRationalLiteral *)malloc(sizeof(ExprRationalLiteral));
-  rational_lit->value = value;
+// ASTExpr *mk_rational_lit(int line, int col, rational value) {
+//   ExprRationalLiteral *rational_lit =
+//       (ExprRationalLiteral *)malloc(sizeof(ExprRationalLiteral));
+//   rational_lit->value = value;
+
+//   ASTExpr *expr_node = (ASTExpr *)malloc(sizeof(ASTExpr));
+//   expr_node->kind = EXPR_RATIONAL_LITERAL;
+//   expr_node->line = line;
+//   expr_node->col = col;
+//   expr_node->rational_lit = rational_lit;
+
+//   return expr_node;
+// }
+
+ASTExpr *mk_frac_cons_rational(int line, int col, rational value){
+  ExprFracCons *frac_cons_rational = 
+    (ExprFracCons *)malloc(sizeof(ExprFracCons));
+  frac_cons_rational->kind = FRAC_RATIONAL;
+  frac_cons_rational->rational_lit = value;
 
   ASTExpr *expr_node = (ASTExpr *)malloc(sizeof(ASTExpr));
-  expr_node->kind = EXPR_RATIONAL_LITERAL;
+  expr_node->kind = EXPR_FRAC_CONS;
   expr_node->line = line;
   expr_node->col = col;
-  expr_node->rational_lit = rational_lit;
+  expr_node->frac_cons = frac_cons_rational;
+
+  return expr_node;
+}
+
+ASTExpr *mk_frac_cons_exprs(int line, int col, ASTExpr *top, ASTExpr *bot){
+  ExprFracCons *frac_cons_exprs = 
+    (ExprFracCons *)malloc(sizeof(ExprFracCons));
+  frac_cons_exprs->kind = FRAC_EXPRS;
+  frac_cons_exprs->exprs.top = top;
+  frac_cons_exprs->exprs.bot = bot;
+
+  ASTExpr *expr_node = (ASTExpr *)malloc(sizeof(ASTExpr));
+  expr_node->kind = EXPR_FRAC_CONS;
+  expr_node->line = line;
+  expr_node->col = col;
+  expr_node->frac_cons = frac_cons_exprs;
 
   return expr_node;
 }

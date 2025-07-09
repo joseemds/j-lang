@@ -29,6 +29,8 @@ PRIM_TYPE  (Int|String|Bool|Float|Frac|Void|Char)
 CHAR_LITERAL  '[^']'
 STRING_LITERAL  \"[^"]*\"
 
+FRAC_LITERAL ({DIGIT}+[ \t]*\/\/[ \t]*{DIGIT}+)
+
 %%
 
 "--".*                  {}
@@ -52,6 +54,18 @@ STRING_LITERAL  \"[^"]*\"
 "break"               { return BREAK; }
 "continue"            { return CONTINUE; }
 
+{FRAC_LITERAL}        {
+                        const char del[2] = "//";
+                        char *tok;
+                        tok = strtok(yytext, del);
+                        int top = atoi(tok);
+
+                        tok = strtok(NULL, del);
+                        int bot = atoi(tok);
+                        
+                        yylval.rValue = rational_create(top, bot);
+                        return FRAC_LIT;
+                      }
 {DIGIT}+              { yylval.iValue = atoi(yytext); return NUMBER;}
 {DIGIT}*\.{DIGIT}+    { return FLOAT; }
 {CHAR_LITERAL}        {
@@ -77,6 +91,7 @@ STRING_LITERAL  \"[^"]*\"
 "+"                   { return PLUS; }
 "-"                   { return MINUS; }
 "*"                   { return TIMES; }
+"//"                  { return FRAC_CONS; }
 "/"                   { return DIVIDE; }
 "%"                   { return MOD; }
 "&&"                  { return AND; }

@@ -1,7 +1,13 @@
 #include "rational.h"
 #include "jmath.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 rational rational_create(int top, int bot) {
+  if (bot == 0) {
+    fprintf(stderr, "Not possible to create a rational with 0 as the denominator\n");
+    exit(EXIT_FAILURE);
+  }
   return (rational){.top = top, .bot = bot};
 }
 
@@ -81,6 +87,16 @@ rational rational_power(rational b, int p) {
 }
 
 rational rational_invert(rational a) { return rational_power(a, -1); }
+
+rational rational_neg(rational a) {
+  rational r;
+
+  r.top = -a.top;
+
+  r.bot = a.bot;
+
+  return r;
+}
 
 rational rational_simplify(rational r) {
   int common = gcd(r.top, r.bot);

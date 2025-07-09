@@ -52,7 +52,8 @@ typedef enum ExprKind {
   EXPR_STRING_LITERAL,
   EXPR_BOOL_LITERAL,
   EXPR_IDENT,
-  EXPR_RATIONAL_LITERAL,
+  // EXPR_RATIONAL_LITERAL,
+  EXPR_FRAC_CONS,
   EXPR_CHAR_LITERAL
 } ExprKind;
 
@@ -92,9 +93,22 @@ typedef struct ExprBoolLiteral {
   int value;
 } ExprBoolLiteral;
 
-typedef struct ExprRationalLiteral {
-  rational value;
-} ExprRationalLiteral;
+// typedef struct ExprRationalLiteral {
+//   rational value;
+// } ExprRationalLiteral;
+
+typedef enum FracKind { FRAC_RATIONAL, FRAC_EXPRS } FracKind;
+
+typedef struct ExprFracCons {
+  FracKind kind;
+  union {
+    rational rational_lit;
+    struct {
+      ASTExpr *top;
+      ASTExpr *bot;
+    } exprs;
+  };
+} ExprFracCons;
 
 typedef struct ExprCharLiteral {
   char *value;
@@ -143,7 +157,7 @@ typedef struct ASTExpr {
     ExprFloatLiteral *float_lit;
     ExprStringLiteral *string_lit;
     ExprBoolLiteral *bool_lit;
-    ExprRationalLiteral *rational_lit;
+    ExprFracCons *frac_cons;
     ExprCharLiteral *char_lit;
     ExprFuncCall *func_call;
     ExprArrayLit *array_lit;
@@ -317,7 +331,9 @@ ASTExpr *mk_int_lit(int line, int col, int value);
 ASTExpr *mk_float_lit(int line, int col, float value);
 ASTExpr *mk_string_lit(int line, int col, char *value);
 ASTExpr *mk_bool_lit(int line, int col, int value);
-ASTExpr *mk_rational_lit(int line, int col, rational value);
+// ASTExpr *mk_rational_lit(int line, int col, rational value);
+ASTExpr *mk_frac_cons_rational(int line, int col, rational value);
+ASTExpr *mk_frac_cons_exprs(int line, int col, ASTExpr *top, ASTExpr *bot);
 ASTExpr *mk_char_lit(int line, int col, char *value);
 ASTExpr *mk_func_call(int line, int col, char *funcName, ExprList *args);
 

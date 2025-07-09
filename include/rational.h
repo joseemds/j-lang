@@ -21,6 +21,8 @@ rational rational_power(rational b, int p);
 
 rational rational_simplify(rational r);
 
+rational rational_neg(rational a);
+
 int rational_compare(rational a, rational b);
 
 float rational_divide(rational r);

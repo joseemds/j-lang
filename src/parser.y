@@ -5,6 +5,7 @@
 #include <ast.h>
 #include <printers.h>
 #include <transpiler.h>
+#include "rational.h"
 
 int yylex(void);
 int yyerror(const char *s);
@@ -20,6 +21,7 @@ StmtList *root = NULL;
 %union {
 	int    iValue;
   float  fValue;
+  rational rValue;
 	char *cValue;
 	char *sValue;
 	ASTStmt *stmtValue;
@@ -36,12 +38,14 @@ StmtList *root = NULL;
 %token <cValue> CHAR_LIT
 %token <iValue> NUMBER
 %token <fValue> FLOAT
+%token <rValue> FRAC_LIT
 %token TYPE FUNC VAL IF ELSE WHILE FOR RETURN IMPORT ENUM BREAK CONTINUE
 %nonassoc EQUAL CMP LEQ LT GEQ GT NEQ TRUE FALSE
 %token PLUS MINUS TIMES DIVIDE MOD AND OR NOT
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COLON SEMICOLON COMMA DOT
 %define parse.error verbose
 %locations
+%nonassoc FRAC_CONS
 
 %left TIMES DIVIDE AND
 %left PLUS MINUS OR
@@ -155,13 +159,15 @@ expr: arith_expr  {$$ = $1;}
     | expr CMP arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, CMP, $1, $3);}
     | expr NEQ arith_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, NEQ, $1, $3);}
 
-arith_expr: atomic_expr                   {$$ = $1;}
-          | arith_expr PLUS atomic_expr   {$$ = mk_binary_op(@1.first_line, @1.first_column, PLUS, $1, $3);}
-          | arith_expr MINUS atomic_expr  {$$ = mk_binary_op(@1.first_line, @1.first_column, MINUS, $1, $3);}
-          | arith_expr TIMES atomic_expr  {$$ = mk_binary_op(@1.first_line, @1.first_column, TIMES, $1, $3);}
-          | arith_expr DIVIDE atomic_expr {$$ = mk_binary_op(@1.first_line, @1.first_column, DIVIDE, $1, $3);}
-          | NOT atomic_expr               {$$ = mk_unary_op(@1.first_line, @1.first_column, NOT, $2);}
-          | MINUS atomic_expr             {$$ = mk_unary_op(@1.first_line, @1.first_column, MINUS, $2);}
+arith_expr: atomic_expr                      {$$ = $1;}
+          | arith_expr PLUS atomic_expr      {$$ = mk_binary_op(@1.first_line, @1.first_column, PLUS, $1, $3);}
+          | arith_expr MINUS atomic_expr     {$$ = mk_binary_op(@1.first_line, @1.first_column, MINUS, $1, $3);}
+          | arith_expr TIMES atomic_expr     {$$ = mk_binary_op(@1.first_line, @1.first_column, TIMES, $1, $3);}
+          | arith_expr DIVIDE atomic_expr    {$$ = mk_binary_op(@1.first_line, @1.first_column, DIVIDE, $1, $3);}
+          | arith_expr FRAC_CONS atomic_expr {$$ = mk_frac_cons_exprs(@1.first_line, @1.first_column, $1, $3);} 
+          | NOT atomic_expr                  {$$ = mk_unary_op(@1.first_line, @1.first_column, NOT, $2);}
+          | MINUS atomic_expr                {$$ = mk_unary_op(@1.first_line, @1.first_column, MINUS, $2);}
+
 
 atomic_expr: NUMBER {$$ = mk_int_lit(@1.first_line, @1.first_column, $1);}
            | FLOAT {$$ = mk_float_lit(@1.first_line, @1.first_column, $1);}
@@ -170,6 +176,7 @@ atomic_expr: NUMBER {$$ = mk_int_lit(@1.first_line, @1.first_column, $1);}
            | FALSE {$$ = mk_bool_lit(@1.first_line, @1.first_column, 0);}
            | LID {$$ = mk_ident(@1.first_line, @1.first_column, $1);}
            | CHAR_LIT {$$ = mk_char_lit(@1.first_line, @1.first_column, $1);}
+           | FRAC_LIT {$$ = mk_frac_cons_rational(@1.first_line, @1.first_column, $1);}
            | func_call {$$ = $1;}
            | LPAREN expr RPAREN {$$ = $2;}
            | array_access {$$ = $1;}
@@ -202,7 +209,7 @@ for_stmt: FOR LPAREN variable_stmt[var] SEMICOLON expr[cond] SEMICOLON assign[in
           }
 
 func_call: LID LPAREN arg_list_opt RPAREN {
-				 $$ = mk_func_call(@1.first_line, @1.first_column, $1, $3);
+				   $$ = mk_func_call(@1.first_line, @1.first_column, $1, $3);
 				 }
 
 arg_list_opt: %empty {$$ = NULL;}
