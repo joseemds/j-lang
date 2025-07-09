@@ -327,46 +327,47 @@ void transpile_func_decl(StmtFuncDecl *func_decl) {
 }
 
 void transpile_declaration(ASTType *type, ExprList *idents, ExprList *inits) {
-    if (type->kind == TYPE_ARRAY) {
-        transpile_type(type->array->inner_type);
-        printf(" ");
+  if (type->kind == TYPE_ARRAY) {
+    transpile_type(type->array->inner_type);
+    printf(" ");
 
-        while (idents != NULL) {
-            transpile_expr(idents->expr);
-            printf("[]");
+    while (idents != NULL) {
+      transpile_expr(idents->expr);
+      printf("[]");
 
-            if (inits != NULL) {
-                printf(" = ");
-                ASTExpr *init_expr = inits->expr;
-                
-                if (init_expr && init_expr->kind == EXPR_ARRAY_LIT) {
-                    printf("{");
-                    transpile_expr_list(init_expr->array_lit->elements);
-                    printf("}");
-                } else {
-                    transpile_expr(init_expr);
-                }
-                inits = inits->next;
-            }
-            if (idents->next != NULL) printf(", ");
-            idents = idents->next;
+      if (inits != NULL) {
+        printf(" = ");
+        ASTExpr *init_expr = inits->expr;
+
+        if (init_expr && init_expr->kind == EXPR_ARRAY_LIT) {
+          printf("{");
+          transpile_expr_list(init_expr->array_lit->elements);
+          printf("}");
+        } else {
+          transpile_expr(init_expr);
         }
-    } 
-    else {
-        transpile_type(type);
-        printf(" ");
-        while (idents != NULL) {
-            transpile_expr(idents->expr);
-            if (inits != NULL) {
-                printf(" = ");
-                transpile_expr(inits->expr);
-                inits = inits->next;
-            }
-            if (idents->next != NULL) printf(", ");
-            idents = idents->next;
-        }
+        inits = inits->next;
+      }
+      if (idents->next != NULL)
+        printf(", ");
+      idents = idents->next;
     }
-    printf(";\n");
+  } else {
+    transpile_type(type);
+    printf(" ");
+    while (idents != NULL) {
+      transpile_expr(idents->expr);
+      if (inits != NULL) {
+        printf(" = ");
+        transpile_expr(inits->expr);
+        inits = inits->next;
+      }
+      if (idents->next != NULL)
+        printf(", ");
+      idents = idents->next;
+    }
+  }
+  printf(";\n");
 }
 
 void transpile_stmt(ASTStmt *stmt) {
@@ -381,7 +382,38 @@ void transpile_stmt(ASTStmt *stmt) {
     transpile_declaration(stmt->val_decl->type, stmt->val_decl->idents, NULL);
     break;
   case STMT_VAR_INIT:
-    transpile_declaration(stmt->val_init->type, stmt->val_init->idents, stmt->val_init->exprs);
+    ASTType *type = stmt->val_init->type;
+    ExprList *idents = stmt->val_init->idents;
+    ExprList *exprs = stmt->val_init->exprs;
+
+    if (type->kind == TYPE_ARRAY && idents && !idents->next && exprs &&
+        !exprs->next && exprs->expr->kind == EXPR_ARRAY_LIT) {
+
+      ASTType *inner_type = type->array->inner_type;
+      const char *var_name = idents->expr->ident->name;
+
+      printf("  Vector* %s = vector_init(sizeof(", var_name);
+      transpile_type(inner_type);
+      printf("));\n");
+
+      ExprList *elements = exprs->expr->array_lit->elements;
+      int temp_count = 0;
+      while (elements != NULL) {
+        char temp_var_name[32];
+        sprintf(temp_var_name, "_tmp_%s_%d", var_name, temp_count++);
+
+        printf("  ");
+        transpile_type(inner_type);
+        printf(" %s = ", temp_var_name);
+        transpile_expr(elements->expr);
+        printf(";\n");
+
+        printf("  vector_push(%s, &%s);\n", var_name, temp_var_name);
+
+        elements = elements->next;
+      }
+    }
+
     break;
   case STMT_ASSIGN:
     transpile_expr(stmt->assign->ident);
@@ -485,8 +517,12 @@ void transpile_stmt(ASTStmt *stmt) {
 }
 
 void print_headers() {
+  printf("// Código gerado automaticamente pela J-Lang");
   printf("#include <stdio.h>\n");
+  printf("#include <stdlib.h>\n");
+  printf("#include <string.h>\n");
   printf("#include \"rational.h\"\n");
+  printf("#include \"vector.h\"\n\n");
 }
 
 void transpile(StmtList *program) {
