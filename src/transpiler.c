@@ -287,7 +287,6 @@ void transpile_type_decl(StmtTypeDecl *type_decl) {
     pp_expr_list(type_decl->enum_
                      .values); // error because in C the values aren't strings
     printf("};\n");
-
     break;
   }
 }

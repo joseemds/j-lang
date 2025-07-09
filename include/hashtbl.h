@@ -20,7 +20,7 @@ typedef struct HashTable {
 // Função de hash simples (djb2)
 unsigned long hash(const char *str);
 
-void hashtbl_init(HashTable *tbl);
+HashTable *hashtbl_init();
 
 void hashtbl_put(HashTable *tbl, const char *key, Symbol *value);
 

@@ -8,7 +8,18 @@ unsigned long hash(const char *str) {
   return hash % SIZE;
 }
 
-void hashtbl_init(HashTable *tbl) { /* ... */ }
+HashTable *hashtbl_init() {
+  HashTable *tbl = (HashTable *)malloc(sizeof(HashTable));
+  if (!tbl) {
+    return NULL;
+  }
+
+  for (int i = 0; i < SIZE; i++) {
+    tbl->buckets[i] = NULL;
+  }
+
+  return tbl;
+}
 
 void hashtbl_put(HashTable *tbl, const char *key, Symbol *value) {
   unsigned long index = hash(key);
@@ -53,4 +64,6 @@ void hashtbl_free(HashTable *tbl) {
       entry = next;
     }
   }
+
+  free(tbl);
 }

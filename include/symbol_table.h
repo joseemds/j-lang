@@ -2,10 +2,10 @@
 #include "hashtbl.h"
 #include "symbol.h"
 
-#define SCOPE_STACK_MAX_DEPTH 100
+#define SCOPE_MAX_DEPTH 100
 
 typedef struct SymbolTable {
-  HashTable *scope_stack[SCOPE_STACK_MAX_DEPTH];
+  HashTable *scope_stack[SCOPE_MAX_DEPTH];
   int scope_level;
 } SymbolTable;
 

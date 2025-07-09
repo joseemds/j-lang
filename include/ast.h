@@ -148,6 +148,7 @@ typedef struct IdentList {
 
 typedef struct ASTExpr {
   ExprKind kind;
+  ASTType *inferred_type; // Feito na analise semantica
   int col;
   int line;
   union {

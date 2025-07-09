@@ -6,6 +6,7 @@
 #include <printers.h>
 #include <transpiler.h>
 #include "rational.h"
+#include <semantic.h>
 
 int yylex(void);
 int yyerror(const char *s);
@@ -232,6 +233,8 @@ int main (void) {
 		// pp_stmt_list(root);
 		// transpile_stmt_list(root);
 		transpile(root);
+		printf("checagem %d\n", check_program(root));
+ 		transpile_stmt_list(root);
 	}
 	return status;
 }
