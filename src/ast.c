@@ -54,7 +54,7 @@ ASTExpr *mk_ident(int line, int col, char *name) {
 }
 
 ASTExpr *mk_func_call(int line, int col, char *func_name, ExprList *params) {
-  ExprFuncCall *func_call = (ExprFuncCall *)malloc(sizeof(ExprIdent));
+  ExprFuncCall *func_call = (ExprFuncCall *)malloc(sizeof(ExprFuncCall));
   func_call->func_name = strdup(func_name);
   func_call->params = params;
 
@@ -189,6 +189,7 @@ ASTExpr *mk_binary_op(int line, int col, int op, ASTExpr *left,
   binary_op->right = right;
   binary_op->op = op;
 
+  expr_node->kind = EXPR_BINARY;
   expr_node->col = col;
   expr_node->line = line;
   expr_node->binary_op = binary_op;

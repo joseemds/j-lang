@@ -51,12 +51,15 @@ void check_expr(ASTExpr *expr, SymbolTable *st) {
   case EXPR_INT_LITERAL:
     expr->inferred_type = mk_type_prim(expr->line, expr->col, "Int");
     break;
+
   case EXPR_FLOAT_LITERAL:
     expr->inferred_type = mk_type_prim(expr->line, expr->col, "Float");
     break;
+
   case EXPR_BOOL_LITERAL:
     expr->inferred_type = mk_type_prim(expr->line, expr->col, "Bool");
     break;
+      
   case EXPR_STRING_LITERAL:
     expr->inferred_type = mk_type_prim(expr->line, expr->col, "String");
     break;

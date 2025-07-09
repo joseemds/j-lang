@@ -10,13 +10,11 @@ unsigned long hash(const char *str) {
 
 HashTable *hashtbl_init() {
   HashTable *tbl = (HashTable *)malloc(sizeof(HashTable));
-  if (!tbl) {
+  if (!tbl)
     return NULL;
-  }
 
-  for (int i = 0; i < SIZE; i++) {
+  for (int i = 0; i < SIZE; i++)
     tbl->buckets[i] = NULL;
-  }
 
   return tbl;
 }
@@ -59,7 +57,7 @@ void hashtbl_free(HashTable *tbl) {
     while (entry != NULL) {
       Entry *next = entry->next;
       free(entry->key);
-      // free(entry->value);
+      free(entry->value);
       free(entry);
       entry = next;
     }

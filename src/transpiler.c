@@ -375,142 +375,147 @@ void transpile_declaration(ASTType *type, ExprList *idents, ExprList *inits) {
 
 void transpile_stmt(ASTStmt *stmt) {
   switch (stmt->kind) {
-  case STMT_TYPE_DECL:
-    transpile_type_decl(stmt->type_decl);
-    break;
-  case STMT_FUNC_DECL:
-    transpile_func_decl(stmt->func_decl);
-    break;
-  case STMT_VAR_DECL:
-    transpile_declaration(stmt->val_decl->type, stmt->val_decl->idents, NULL);
-    break;
-  case STMT_VAR_INIT:
-    ASTType *type = stmt->val_init->type;
-    ExprList *idents = stmt->val_init->idents;
-    ExprList *exprs = stmt->val_init->exprs;
+    case STMT_TYPE_DECL:
+      transpile_type_decl(stmt->type_decl);
+      break;
+    case STMT_FUNC_DECL:
+      transpile_func_decl(stmt->func_decl);
+      break;
+    case STMT_VAR_DECL:
+      transpile_declaration(stmt->val_decl->type, stmt->val_decl->idents, NULL);
+      break;
+    case STMT_VAR_INIT:
+      ASTType *type = stmt->val_init->type;
+      ExprList *idents = stmt->val_init->idents;
+      ExprList *exprs = stmt->val_init->exprs;
 
-    if (type->kind == TYPE_ARRAY && idents && !idents->next && exprs &&
-        !exprs->next && exprs->expr->kind == EXPR_ARRAY_LIT) {
+      if (type->kind == TYPE_ARRAY && idents && !idents->next && exprs &&
+          !exprs->next && exprs->expr->kind == EXPR_ARRAY_LIT) {
 
-      ASTType *inner_type = type->array->inner_type;
-      const char *var_name = idents->expr->ident->name;
+        ASTType *inner_type = type->array->inner_type;
+        const char *var_name = idents->expr->ident->name;
 
-      ExprList *elements = exprs->expr->array_lit->elements;
-      ExprList *counter = elements;
-      int count = 0;
+        ExprList *elements = exprs->expr->array_lit->elements;
+        ExprList *counter = elements;
+        int count = 0;
 
-      while (counter != NULL) {
-        count++;
-        counter = counter->next;
+        while (counter != NULL) {
+          count++;
+          counter = counter->next;
+        }
+        printf("  Vector* %s = vector_from_array((", var_name);
+        transpile_type(inner_type);
+        printf("[]){");
+        transpile_expr_list(elements);
+        printf("}, %d, sizeof(", count);
+        transpile_type(inner_type);
+        printf("));\n");
+      } else {
+        transpile_type(type);
+        printf(" ");
+        transpile_val_init(idents, exprs);
+        printf(";\n");
       }
-      printf("  Vector* %s = vector_from_array((", var_name);
-      transpile_type(inner_type);
-      printf("[]){");
-      transpile_expr_list(elements);
-      printf("}, %d, sizeof(", count);
-      transpile_type(inner_type);
-      printf("));\n");
-    }
 
-    break;
-  case STMT_ASSIGN:
-    transpile_expr(stmt->assign->ident);
-    printf(" = ");
-    transpile_expr(stmt->assign->expr);
-    printf(";\n");
-    break;
+      break;
+    case STMT_ASSIGN:
+      transpile_expr(stmt->assign->ident);
+      printf(" = ");
+      transpile_expr(stmt->assign->expr);
+      printf(";\n");
+      break;
 
-  case STMT_EXPR:
-    transpile_expr(
-        stmt->expr->expr); // not putting semicolon when called as a single stmt
-    break;
+    case STMT_EXPR:
+      transpile_expr(
+          stmt->expr->expr); // not putting semicolon when called as a single stmt
+      break;
 
-  case STMT_RETURN:
-    printf("return ");
-    transpile_expr(stmt->return_stmt->expr);
-    printf(";\n");
-    break;
+    case STMT_RETURN:
+      printf("return ");
+      transpile_expr(stmt->return_stmt->expr);
+      printf(";\n");
+      break;
 
-  case STMT_WHILE:
-    int start_while_label = label_count++;
-    int end_while_label = label_count++;
+    case STMT_WHILE:
+      int start_while_label = label_count++;
+      int end_while_label = label_count++;
 
-    push_loop_labels(start_while_label, end_while_label);
+      push_loop_labels(start_while_label, end_while_label);
 
-    printf("label_%d: // continue\n  ", start_while_label);
-    printf("if (!(");
-    transpile_expr(stmt->while_stmt->cond);
-    printf(")) goto label_%d;\n", end_while_label);
+      printf("label_%d: // continue\n  ", start_while_label);
+      printf("if (!(");
+      transpile_expr(stmt->while_stmt->cond);
+      printf(")) goto label_%d;\n", end_while_label);
 
-    transpile_stmt_list(stmt->while_stmt->body);
+      transpile_stmt_list(stmt->while_stmt->body);
 
-    printf("  goto label_%d;\n", start_while_label);
+      printf("  goto label_%d;\n", start_while_label);
 
-    printf("label_%d: // break\n", end_while_label);
-    pop_loop_labels();
-    break;
+      printf("label_%d: // break\n", end_while_label);
+      pop_loop_labels();
+      break;
 
-  case STMT_IF:
-    int if_then_label = label_count++;
-    int if_end_label = label_count++;
+    case STMT_IF:
+      int if_then_label = label_count++;
+      int if_end_label = label_count++;
 
-    printf("if ((");
-    transpile_expr(stmt->if_stmt->condition);
-    printf(")) goto label_%d;\n", if_then_label);
+      printf("if ((");
+      transpile_expr(stmt->if_stmt->condition);
+      printf(")) goto label_%d;\n", if_then_label);
 
-    if (stmt->if_stmt->else_) {
-      transpile_stmt_list(stmt->if_stmt->else_);
-    }
-    printf("goto label_%d;\n", if_end_label);
+      if (stmt->if_stmt->else_) {
+        transpile_stmt_list(stmt->if_stmt->else_);
+      }
+      printf("goto label_%d;\n", if_end_label);
 
-    printf("label_%d:\n", if_then_label);
-    if (stmt->if_stmt->then) {
-      transpile_stmt_list(stmt->if_stmt->then);
-    }
+      printf("label_%d:\n", if_then_label);
+      if (stmt->if_stmt->then) {
+        transpile_stmt_list(stmt->if_stmt->then);
+      }
 
-    printf("label_%d:\n", if_end_label);
-    break;
+      printf("label_%d:\n", if_end_label);
+      break;
 
-  case STMT_FOR:
-    int for_cond_label = label_count++;
-    int for_inc_label = label_count++;
-    int for_end_label = label_count++;
+    case STMT_FOR:
+      int for_cond_label = label_count++;
+      int for_inc_label = label_count++;
+      int for_end_label = label_count++;
 
-    push_loop_labels(for_inc_label, for_end_label);
+      push_loop_labels(for_inc_label, for_end_label);
 
-    if (stmt->for_stmt->var)
-      transpile_stmt(stmt->for_stmt->var);
+      if (stmt->for_stmt->var)
+        transpile_stmt(stmt->for_stmt->var);
 
-    printf("  goto label_%d;\n", for_cond_label);
+      printf("  goto label_%d;\n", for_cond_label);
 
-    printf("label_%d: // continue target\n  ", for_inc_label);
-    if (stmt->for_stmt->inc) {
-      transpile_stmt(stmt->for_stmt->inc);
-    }
+      printf("label_%d: // continue target\n  ", for_inc_label);
+      if (stmt->for_stmt->inc) {
+        transpile_stmt(stmt->for_stmt->inc);
+      }
 
-    printf("label_%d: // condition check\n  ", for_cond_label);
-    printf("if (!(");
-    transpile_expr(stmt->for_stmt->cond);
-    printf(")) goto label_%d;\n", for_end_label);
+      printf("label_%d: // condition check\n  ", for_cond_label);
+      printf("if (!(");
+      transpile_expr(stmt->for_stmt->cond);
+      printf(")) goto label_%d;\n", for_end_label);
 
-    transpile_stmt_list(stmt->for_stmt->body);
+      transpile_stmt_list(stmt->for_stmt->body);
 
-    printf("  goto label_%d;\n", for_inc_label);
+      printf("  goto label_%d;\n", for_inc_label);
 
-    printf("label_%d: // break target\n", for_end_label);
-    pop_loop_labels();
-    break;
+      printf("label_%d: // break target\n", for_end_label);
+      pop_loop_labels();
+      break;
 
-  case STMT_BREAK:
-    printf("goto label_%d; // break\n", get_current_break_label());
-    break;
-  case STMT_CONTINUE:
-    printf("goto label_%d; // continue\n", get_current_continue_label());
-    break;
+    case STMT_BREAK:
+      printf("goto label_%d; // break\n", get_current_break_label());
+      break;
+    case STMT_CONTINUE:
+      printf("goto label_%d; // continue\n", get_current_continue_label());
+      break;
 
-  default:
-    printf("Unimplemented");
-    break;
+    default:
+      printf("Unimplemented");
+      break;
   }
 }
 
