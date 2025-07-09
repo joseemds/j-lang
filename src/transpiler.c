@@ -217,6 +217,7 @@ void transpile_expr(ASTExpr *expr) {
     break;
 
   case EXPR_ARRAY_LIT:
+    // Expr de array solta não é suportado pelo C
     printf(" (");
     // transpile_type(); // Pegar tipo do array
     printf("[]){");
@@ -295,9 +296,16 @@ void transpile_func_params(StmtFuncParams *params) {
   while (params != NULL) {
     ExprList *ident = params->idents;
     while (ident != NULL) {
-      transpile_type(params->type);
-      printf(" ");
-      transpile_expr(ident->expr);
+      if (params->type->kind == TYPE_ARRAY) {
+        transpile_type(params->type->array->inner_type);
+        printf(" ");
+        transpile_expr(ident->expr);
+        printf("[]");
+      } else {
+        transpile_type(params->type);
+        printf(" ");
+        transpile_expr(ident->expr);
+      }
       if (ident->next != NULL || params->next != NULL) {
         printf(", ");
       }
@@ -318,6 +326,49 @@ void transpile_func_decl(StmtFuncDecl *func_decl) {
   printf("\n}\n");
 }
 
+void transpile_declaration(ASTType *type, ExprList *idents, ExprList *inits) {
+    if (type->kind == TYPE_ARRAY) {
+        transpile_type(type->array->inner_type);
+        printf(" ");
+
+        while (idents != NULL) {
+            transpile_expr(idents->expr);
+            printf("[]");
+
+            if (inits != NULL) {
+                printf(" = ");
+                ASTExpr *init_expr = inits->expr;
+                
+                if (init_expr && init_expr->kind == EXPR_ARRAY_LIT) {
+                    printf("{");
+                    transpile_expr_list(init_expr->array_lit->elements);
+                    printf("}");
+                } else {
+                    transpile_expr(init_expr);
+                }
+                inits = inits->next;
+            }
+            if (idents->next != NULL) printf(", ");
+            idents = idents->next;
+        }
+    } 
+    else {
+        transpile_type(type);
+        printf(" ");
+        while (idents != NULL) {
+            transpile_expr(idents->expr);
+            if (inits != NULL) {
+                printf(" = ");
+                transpile_expr(inits->expr);
+                inits = inits->next;
+            }
+            if (idents->next != NULL) printf(", ");
+            idents = idents->next;
+        }
+    }
+    printf(";\n");
+}
+
 void transpile_stmt(ASTStmt *stmt) {
   switch (stmt->kind) {
   case STMT_TYPE_DECL:
@@ -327,19 +378,10 @@ void transpile_stmt(ASTStmt *stmt) {
     transpile_func_decl(stmt->func_decl);
     break;
   case STMT_VAR_DECL:
-    transpile_type(stmt->val_decl->type);
-    printf(" ");
-    transpile_expr_list(stmt->val_decl->idents);
-    printf(";\n");
+    transpile_declaration(stmt->val_decl->type, stmt->val_decl->idents, NULL);
     break;
   case STMT_VAR_INIT:
-    transpile_type(stmt->val_init->type);
-    printf(" ");
-    // transpile_expr_list(stmt->val_init->idents);
-    // printf(" = ");
-    // transpile_expr_list(stmt->val_init->exprs);
-    transpile_val_init(stmt->val_init->idents, stmt->val_init->exprs);
-    printf(";\n");
+    transpile_declaration(stmt->val_init->type, stmt->val_init->idents, stmt->val_init->exprs);
     break;
   case STMT_ASSIGN:
     transpile_expr(stmt->assign->ident);
