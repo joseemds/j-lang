@@ -136,23 +136,9 @@ ASTExpr *mk_string_lit(int line, int col, char *value) {
   return expr_node;
 }
 
-// ASTExpr *mk_rational_lit(int line, int col, rational value) {
-//   ExprRationalLiteral *rational_lit =
-//       (ExprRationalLiteral *)malloc(sizeof(ExprRationalLiteral));
-//   rational_lit->value = value;
-
-//   ASTExpr *expr_node = (ASTExpr *)malloc(sizeof(ASTExpr));
-//   expr_node->kind = EXPR_RATIONAL_LITERAL;
-//   expr_node->line = line;
-//   expr_node->col = col;
-//   expr_node->rational_lit = rational_lit;
-
-//   return expr_node;
-// }
-
-ASTExpr *mk_frac_cons_rational(int line, int col, rational value) {
-  ExprFracCons *frac_cons_rational =
-      (ExprFracCons *)malloc(sizeof(ExprFracCons));
+ASTExpr *mk_frac_cons_rational(int line, int col, rational value){
+  ExprFracCons *frac_cons_rational = 
+    (ExprFracCons *)malloc(sizeof(ExprFracCons));
   frac_cons_rational->kind = FRAC_RATIONAL;
   frac_cons_rational->rational_lit = value;
 
@@ -526,6 +512,16 @@ StructFieldAssign *mk_struct_field_assign(char *name, ASTExpr *value) {
   sfa->value = value;
   sfa->next = NULL;
   return sfa;
+}
+
+void append_struct_field_assign(StructFieldAssign *curr, StructFieldAssign *next){
+  if (next == NULL) {
+    return;
+  }
+  while (curr->next != NULL) {
+    curr = curr->next;
+  }
+  curr->next = next;
 }
 
 ASTExpr *mk_struct_cons_expr(int line, int col, ASTType *type,
