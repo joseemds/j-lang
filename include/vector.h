@@ -15,3 +15,5 @@ void vector_push(Vector *v, void *element);
 void *vector_get(Vector *v, size_t index);
 void vector_free(Vector *v);
 int vector_pop(Vector *v, void *out_element);
+Vector *vector_from_array(void *source_array, size_t count,
+                          size_t element_size);

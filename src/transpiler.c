@@ -392,26 +392,21 @@ void transpile_stmt(ASTStmt *stmt) {
       ASTType *inner_type = type->array->inner_type;
       const char *var_name = idents->expr->ident->name;
 
-      printf("  Vector* %s = vector_init(sizeof(", var_name);
+      ExprList *elements = exprs->expr->array_lit->elements;
+      ExprList *counter = elements;
+      int count = 0;
+
+      while (counter != NULL) {
+        count++;
+        counter = counter->next;
+      }
+      printf("  Vector* %s = vector_from_array((", var_name);
+      transpile_type(inner_type);
+      printf("[]){");
+      transpile_expr_list(elements);
+      printf("}, %d, sizeof(", count);
       transpile_type(inner_type);
       printf("));\n");
-
-      ExprList *elements = exprs->expr->array_lit->elements;
-      int temp_count = 0;
-      while (elements != NULL) {
-        char temp_var_name[32];
-        sprintf(temp_var_name, "_tmp_%s_%d", var_name, temp_count++);
-
-        printf("  ");
-        transpile_type(inner_type);
-        printf(" %s = ", temp_var_name);
-        transpile_expr(elements->expr);
-        printf(";\n");
-
-        printf("  vector_push(%s, &%s);\n", var_name, temp_var_name);
-
-        elements = elements->next;
-      }
     }
 
     break;

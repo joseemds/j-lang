@@ -2,13 +2,18 @@
 #include <stdio.h>
 
 Vector *vector_init(size_t element_size) {
-  Vector *v = (Vector *)malloc(element_size);
+  Vector *v = (Vector *)malloc(sizeof(Vector));
+  if (!v)
+    return NULL;
 
   v->element_size = element_size;
   v->size = 0;
   v->capacity = 1;
   v->data = malloc(v->capacity * element_size);
-
+  if (!v->data) {
+    free(v);
+    return NULL;
+  }
   return v;
 }
 
@@ -30,7 +35,12 @@ void *vector_get(Vector *v, size_t index) {
   return (char *)v->data + index * v->element_size;
 }
 
-void vector_free(Vector *v) { free(v->data); }
+void vector_free(Vector *v) {
+  if (v) {
+    free(v->data);
+    free(v);
+  }
+}
 
 int vector_pop(Vector *v, void *out_element) {
   if (v->size == 0)
@@ -43,4 +53,25 @@ int vector_pop(Vector *v, void *out_element) {
     memcpy(out_element, source, v->element_size);
 
   return 1;
+}
+
+Vector *vector_from_array(void *source_array, size_t count,
+                          size_t element_size) {
+  Vector *v = vector_init(element_size);
+  if (!v)
+    return NULL;
+
+  if (v->capacity < count) {
+    v->capacity = count;
+    v->data = realloc(v->data, v->capacity * v->element_size);
+    if (!v->data) {
+      free(v);
+      return NULL;
+    }
+  }
+
+  memcpy(v->data, source_array, count * element_size);
+  v->size = count;
+
+  return v;
 }
