@@ -376,7 +376,7 @@ ASTStmt *mk_val_decl_stmt(int line, int col, ExprList *idents, ASTType *typ) {
 
 ASTStmt *mk_val_init_stmt(int line, int col, ExprList *idents, ASTType *typ,
                           ExprList *values) {
-  StmtValInit *val_init = (StmtValInit *)malloc(sizeof(StmtValDecl));
+  StmtValInit *val_init = (StmtValInit *)malloc(sizeof(StmtValInit));
   ASTStmt *stmt = (ASTStmt *)malloc(sizeof(ASTStmt));
 
   val_init->idents = idents;
