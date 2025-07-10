@@ -116,15 +116,20 @@ float rational_divide(rational r) { return (float)r.top / r.bot; }
 
 float frac_to_decimal(rational r) { return (float)r.top / r.bot; }
 
+rational int_to_frac(int x) {
+  if (x == 0) {
+    fprintf(stderr, "0 não pode ser representado como fração");
+  }
 
-rational int_to_frac(int x){
-	if(x == 0) {
-		fprintf(stderr, "0 não pode ser representado como fração");
-	}
-
-	return rational_create(x, x);
+  return rational_create(x, x);
 }
 
-void print_rational(rational r){
-	printf("%d/%d", r.top, r.bot);
+void print_rational(rational r) { printf("%d/%d", r.top, r.bot); }
+
+rational rational_mul_scalar(rational a, int s) {
+  rational r;
+  r.top = a.top * s;
+  r.bot = a.bot * s;
+
+  return r;
 }

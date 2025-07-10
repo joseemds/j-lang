@@ -20,15 +20,15 @@ void transpile_printf(ASTExpr *expr) {
     const char *typeName = type->prim->name;
     if (strcmp(typeName, "String") == 0) {
       printf("printf(\"%%s \", ");
-      transpile_expr(expr,0 ,0);
+      transpile_expr(expr, 0, 0);
       printf(");\n  ");
     } else if (strcmp(typeName, "Int") == 0) {
       printf("printf(\"%%d \", ");
-      transpile_expr(expr, 0,0);
+      transpile_expr(expr, 0, 0);
       printf(");\n  ");
     } else if (strcmp(typeName, "Char") == 0) {
       printf("printf(\"%%c \", ");
-      transpile_expr(expr, 0,0);
+      transpile_expr(expr, 0, 0);
       printf(");\n  ");
     } else if (strcmp(typeName, "Bool") == 0) {
       printf("printf(\"%%d \", ");
@@ -36,7 +36,7 @@ void transpile_printf(ASTExpr *expr) {
       printf(");\n  ");
     } else if (strcmp(typeName, "Float") == 0) {
       printf("printf(\"%%f \", ");
-      transpile_expr(expr, 0,0);
+      transpile_expr(expr, 0, 0);
       printf(");\n  ");
     } else if (strcmp(typeName, "Frac") == 0) {
       printf("print_rational(");
@@ -46,7 +46,7 @@ void transpile_printf(ASTExpr *expr) {
       printf("/* Cannot print type %s */", typeName);
     }
   } else {
-      printf("/* Apenas tipos primitos são aceitos*/");
+    printf("/* Apenas tipos primitos são aceitos*/");
   }
 }
 
@@ -174,10 +174,10 @@ void transpile_type(ASTType *type) {
     } else if (strcmp(type->prim->name, "Frac") == 0) {
       printf("rational");
     } else {
-			char* tmp = strdup(type->prim->name);
-			tmp[0] = tolower(tmp[0]);
-      printf("%s",tmp);
-			free(tmp);
+      char *tmp = strdup(type->prim->name);
+      tmp[0] = tolower(tmp[0]);
+      printf("%s", tmp);
+      free(tmp);
     }
     break;
 
@@ -276,10 +276,29 @@ void transpile_expr(ASTExpr *expr, int depth, int is_statement) {
     return;
 
   switch (expr->kind) {
-  case EXPR_UNARY:
-    transpile_unary_op(expr->unary_op->op);
-    transpile_expr(expr->unary_op->operand, depth + 1, 0);
+  case EXPR_UNARY: {
+    ASTType *operand_type = expr->unary_op->operand->inferred_type;
+
+    if (expr->unary_op->op == MINUS && operand_type != NULL &&
+        operand_type->kind == TYPE_PRIM &&
+        strcmp(operand_type->prim->name, "Frac") == 0) {
+      printf("rational_mul_scalar(");
+      transpile_expr(expr->unary_op->operand, depth, 0);
+      printf(", -1)");
+
+    } else {
+      if (expr->unary_op->op == MINUS) {
+        printf("-");
+      } else if (expr->unary_op->op == NOT) {
+        printf("!");
+      }
+
+      printf("(");
+      transpile_expr(expr->unary_op->operand, depth, 0);
+      printf(")");
+    }
     break;
+  }
 
   case EXPR_IDENT:
     printf("%s", expr->ident->name);
@@ -310,43 +329,41 @@ void transpile_expr(ASTExpr *expr, int depth, int is_statement) {
     break;
 
   case EXPR_FUNC_CALL:
- if (expr->kind == EXPR_FUNC_CALL &&
+    if (expr->kind == EXPR_FUNC_CALL &&
         strcmp(expr->func_call->func_name, "print") == 0) {
-ExprList *args = expr->func_call->params;
+      ExprList *args = expr->func_call->params;
       while (args != NULL) {
         transpile_printf(args->expr);
         args = args->next;
       }
       printf("printf(\"\\n\");\n");
 
-			}
-			else{
+    } else {
 
-    printf("%s(", expr->func_call->func_name);
-    transpile_expr_list(expr->func_call->params);
-    printf(")");
-
-			}
+      printf("%s(", expr->func_call->func_name);
+      transpile_expr_list(expr->func_call->params);
+      printf(")");
+    }
     break;
 
   case EXPR_BINARY: {
-			ASTType *operand_type = expr->binary_op->left->inferred_type;
+    ASTType *operand_type = expr->binary_op->left->inferred_type;
 
     if (operand_type != NULL && operand_type->kind == TYPE_PRIM &&
         strcmp(operand_type->prim->name, "Frac") == 0) {
-        
-        transpile_frac_binary_op(expr->binary_op->op, expr->binary_op->left,
-                                 expr->binary_op->right);
+
+      transpile_frac_binary_op(expr->binary_op->op, expr->binary_op->left,
+                               expr->binary_op->right);
 
     } else {
-        printf("(");
-        transpile_expr(expr->binary_op->left, depth+1, 0);
-        transpile_binary_op(expr->binary_op->op);
-        transpile_expr(expr->binary_op->right, depth+1, 0);
-        printf(")");
+      printf("(");
+      transpile_expr(expr->binary_op->left, depth + 1, 0);
+      transpile_binary_op(expr->binary_op->op);
+      transpile_expr(expr->binary_op->right, depth + 1, 0);
+      printf(")");
     }
     break;
-	};
+  };
 
   case EXPR_ATTR_ACCESS:
     transpile_expr(expr->attr_access->base, depth + 1, 0);

@@ -13,6 +13,8 @@ rational rational_sub(rational a, rational b);
 
 rational rational_mul(rational a, rational b);
 
+rational rational_mul_scalar(rational a, int b);
+
 rational rational_div(rational a, rational b);
 
 rational rational_square(rational a);

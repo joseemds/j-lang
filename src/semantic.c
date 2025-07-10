@@ -26,10 +26,19 @@ void populate_symbol_table(SymbolTable *st) {
   Symbol *int_to_frac_fn =
       mk_symbol("int_to_frac", SYMBOL_FUNC, mk_type_prim(-1, -1, "Frac"));
 
-  Symbol* frac_to_decimal = mk_symbol("frac_to_decimal", SYMBOL_FUNC, mk_type_prim(-1, -1, "Float"));
-      
-	Symbol* int_to_frac = mk_symbol("int_to_frac", SYMBOL_FUNC, mk_type_prim(-1, -1, "Frac"));
-	Symbol* int_to_float = mk_symbol("int_to_float", SYMBOL_FUNC, mk_type_prim(-1, -1, "Float"));
+  Symbol *frac_to_decimal =
+      mk_symbol("frac_to_decimal", SYMBOL_FUNC, mk_type_prim(-1, -1, "Float"));
+
+  Symbol *int_to_frac =
+      mk_symbol("int_to_frac", SYMBOL_FUNC, mk_type_prim(-1, -1, "Frac"));
+  Symbol *int_to_float =
+      mk_symbol("int_to_float", SYMBOL_FUNC, mk_type_prim(-1, -1, "Float"));
+
+  Symbol *str_to_int =
+      mk_symbol("str_to_int", SYMBOL_FUNC, mk_type_prim(-1, -1, "Int"));
+
+  Symbol *int_to_string =
+      mk_symbol("int_to_string", SYMBOL_FUNC, mk_type_prim(-1, -1, "String"));
 
   symbol_table_insert(st, print_fn);
   symbol_table_insert(st, input_fn);
@@ -39,6 +48,8 @@ void populate_symbol_table(SymbolTable *st) {
   symbol_table_insert(st, frac_to_decimal);
   symbol_table_insert(st, int_to_frac);
   symbol_table_insert(st, int_to_float);
+  symbol_table_insert(st, int_to_string);
+  symbol_table_insert(st, str_to_int);
 }
 
 void return_error(char *reason, int line, int col) {
@@ -108,6 +119,10 @@ void check_expr(ASTExpr *expr, SymbolTable *st) {
 
   case EXPR_CHAR_LITERAL:
     expr->inferred_type = mk_type_prim(expr->line, expr->col, "Char");
+    break;
+
+  case EXPR_FRAC_CONS:
+    expr->inferred_type = mk_type_prim(expr->line, expr->col, "Frac");
     break;
 
   case EXPR_ARRAY_LIT: {
@@ -187,10 +202,10 @@ void check_expr(ASTExpr *expr, SymbolTable *st) {
     } else if (func->kind != SYMBOL_FUNC) {
       return_error("Identificador não é função", expr->line, expr->col);
     }
-		ExprList *args = expr->func_call->params;
+    ExprList *args = expr->func_call->params;
     while (args != NULL) {
-        check_expr(args->expr, st);
-        args = args->next;
+      check_expr(args->expr, st);
+      args = args->next;
     }
 
     // TODO: Verificar parametros esperados vs passados
@@ -200,7 +215,7 @@ void check_expr(ASTExpr *expr, SymbolTable *st) {
     break;
   }
 
-  case EXPR_BINARY:
+  case EXPR_BINARY: {
     check_expr(expr->binary_op->left, st);
     check_expr(expr->binary_op->right, st);
     ASTType *lhs_type = expr->binary_op->left->inferred_type;
@@ -222,6 +237,49 @@ void check_expr(ASTExpr *expr, SymbolTable *st) {
       expr->inferred_type = lhs_type; // ou rhs_type, ambos são iguais
     break;
   }
+
+  case EXPR_UNARY: {
+    // First, check the operand to infer its type
+    check_expr(expr->unary_op->operand, st);
+    ASTType *op_type = expr->unary_op->operand->inferred_type;
+
+    if (!op_type || op_type->kind != TYPE_PRIM) {
+      type_error("Unary operator can only be applied to primitive types",
+                 expr->line, expr->col);
+      expr->inferred_type = NULL;
+      break;
+    }
+
+    // Check for unary minus (assuming token 288)
+    if (expr->unary_op->op == 288 /* MINUS */) {
+      const char *type_name = op_type->prim->name;
+      // Check if the type is numeric
+      if (strcmp(type_name, "Int") == 0 || strcmp(type_name, "Float") == 0 ||
+          strcmp(type_name, "Frac") == 0) {
+        // The result type of a negation is the same as the operand's type
+        expr->inferred_type = op_type;
+      } else {
+        type_error("Unary minus operator can only be applied to numeric types "
+                   "(Int, Float, Frac)",
+                   expr->line, expr->col);
+        expr->inferred_type = NULL;
+      }
+    } else if (expr->unary_op->op == 289 /* NOT - assuming token value */) {
+      // Check if the type is Boolean for the NOT operator
+      if (strcmp(op_type->prim->name, "Bool") == 0) {
+        expr->inferred_type = mk_type_prim(expr->line, expr->col, "Bool");
+      } else {
+        type_error("Logical NOT operator can only be applied to Bool type",
+                   expr->line, expr->col);
+        expr->inferred_type = NULL;
+      }
+    } else {
+      return_error("Unsupported unary operator", expr->line, expr->col);
+      expr->inferred_type = NULL;
+    }
+    break;
+  }
+  }
 }
 
 void check_stmt(ASTStmt *stmt, SymbolTable *st) {
@@ -234,7 +292,7 @@ void check_stmt(ASTStmt *stmt, SymbolTable *st) {
         ident->name = idents->expr->ident->name;
         ident->kind = SYMBOL_VAR;
         ident->type = stmt->val_decl->type;
-				// idents->expr->inferred_type = ident->type;
+        // idents->expr->inferred_type = ident->type;
         symbol_table_insert(st, ident);
       }
 
@@ -352,6 +410,9 @@ void check_stmt(ASTStmt *stmt, SymbolTable *st) {
     check_expr(stmt->expr->expr, st);
     break;
 
+  case STMT_RETURN:
+    check_expr(stmt->return_stmt->expr, st);
+
   case STMT_WHILE:
     check_expr(stmt->while_stmt->cond, st);
     break;
@@ -373,9 +434,9 @@ void check_stmt(ASTStmt *stmt, SymbolTable *st) {
 
     if (var_type && cond_type_ && inc_type &&
         (!strcmp(cond_type_->prim->name, "Bool") == 0)) {
-      return_error(
-          "Type Error: tipos diferentes entre variavel, condicao e incremento",
-          stmt->line, stmt->col);
+      return_error("Type Error: tipos diferentes entre variavel, condicao e "
+                   "incremento",
+                   stmt->line, stmt->col);
     }
 
     check_stmt_list(stmt->for_stmt->body, st);
