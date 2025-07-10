@@ -1,3 +1,3 @@
-5 // 6;
-
-func main() : Void {}
+func main() : Void {
+  val test : Frac = 5 // 6;
+}

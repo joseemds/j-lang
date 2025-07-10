@@ -1,4 +1,4 @@
-' ';
-"s a l v e";
-
-func main() : Void {}
+func main() : Void {
+  val v : Char = ' ';
+  val c : Char = 'c';
+}

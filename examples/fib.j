@@ -15,5 +15,6 @@ func fib_times_fib(n, m : Int) : Int {
 }
 
 func main() : Void {
-  print(fib(my_int));
+  -- print(fib(my_int));
+  val fib_5 : Int = fib(5);
 }
