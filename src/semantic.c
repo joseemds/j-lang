@@ -8,20 +8,29 @@
 
 void populate_symbol_table(SymbolTable *st) {
 
+  StmtFuncParams *print_params = malloc(sizeof(StmtFuncParams));
+  print_params->idents = mk_expr_list(mk_ident(0, 0, "value"));
+  print_params->type = mk_type_prim(-1, -1, "String");
+  print_params->next = NULL;
+
   Symbol *print_fn =
       mk_symbol("print", SYMBOL_FUNC, mk_type_prim(-1, -1, "Void"));
+  print_fn->func_params = print_params;
 
   Symbol *input_fn =
       mk_symbol("input", SYMBOL_FUNC, mk_type_prim(-1, -1, "String"));
 
+  input_fn->func_params = NULL;
+
   Symbol *int_of_string_fn =
       mk_symbol("int_of_string", SYMBOL_FUNC, mk_type_prim(-1, -1, "Int"));
 
-  Symbol *bool_of_string_fn =
-      mk_symbol("int_of_string", SYMBOL_FUNC, mk_type_prim(-1, -1, "Bool"));
+  StmtFuncParams *int_of_string_params = malloc(sizeof(StmtFuncParams));
+  int_of_string_params->idents = mk_expr_list(mk_ident(0,0, "str"));
+  int_of_string_params->type = mk_type_prim(-1, -1, "String");
+  int_of_string_params->next = NULL;
 
-  Symbol *float_of_string_fn =
-      mk_symbol("int_of_string", SYMBOL_FUNC, mk_type_prim(-1, -1, "Float"));
+	int_of_string_fn->func_params = int_of_string_params;
 
   Symbol *int_to_frac_fn =
       mk_symbol("int_to_frac", SYMBOL_FUNC, mk_type_prim(-1, -1, "Frac"));
@@ -43,8 +52,8 @@ void populate_symbol_table(SymbolTable *st) {
   symbol_table_insert(st, print_fn);
   symbol_table_insert(st, input_fn);
   symbol_table_insert(st, int_of_string_fn);
-  symbol_table_insert(st, bool_of_string_fn);
-  symbol_table_insert(st, float_of_string_fn);
+  // symbol_table_insert(st, bool_of_string_fn);
+  // symbol_table_insert(st, float_of_string_fn);
   symbol_table_insert(st, frac_to_decimal);
   symbol_table_insert(st, int_to_frac);
   symbol_table_insert(st, int_to_float);
@@ -202,14 +211,56 @@ void check_expr(ASTExpr *expr, SymbolTable *st) {
     } else if (func->kind != SYMBOL_FUNC) {
       return_error("Identificador não é função", expr->line, expr->col);
     }
+
+    // Checa tipo dos argumentos passados
     ExprList *args = expr->func_call->params;
     while (args != NULL) {
       check_expr(args->expr, st);
       args = args->next;
     }
 
-    // TODO: Verificar parametros esperados vs passados
-    // Tipo retorno da função
+    ExprList *params = expr->func_call->params;
+    while (params != NULL) {
+      check_expr(params->expr, st);
+      params = params->next;
+    }
+    StmtFuncParams *func_params = func->func_params;
+    ExprList *passed_args = expr->func_call->params;
+
+    while (func_params != NULL && passed_args != NULL) {
+      ExprList *func_params_idents = func_params->idents;
+      while (func_params_idents != NULL && passed_args != NULL) {
+
+        if (passed_args->expr->inferred_type == NULL) {
+          break;
+        }
+
+        if (!cmp_types(func_params->type, passed_args->expr->inferred_type)) {
+          char err_msg[256];
+          sprintf(err_msg, "Tipo incorreto para o argumento na função '%s'.",
+                  func->name);
+          type_error(err_msg, passed_args->expr->line, passed_args->expr->col);
+        }
+
+        func_params_idents = func_params_idents->next;
+        passed_args = passed_args->next;
+      }
+
+      if (func_params_idents != NULL && passed_args == NULL) {
+        // Contagem de parametros diferente
+        break;
+      }
+
+      func_params = func_params->next;
+    }
+
+    if (func_params != NULL || passed_args != NULL) {
+      char err_msg[256];
+      sprintf(err_msg, "Número incorreto de argumentos para a função '%s'.",
+              func->name);
+      return_error(err_msg, expr->line, expr->col);
+    }
+
     expr->inferred_type = func->type;
 
     break;
@@ -357,6 +408,7 @@ void check_stmt(ASTStmt *stmt, SymbolTable *st) {
     func_symbol->name = strdup(stmt->func_decl->name);
     func_symbol->kind = SYMBOL_FUNC;
     func_symbol->type = stmt->func_decl->return_typ;
+    func_symbol->func_params = stmt->func_decl->params;
     symbol_table_insert(st, func_symbol);
 
     symbol_table_enter_scope(st);

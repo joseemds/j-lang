@@ -6,6 +6,9 @@ typedef struct Symbol {
   char *name;
   SymbolKind kind;
   ASTType *type;
+  union {
+    StmtFuncParams *func_params;
+  };
 } Symbol;
 
 Symbol *mk_symbol(char *name, SymbolKind kind, ASTType *type);
