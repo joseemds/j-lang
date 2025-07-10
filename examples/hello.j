@@ -1,8 +1,3 @@
-func salve() : Void {
-  
-}
-
 func main() : Void {
-	-- print("Hello, World!");
-  salve();
+	print("Hello, World!");
 }

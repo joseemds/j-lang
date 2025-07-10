@@ -44,4 +44,9 @@ func dangling_else() : Int {
   return 1;
 }
 
-func main() : Void {}
+func main() : Void {
+  print(if_());
+  print(if_else());
+  print(nested_ifs());
+  print(dangling_else());
+}
