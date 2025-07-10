@@ -230,7 +230,7 @@ void check_expr(ASTExpr *expr, SymbolTable *st) {
       type_error("Tipos de operandos diferente", expr->line, expr->col);
     }
 
-    if (expr->binary_op->op >= 278 &&
+    if (expr->binary_op->op >= 279 &&
         expr->binary_op->op <= 284) // operadores relacionais
       expr->inferred_type = mk_type_prim(expr->line, expr->col, "Bool");
     else
@@ -264,7 +264,7 @@ void check_expr(ASTExpr *expr, SymbolTable *st) {
                    expr->line, expr->col);
         expr->inferred_type = NULL;
       }
-    } else if (expr->unary_op->op == 289 /* NOT - assuming token value */) {
+    } else if (expr->unary_op->op == 294 /* NOT - assuming token value */) {
       // Check if the type is Boolean for the NOT operator
       if (strcmp(op_type->prim->name, "Bool") == 0) {
         expr->inferred_type = mk_type_prim(expr->line, expr->col, "Bool");

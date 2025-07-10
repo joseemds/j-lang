@@ -52,62 +52,71 @@ void transpile_printf(ASTExpr *expr) {
 
 void transpile_frac_binary_op(int op, ASTExpr *left, ASTExpr *right) {
   switch (op) {
-  case PLUS:
-    printf("rational_add(");
-    break;
-  case MINUS:
-    printf("rational_sub(");
-    break;
-  case TIMES:
-    printf("rational_mul(");
-    break;
-  case DIVIDE:
-    printf("rational_div(");
-    break;
+    case PLUS:
+      printf("rational_add(");
+      break;
+    case MINUS:
+      printf("rational_sub(");
+      break;
+    case TIMES:
+      printf("rational_mul(");
+      break;
+    case DIVIDE:
+      printf("rational_div(");
+      break;
 
-  case CMP:
-  case NEQ:
-  case GT:
-  case GEQ:
-  case LT:
-  case LEQ:
-    printf("rational_compare(");
-    break;
+    case CMP:
+    case NEQ:
+    case GT:
+    case GEQ:
+    case LT:
+    case LEQ:
+      printf("rational_compare(");
+      break;
 
-  default:
-    printf("/* unsupported_frac_op */(");
-    break;
+    default:
+      printf("/* unsupported_frac_op */(");
+      break;
   }
 
   transpile_expr(left, 0, 0);
   printf(", ");
   transpile_expr(right, 0, 0);
-  printf(")");
 
   // For comparison operators, add the final part of the C expression
   switch (op) {
   case CMP:
-    printf(" == 0");
+    printf(", %d)", CMP);
+    printf(" == 1");
     break;
   case NEQ:
-    printf(" != 0");
+    printf(", %d)", NEQ);
+    printf(" == 0");
     break;
   case GT:
-    printf(" > 0");
+    printf(", %d)", GT);
+    printf(" == 1");
     break;
   case GEQ:
-    printf(" >= 0");
+    printf(", %d)", GEQ);
+    printf(" == 1");
     break;
   case LT:
-    printf(" < 0");
+    printf(", %d)", LT);
+    printf(" == 1");
     break;
   case LEQ:
-    printf(" <= 0");
+    printf(", %d)", LEQ);
+    printf(" == 1");
     break;
   default:
     // No suffix for arithmetic ops
     break;
   }
+  if (!(op >= CMP && op <= LEQ))
+    // If it's not a comparison operator, we close the function call
+    printf(")");
+
 }
 
 struct {

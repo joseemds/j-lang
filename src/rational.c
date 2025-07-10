@@ -108,10 +108,42 @@ rational rational_simplify(rational r) {
   return r;
 }
 
-int rational_compare(rational a, rational b) {
+int rational_compare(rational a, rational b, int op) {
   a = rational_simplify(a);
   b = rational_simplify(b);
-  return (a.top == b.top && a.bot == b.bot) ? 1 : 0;
+  int mmc = lcm(a.bot, b.bot);
+
+  switch(op) {
+    case 279: // CMP
+    case 280: // NEQ
+      return (a.top == b.top && a.bot == b.bot) ? 1 : 0;
+      break;
+    case 281: // GT
+      a.top = a.top * (mmc / a.bot);
+      b.top = b.top * (mmc / b.bot);
+
+      return (a.top > b.top) ? 1 : 0;
+      break;
+    case 282: // GEQ
+      a.top = a.top * (mmc / a.bot);
+      b.top = b.top * (mmc / b.bot);
+
+      return (a.top >= b.top) ? 1 : 0;
+      break;
+    case 283: // LT
+      a.top = a.top * (mmc / a.bot);
+      b.top = b.top * (mmc / b.bot);
+
+      return (a.top < b.top) ? 1 : 0;
+      break;
+    case 284: // LEQ
+      a.top = a.top * (mmc / a.bot);
+      b.top = b.top * (mmc / b.bot);
+
+      return (a.top <= b.top) ? 1 : 0;
+      break;
+  }
+  return 0;
 }
 
 float rational_divide(rational r) { return (float)r.top / r.bot; }

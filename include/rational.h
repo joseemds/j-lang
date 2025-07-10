@@ -25,7 +25,7 @@ rational rational_simplify(rational r);
 
 rational rational_neg(rational a);
 
-int rational_compare(rational a, rational b);
+int rational_compare(rational a, rational b, int op);
 
 float rational_divide(rational r);
 
