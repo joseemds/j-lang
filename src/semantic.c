@@ -52,7 +52,7 @@ void check_stmt_list(StmtList *list, SymbolTable *st) {
 
 void check_expr(ASTExpr *expr, SymbolTable *st) {
   if (!expr) {
-    return_error("Expressão nula", expr->line, expr->col);
+    return_error("Expressão nula", 0, 0);
     exit(EXIT_FAILURE);
   }
   switch (expr->kind) {
@@ -86,6 +86,7 @@ void check_expr(ASTExpr *expr, SymbolTable *st) {
     }
 
     case EXPR_FUNC_CALL: {
+
       Symbol *func = symbol_table_lookup(st, expr->func_call->func_name);
       if (!func) {
         // char err_msg[128];
@@ -101,6 +102,8 @@ void check_expr(ASTExpr *expr, SymbolTable *st) {
       // TODO: Verificar parametros esperados vs passados
       // Tipo retorno da função
       expr->inferred_type = func->type;
+      
+      break;
     }
 
     case EXPR_BINARY:
