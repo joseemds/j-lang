@@ -35,7 +35,8 @@ FRAC_LITERAL ({DIGIT}+[ \t]*\/\/[ \t]*{DIGIT}+)
 
 "--".*                  {}
 
-{WHITESPACE}            {}
+\n               {yycol = 1;}
+[ \t\r]+ 					 {yycol += yyleng;}
 
 {PRIM_TYPE}           { yylval.sValue = strdup(yytext); return PRIM_TYPE; }
 

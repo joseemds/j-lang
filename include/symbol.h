@@ -7,3 +7,5 @@ typedef struct Symbol {
   SymbolKind kind;
   ASTType *type;
 } Symbol;
+
+Symbol *mk_symbol(char *name, SymbolKind kind, ASTType *type);

@@ -325,7 +325,8 @@ ASTStmt *mk_if_stmt(int line, int col, ASTExpr *cond, StmtList *then,
 ASTStmt *mk_break_stmt(int line, int col);
 ASTStmt *mk_continue_stmt(int line, int col);
 ASTStmt *mk_expr_stmt(int line, int col, ASTExpr *expr);
-// ASTStmt *mk_func_call_stmt(int line, int col, StmtFuncCall *func_call); // deprecated?
+// ASTStmt *mk_func_call_stmt(int line, int col, StmtFuncCall *func_call); //
+// deprecated?
 
 ASTExpr *mk_unary_op(int line, int col, int op, ASTExpr *operand);
 ASTExpr *mk_binary_op(int line, int col, int op, ASTExpr *left, ASTExpr *right);
@@ -346,7 +347,8 @@ ASTExpr *mk_struct_cons_expr(int line, int col, ASTType *type,
                              StructFieldAssign *assignments);
 
 StructFieldAssign *mk_struct_field_assign(char *name, ASTExpr *value);
-void append_struct_field_assign(StructFieldAssign *fields, StructFieldAssign *next);
+void append_struct_field_assign(StructFieldAssign *fields,
+                                StructFieldAssign *next);
 
 ASTType *mk_type_ident(int line, int col, char *type_name);
 ASTType *mk_type_prim(int line, int col, char *type_name);

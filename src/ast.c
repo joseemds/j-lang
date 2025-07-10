@@ -136,9 +136,9 @@ ASTExpr *mk_string_lit(int line, int col, char *value) {
   return expr_node;
 }
 
-ASTExpr *mk_frac_cons_rational(int line, int col, rational value){
-  ExprFracCons *frac_cons_rational = 
-    (ExprFracCons *)malloc(sizeof(ExprFracCons));
+ASTExpr *mk_frac_cons_rational(int line, int col, rational value) {
+  ExprFracCons *frac_cons_rational =
+      (ExprFracCons *)malloc(sizeof(ExprFracCons));
   frac_cons_rational->kind = FRAC_RATIONAL;
   frac_cons_rational->rational_lit = value;
 
@@ -515,7 +515,8 @@ StructFieldAssign *mk_struct_field_assign(char *name, ASTExpr *value) {
   return sfa;
 }
 
-void append_struct_field_assign(StructFieldAssign *curr, StructFieldAssign *next){
+void append_struct_field_assign(StructFieldAssign *curr,
+                                StructFieldAssign *next) {
   if (next == NULL) {
     return;
   }
