@@ -26,3 +26,9 @@ rational rational_neg(rational a);
 int rational_compare(rational a, rational b);
 
 float rational_divide(rational r);
+
+float frac_to_decimal(rational r);
+
+void print_rational(rational r);
+
+rational int_to_frac(int x);

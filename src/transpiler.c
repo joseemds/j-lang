@@ -4,6 +4,7 @@
 #include "y.tab.h"
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define STACK_MAX_DEPTH 1000
@@ -173,8 +174,10 @@ void transpile_type(ASTType *type) {
     } else if (strcmp(type->prim->name, "Frac") == 0) {
       printf("rational");
     } else {
-      type->prim->name[0] = tolower(type->prim->name[0]);
-      printf("%s", type->prim->name);
+			char* tmp = strdup(type->prim->name);
+			tmp[0] = tolower(tmp[0]);
+      printf("%s",tmp);
+			free(tmp);
     }
     break;
 
@@ -642,6 +645,7 @@ void print_headers() {
   printf("// Código gerado automaticamente pela J-Lang\n");
   printf("#include <stdio.h>\n");
   printf("#include <stdlib.h>\n");
+  printf("#include <stdj.h>\n");
   printf("#include <string.h>\n");
   printf("#include \"rational.h\"\n");
   printf("#include \"vector.h\"\n\n");

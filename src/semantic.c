@@ -23,15 +23,22 @@ void populate_symbol_table(SymbolTable *st) {
   Symbol *float_of_string_fn =
       mk_symbol("int_of_string", SYMBOL_FUNC, mk_type_prim(-1, -1, "Float"));
 
+  Symbol *int_to_frac_fn =
+      mk_symbol("int_to_frac", SYMBOL_FUNC, mk_type_prim(-1, -1, "Frac"));
+
+  Symbol* frac_to_decimal = mk_symbol("frac_to_decimal", SYMBOL_FUNC, mk_type_prim(-1, -1, "Float"));
+      
+	Symbol* int_to_frac = mk_symbol("int_to_frac", SYMBOL_FUNC, mk_type_prim(-1, -1, "Frac"));
+	Symbol* int_to_float = mk_symbol("int_to_float", SYMBOL_FUNC, mk_type_prim(-1, -1, "Float"));
+
   symbol_table_insert(st, print_fn);
-
   symbol_table_insert(st, input_fn);
-
   symbol_table_insert(st, int_of_string_fn);
-
   symbol_table_insert(st, bool_of_string_fn);
-
   symbol_table_insert(st, float_of_string_fn);
+  symbol_table_insert(st, frac_to_decimal);
+  symbol_table_insert(st, int_to_frac);
+  symbol_table_insert(st, int_to_float);
 }
 
 void return_error(char *reason, int line, int col) {
@@ -180,6 +187,11 @@ void check_expr(ASTExpr *expr, SymbolTable *st) {
     } else if (func->kind != SYMBOL_FUNC) {
       return_error("Identificador não é função", expr->line, expr->col);
     }
+		ExprList *args = expr->func_call->params;
+    while (args != NULL) {
+        check_expr(args->expr, st);
+        args = args->next;
+    }
 
     // TODO: Verificar parametros esperados vs passados
     // Tipo retorno da função
@@ -222,6 +234,7 @@ void check_stmt(ASTStmt *stmt, SymbolTable *st) {
         ident->name = idents->expr->ident->name;
         ident->kind = SYMBOL_VAR;
         ident->type = stmt->val_decl->type;
+				// idents->expr->inferred_type = ident->type;
         symbol_table_insert(st, ident);
       }
 

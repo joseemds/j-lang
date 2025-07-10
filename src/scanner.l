@@ -68,7 +68,7 @@ FRAC_LITERAL ({DIGIT}+[ \t]*\/\/[ \t]*{DIGIT}+)
                         return FRAC_LIT;
                       }
 {DIGIT}+              { yylval.iValue = atoi(yytext); return NUMBER;}
-{DIGIT}*\.{DIGIT}+    { return FLOAT; }
+{DIGIT}*\.{DIGIT}+    { yylval.fValue = atof(yytext);  return FLOAT; }
 {CHAR_LITERAL}        {
                         yylval.cValue = strdup(yytext);
                         return CHAR_LIT;
