@@ -31,4 +31,14 @@ func inv_rational(a : Frac) : Frac {
   return (1 // 1 / a);
 }
 
-func main() : Void {}
+func main() : Void {
+  val created, clone : Frac = create_rational(1,2);
+  clone = created;
+  print(compare_rational(created, clone));
+  print(add_rational(created, clone));
+  print(sub_rational(created, clone));
+  print(mul_rational(created, clone));
+  print(div_rational(created, clone));
+  print(neg_rational(created));
+  print(inv_rational(created));
+}

@@ -676,8 +676,8 @@ void print_headers() {
   printf("// Código gerado automaticamente pela J-Lang\n");
   printf("#include <stdio.h>\n");
   printf("#include <stdlib.h>\n");
-  printf("#include <stdj.h>\n");
   printf("#include <string.h>\n");
+  printf("#include \"stdj.h\"\n");
   printf("#include \"rational.h\"\n");
   printf("#include \"vector.h\"\n\n");
 }
