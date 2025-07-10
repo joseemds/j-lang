@@ -45,7 +45,30 @@ char *input() {
 }
 
 char *int_to_string(int i) {
-  static char buffer[12];
+  int length = snprintf(NULL, 0, "%d", i);
+
+  char *buffer = malloc(length + 1);
+  if (!buffer) {
+    return NULL;
+  }
+
   sprintf(buffer, "%d", i);
+
   return buffer;
+}
+
+char *string_concat(char *a, char *b) {
+  size_t len_a = strlen(a);
+  size_t len_b = strlen(b);
+
+  char *new_str = malloc(len_a + len_b + 1);
+
+  if (new_str == NULL) {
+    fprintf(stderr, "Fatal: failed to allocate memory for string_concat.\n");
+    exit(1);
+  }
+  strcpy(new_str, a);
+  strcat(new_str, b);
+
+  return new_str;
 }

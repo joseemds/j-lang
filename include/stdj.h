@@ -9,3 +9,5 @@ char *int_to_string(int i);
 char *input();
 
 char *int_to_string(int i);
+
+char *string_concat(char *a, char *b);

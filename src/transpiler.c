@@ -349,6 +349,17 @@ void transpile_expr(ASTExpr *expr, int depth, int is_statement) {
   case EXPR_BINARY: {
     ASTType *operand_type = expr->binary_op->left->inferred_type;
 
+    if (operand_type != NULL && expr->binary_op->op == PLUS &&
+        strcmp(operand_type->prim->name, "String") == 0) {
+
+      printf("string_concat(");
+      transpile_expr(expr->binary_op->left, depth + 1, 0);
+      printf(", ");
+      transpile_expr(expr->binary_op->right, depth + 1, 0);
+      printf(")");
+      return;
+    }
+
     if (operand_type != NULL && operand_type->kind == TYPE_PRIM &&
         strcmp(operand_type->prim->name, "Frac") == 0) {
 
