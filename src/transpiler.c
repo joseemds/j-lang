@@ -512,7 +512,8 @@ void transpile_stmt(ASTStmt *stmt, int indentation_level) {
   case STMT_VAR_DECL:
     transpile_declaration(stmt->val_decl->type, stmt->val_decl->idents);
     break;
-  case STMT_VAR_INIT:
+  case STMT_VAR_INIT: {
+
     ASTType *type = stmt->val_init->type;
     ExprList *idents = stmt->val_init->idents;
     ExprList *exprs = stmt->val_init->exprs;
@@ -545,13 +546,15 @@ void transpile_stmt(ASTStmt *stmt, int indentation_level) {
       printf(";\n");
     }
     break;
+  }
 
-  case STMT_ASSIGN:
+  case STMT_ASSIGN: {
     transpile_expr(stmt->assign->ident, 0, 0);
     printf(" = ");
     transpile_expr(stmt->assign->expr, 0, 0);
     printf(";\n");
     break;
+  }
 
   case STMT_EXPR:
     transpile_expr(stmt->expr->expr, 0, 1);

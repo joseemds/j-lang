@@ -6,7 +6,7 @@
 
 float int_to_float(int v) { return (float)v; }
 
-int string_to_int(char *value) {
+int str_to_int(char *value) {
   char *endptr;
   errno = 0;
   long result = strtol(value, &endptr, 10);
